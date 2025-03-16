@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import InputAdornment from "@mui/material/InputAdornment";
 
 interface InputBoxProps {
+  name?: string; // Add this line
   label: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -23,6 +24,9 @@ const InputBox: React.FC<InputBoxProps> = ({
   icon,
   ...props
 }) => {
+  const labelParts = label.split("*");
+  const mainLabel = labelParts[0];
+  const hasAsterisk = labelParts.length > 1;
   return (
     <Box sx={{ maxWidth: { xs: "100%", sm: "500px", md: "700px", lg: "900px" } }}>
       {/* Label */}
@@ -37,7 +41,10 @@ const InputBox: React.FC<InputBoxProps> = ({
           paddingLeft: "4px",
         }}
       >
-        {label}
+        {mainLabel}
+        {hasAsterisk && (
+          <span style={{ color: "red", marginLeft: "2px" }}>*</span>
+        )}
       </Box>
 
       {/* Input Field with Full Border, Border Radius, Shadow, Placeholder, and Icon */}
@@ -79,6 +86,7 @@ const InputBox: React.FC<InputBoxProps> = ({
             },
           },
           "& .MuiOutlinedInput-input": {
+            height : '20px',
             padding: { xs: "4px 8px 10px 8px", sm: "5px 10px", md: "6px 12px" }, 
             textAlign: "left",
           },
