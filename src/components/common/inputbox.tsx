@@ -69,8 +69,9 @@ const InputBox: React.FC<InputBoxProps> = ({
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "1.25rem", // Consistent icon size
+                      fontSize: "1rem", // Consistent icon size
                       color: "action.active", // Icon color
+                      height: { xs: "4px", sm: "4px", md: "6px" },
                     }}
                   >
                     {icon}
@@ -102,7 +103,7 @@ const InputBox: React.FC<InputBoxProps> = ({
             },
           },
           "& .MuiOutlinedInput-input": {
-            height: { xs: "18px", sm: "20px", md: "22px" },
+            height: { xs: "10px", sm: "10px", md: "6px" },
             padding: { xs: "10px 14px", sm: "12px 16px", md: "14px 18px" }, // Adjusted padding
             textAlign: "left",
           },

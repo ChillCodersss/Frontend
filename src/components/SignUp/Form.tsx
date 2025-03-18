@@ -43,12 +43,13 @@ const SignUpForm: React.FC = () => {
   };
 
   return (
+
     <form>
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: { xs: "10px", sm: "12px" }, // Responsive gap
+          gap: { xs: "5px", sm: "10px" }, // Responsive gap
           width: "100%", // Take up full width
         }}
       >
@@ -57,11 +58,11 @@ const SignUpForm: React.FC = () => {
           component="h1"
           sx={{
             textAlign: "left",
-            fontSize: { xs: "20px", sm: "24px", md: "20px" }, // Responsive font size
-            marginBottom: { xs: "5px", sm: "10px" }, // Responsive margin
+            fontSize: { xs: "16px", sm: "18px", md: "20px" }, // Responsive font size
+            marginBottom: { xs: "5px", sm: "5px" }, // Responsive margin
           }}
         >
-          Signup Form
+          Sign up Form
         </Box>
 
         <InputBox
@@ -141,7 +142,7 @@ const SignUpForm: React.FC = () => {
             marginTop: { xs: "5px", sm: "10px" },
           }}
         >
-          <ConfirmButton children="SignUp" />
+          <ConfirmButton children="Sign Up" />
         </Box>
 
         {/*Links below Button /*/}
