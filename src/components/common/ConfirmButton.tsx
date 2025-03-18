@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
-import { Button, ButtonProps } from '@mui/material';
-import Box from '@mui/material/Box';
+import React, { ReactNode } from "react";
+import { Button, ButtonProps } from "@mui/material";
+import Box from "@mui/material/Box";
 
 interface ConfirmButtonProps extends ButtonProps {
   children: ReactNode;
@@ -8,22 +8,22 @@ interface ConfirmButtonProps extends ButtonProps {
 
 function ConfirmButton({ children, ...props }: ConfirmButtonProps) {
   return (
-    <Box sx={{ maxWidth: { xs: '100%', sm: '500px', md: '700px', lg: '900px' } }}>
+    <Box sx={{ width: "100%" }}>
       <Button
         variant="contained"
         sx={{
-          borderRadius: { xs: '8px', sm: '10px', md: '12px' },
-          color: 'white', 
-          backgroundColor: '#0A155C',
+          borderRadius: { xs: "8px", sm: "10px", md: "12px" },
+          color: "white",
+          backgroundColor: "#0A155C",
           padding: 0,
-          minWidth: { xs: '150px', sm: '200px', md: '250px' },
-          fontSize: { xs: '12px', sm: '14px', md: '16px' },
-          height: { xs: '50px', sm: '55px', md: '60px' },
-          '&:hover': {
-            backgroundColor: '#0A155C', // Darker shade for hover
+          width: "100%", // Take up full width
+          fontSize: { xs: "12px", sm: "14px", md: "16px" }, // Responsive font size
+          height: { xs: "30px", sm: "30px", md: "40px" },
+          "&:hover": {
+            backgroundColor: " #0A155C", // Darker shade for hover
           },
-          '&:active': {
-            backgroundColor: '#070F3D', // Even darker shade for active state
+          "&:active": {
+            backgroundColor: " #070F3D", // Even darker shade for active state
           },
         }}
         {...props}
