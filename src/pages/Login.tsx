@@ -2,15 +2,12 @@ import InputBox from "@/components/common/inputbox";
 import ConfirmButton from "@/components/common/ConfirmButton";
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
-import './Form.css'
-const SignUpForm: React.FC = () => {
+import './Login.css'
+const Login: React.FC = () => {
   // State to manage form inputs
   const [formData, setFormData] = useState({
-    firstName: "", 
-    lastName: "", 
     email: "",
-    password: "",
-    confirmPassword: "",
+    password: ""
   });
 
   // Handle input changes
@@ -47,13 +44,13 @@ const SignUpForm: React.FC = () => {
           maxWidth: { xs: "100%", sm: "300px", md: "400px" }, // Responsive maxWidth
           width: "100%",
           margin: "0 auto",
-          backgroundColor: "#BFD9D9",
+          backgroundColor: " #BFD9D9",
           borderRadius: "12px",
           padding: "20px",
         }}
 
       >
-        <h1 style={{ textAlign: "left" }}>Signup Form</h1>
+        <h1 style={{ textAlign: "left" }}>ثبت نام</h1>
         {/* Email Field */}
         <InputBox
           label="Email*"
@@ -64,39 +61,11 @@ const SignUpForm: React.FC = () => {
           placeholder="example@gmail.com"
         />
 
-        {/* First Name Field */}
-        <InputBox
-          label="First Name"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleInputChange}
-          placeholder="Enter your first name"
-        />
-
-        {/* Last Name Field */}
-        <InputBox
-          label="Last Name"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleInputChange}
-          placeholder="Enter your last name"
-        />
-
         {/* Password Field */}
         <InputBox
           label="Password*"
           name="password"
           value={formData.password}
-          onChange={handleInputChange}
-          type="password"
-          placeholder="********"
-        />
-
-        {/* Confirm Password Field */}
-        <InputBox
-          label="Confirm Password*"
-          name="confirmPassword"
-          value={formData.confirmPassword}
           onChange={handleInputChange}
           type="password"
           placeholder="********"
@@ -114,4 +83,4 @@ const SignUpForm: React.FC = () => {
   );
 };
 
-export default SignUpForm;
+export default Login;
