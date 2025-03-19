@@ -32,6 +32,12 @@ const SignUpForm: React.FC = () => {
     }));
   };
 
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    console.log("Form Data:", formData); // Log the final form data
+    // Add your form submission logic here
+  };
+
   // Toggle password visibility
   const handleTogglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -43,30 +49,33 @@ const SignUpForm: React.FC = () => {
   };
 
   return (
-
-    <form>
+    <form onSubmit={handleSubmit}>
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           gap: { xs: "5px", sm: "10px" }, // Responsive gap
           width: "100%", // Take up full width
+          // textAlign: "right",
+          direction: "rtl",
         }}
       >
         {/* Responsive h1 */}
         <Box
           component="h1"
           sx={{
-            textAlign: "left",
             fontSize: { xs: "16px", sm: "18px", md: "20px" }, // Responsive font size
             marginBottom: { xs: "5px", sm: "5px" }, // Responsive margin
+            textAlign: "center",
+            direction: "rtl",
+            color: "white",
           }}
         >
-          Sign up Form
+          فرم ثبت نام
         </Box>
 
         <InputBox
-          label="Email*"
+          label="ایمیل"
           name="email"
           value={formData.email}
           onChange={handleInputChange}
@@ -76,33 +85,33 @@ const SignUpForm: React.FC = () => {
         />
 
         <InputBox
-          label="First Name"
+          label="نام"
           name="firstName"
           value={formData.firstName}
           onChange={handleInputChange}
-          placeholder="Enter your first name"
+          placeholder="نام خود را وارد کنید"
           icon={<PersonIcon />} // Person icon at the end
         />
 
         {/* Last Name Field */}
         <InputBox
-          label="Last Name"
+          label="نام خانوادگی"
           name="lastName"
           value={formData.lastName}
           onChange={handleInputChange}
-          placeholder="Enter your last name"
+          placeholder="نام خانوداگی خود را وارد کنید"
         />
 
         {/* Password Field */}
         <InputBox
-          label="Password*"
+          label="رمز عبور"
           name="password"
           value={formData.password}
           onChange={handleInputChange}
           type={showPassword ? "text" : "password"}
           placeholder="********"
           endAdornment={
-            <InputAdornment position="end" sx={{ paddingRight: "5px" }}>
+            <InputAdornment position="start" sx={{}}>
               <IconButton onClick={handleTogglePasswordVisibility} edge="end">
                 {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
               </IconButton>
@@ -112,14 +121,14 @@ const SignUpForm: React.FC = () => {
 
         {/* Confirm Password Field */}
         <InputBox
-          label="Confirm Password*"
+          label="تکرار رمز عبور"
           name="confirmPassword"
           value={formData.confirmPassword}
           onChange={handleInputChange}
           type={showConfirmPassword ? "text" : "password"}
           placeholder="********"
           endAdornment={
-            <InputAdornment position="end" sx={{ paddingRight: "5px" }}>
+            <InputAdornment position="start" sx={{ paddingRight: "5px" }}>
               <IconButton
                 onClick={handleToggleConfirmPasswordVisibility}
                 edge="end"
@@ -142,7 +151,7 @@ const SignUpForm: React.FC = () => {
             marginTop: { xs: "5px", sm: "10px" },
           }}
         >
-          <ConfirmButton children="Sign Up" />
+          <ConfirmButton  type="submit" children="ثبت نام" />
         </Box>
 
         {/*Links below Button /*/}
@@ -162,28 +171,28 @@ const SignUpForm: React.FC = () => {
             component="a"
             href="/login" // Replace with the actual link
             sx={{
-              color: "#070F3D", // Custom color
+              color: "white", // Custom color
               textDecoration: "none", // Remove underline
               "&:hover": {
                 textDecoration: "underline", // Add underline on hover
               },
             }}
           >
-            Already have an account?
+            اکانت دارم
           </Box>
           {/* "Go to X" Link */}
           <Box
             component="a"
             href="/go-to-x" // Replace with the actual link
             sx={{
-              color: "#070F3D", // Custom color
+              color: "white", // Custom color
               textDecoration: "none", // Remove underline
               "&:hover": {
                 textDecoration: "underline", // Add underline on hover
               },
             }}
           >
-            Go to X
+            فرم استخدام مشاور
           </Box>
         </Box>
       </Box>

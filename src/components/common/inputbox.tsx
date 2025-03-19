@@ -40,13 +40,13 @@ const InputBox: React.FC<InputBoxProps> = ({
           fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
           fontWeight: "500",
           marginBottom: "4px",
-          color: "text.primary",
-          paddingLeft: "4px",
+          color: "white",
+          paddingRight: "4px",
         }}
       >
         {mainLabel}
         {hasAsterisk && (
-          <span style={{ color: "red", marginLeft: "2px" }}>*</span>
+          <span style={{ color: "red", marginRight: "2px" }}>*</span>
         )}
       </Box>
 
@@ -81,6 +81,9 @@ const InputBox: React.FC<InputBoxProps> = ({
               {endAdornment} {/* Additional end adornment (e.g., password visibility toggle) */}
             </>
           ),
+          sx: {
+            backgroundColor: "white", // Set input background color to white
+          },
         }}
         sx={{
           "& .MuiOutlinedInput-root": {
@@ -105,10 +108,13 @@ const InputBox: React.FC<InputBoxProps> = ({
           "& .MuiOutlinedInput-input": {
             height: { xs: "10px", sm: "10px", md: "6px" },
             padding: { xs: "10px 14px", sm: "12px 16px", md: "14px 18px" }, // Adjusted padding
-            textAlign: "left",
+            textAlign: "right",
           },
           "& .MuiInputBase-input::placeholder": {
-            fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.8rem" },
+            fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.9rem" },
+            opacity : 0.5,
+            // paddingRight : "0",
+            
           },
         }}
         {...props}
