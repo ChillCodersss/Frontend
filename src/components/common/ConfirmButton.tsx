@@ -21,10 +21,10 @@ function ConfirmButton({ name, ...props }: ConfirmButtonProps) {
           fontSize: { xs: '14px', sm: '16px', md: '18px' }, // Responsive font size
           height: '32px', // Responsive height
           '&:hover': {
-            backgroundColor: '#0A155C', // Darker shade for hover
+            backgroundColor: ' #0A155C', // Darker shade for hover
           },
           '&:active': {
-            backgroundColor: '#070F3D', // Even darker shade for active state
+            backgroundColor: ' #070F3D', // Even darker shade for active state
           },
         }}
         {...props}

@@ -22,7 +22,7 @@ const Login: React.FC = () => {
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100%" }}>
       {/* پس‌زمینه کلی */}
-      <div className="area" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: -1 }}>
+      <div className="area" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: -1}}>
         <ul className="circles">
           <li></li>
           <li></li>
@@ -49,18 +49,19 @@ const Login: React.FC = () => {
         position: "relative", // برای قرار دادن محتوا در لایه بالاتر
       }}>
         {/* فرم در سمت چپ */}
-        <form style={{ width: "100%", maxWidth: "400px"}}>
+        <form style={{ width: "100%", maxWidth: "400px" }}>
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               gap: "14px",
               width: "100%",
-              backgroundColor: "rgb(7, 40, 97)",
+              backgroundColor: "rgb(255, 255, 255)",
               borderRadius: "12px 0 0 12px", // گوشه‌های گرد برای سمت چپ
               padding: "20px",
               boxSizing: "border-box",
               height: "500px", // ارتفاع فرم برابر با عکس
+              
             }}
           >
             {/* لوگو */}
@@ -82,11 +83,11 @@ const Login: React.FC = () => {
               />
             </Box>
 
-            <h1 style={{ textAlign: "center", color: "white" }}>ورود</h1>
+            <h1 style={{ textAlign: "center", color: "black" }}>ورود</h1>
 
             {/* Email Field */}
             <InputBox
-              label="ایمیل*"
+              label="ایمیل"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
@@ -96,7 +97,7 @@ const Login: React.FC = () => {
 
             {/* Password Field */}
             <InputBox
-              label="رمز عبور*"
+              label="رمز عبور"
               name="password"
               value={formData.password}
               onChange={handleInputChange}
@@ -124,7 +125,7 @@ const Login: React.FC = () => {
                 href="/forgot-password" // لینک مورد نظر
                 sx={{
                   textDecoration: "none", // حذف underline پیش‌فرض
-                  color: "white", // رنگ متن
+                  color: "black", // رنگ متن
                   fontSize: "0.9rem", // اندازه فونت
                   "&:hover": {
                     color: "rgb(183, 28, 124)", // تغییر رنگ هنگام hover
@@ -139,7 +140,7 @@ const Login: React.FC = () => {
                 href="www.google.com" // لینک مورد نظر
                 sx={{
                   textDecoration: "none", // حذف underline پیش‌فرض
-                  color: "white", // رنگ متن
+                  color: "black", // رنگ متن
                   fontSize: "0.9rem", // اندازه فونت
                   "&:hover": {
                     color: "rgb(47, 7, 61)", // تغییر رنگ هنگام hover
@@ -158,13 +159,13 @@ const Login: React.FC = () => {
           sx={{
             width: "400px", // عرض عکس
             height: "500px", // ارتفاع عکس
-            backgroundColor: "#BFD9D9", // رنگ پس‌زمینه عکس (اختیاری)
+            backgroundColor: " #BFD9D9", // رنگ پس‌زمینه عکس (اختیاری)
             borderRadius: "0 12px 12px 0", // گوشه‌های گرد برای سمت راست
             overflow: "hidden", // برای جلوگیری از بیرون زدن عکس
           }}
         >
           <img
-            src="./src/assets/shrek.jpg" // مسیر عکس شما
+            src="./src/assets/goodboy.jfif" // مسیر عکس شما
             alt="Side Image"
             style={{
               width: "100%",
