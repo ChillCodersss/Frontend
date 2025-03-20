@@ -1,8 +1,9 @@
 import Box from "@mui/material/Box";
 import SignUpForm from "@/components/SignUp/Form";
 import "./background.css";
-import logo from "@/assets/logo2.png";
-
+import logo from "@/assets/logo.png";
+import { toast, ToastContainer } from "react-toastify";
+import "./toast.css";
 const Signup = () => {
   return (
     <div className="area">
@@ -33,48 +34,41 @@ const Signup = () => {
           sx={{
             display: "flex",
             flexDirection: { xs: "column", sm: "row" }, // Stack vertically on small screens
-            width: { xs: "100%", sm: "700px" }, // Full width on small screens
-            height: { xs: "auto", sm: "500px" }, // Auto height on small screens
+            width: { xs: "100%", sm: "800px" }, // Full width on small screens
+            height: { xs: "auto", sm: "600px" }, // Auto height on small screens
             maxWidth: "1200px", // Max width for PC
             maxHeight: { xs: "none", sm: "600px" }, // Max height for PC
-            backgroundColor: "rgba(255, 255, 255, 0.2)",
+            // backgroundColor: "rgba(255, 255, 255, 0.2)",
+            backgroundColor: "rgba(13, 212, 212, 0.44)",
             borderRadius: "12px", // Rounded corners
-            overflow: "hidden", // Prevent content from overflowing
-            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)", // Add shadow
-            backdropFilter: "blur(10px)", // Glassy effect
-            border: "2px solid #BFD9D9",
+            //overflow: "hidden", // Prevent content from overflowing
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+            backdropFilter: "blur(100px)",
+            border: "3px solid #BFD9D9",
           }}
         >
           {/* Left Side: Logo with Glassy Background */}
           <Box
             sx={{
               width: { xs: "100%", sm: "50%" },
-              height: { xs: "100px", sm: "100%" }, // Fixed height on mobile
+              height: { xs: "100px", sm: "100%" },
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              backgroundColor: "rgba(255, 255, 255, 0.1)", // Semi-transparent background
-              backdropFilter: "blur(10px)", // Glassy effect
+              // backgroundColor: "rgba(255, 255, 255, 0.1)", // Semi-transparent background
+              backdropFilter: "blur(10px)",
               borderRight: {
                 xs: "none",
-                sm: "1px solid #BFD9D9",
-              }, // Optional: Adds a subtle border
+                sm: "3px solid #BFD9D9",
+              },
             }}
           >
-            {/* <img
-              src={logo}
-              alt="Logo"
-              style={{
-                width: { xs: "100%", sm: "50%" }, // Adjust the size of the logo
-                height: "60%",
-              }}
-            /> */}
             <Box
               component="img"
               src={logo}
               alt="Logo"
               sx={{
-                width: { xs: "60%", sm: "80%" }, // Responsive width
+                width: { xs: "60%", sm: "80%" },
                 height: { xs: "80%", sm: "60%" },
               }}
             />
@@ -88,17 +82,27 @@ const Signup = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              backgroundColor: "rgba(255, 255, 255, 0.1)", // Semi-transparent background
-              backdropFilter: "blur(10px)", // Glassy effect
+              backdropFilter: "blur(10px)",
             }}
           >
             <SignUpForm />
           </Box>
         </Box>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={true}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          className="custom-toast-container"
+        />
       </Box>
     </div>
   );
-  
 };
 
 export default Signup;

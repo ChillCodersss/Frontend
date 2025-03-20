@@ -8,9 +8,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignUpForm: React.FC = () => {
-  // State to manage form inputs
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -19,11 +20,9 @@ const SignUpForm: React.FC = () => {
     confirmPassword: "",
   });
 
-  // State to manage password visibility
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Handle input changes
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
@@ -32,18 +31,74 @@ const SignUpForm: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    console.log("Form Data:", formData); // Log the final form data
-    // Add your form submission logic here
+  const validateForm = () => {
+    const { firstName, lastName, email, password, confirmPassword } = formData;
+    const errors: string[] = [];
+
+    if (!email) {
+      errors.push("ایمیل را وارد کنید");
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.push("ایمیل معتبر نیست");
+    }
+
+    if (!firstName) {
+      errors.push("نام را وارد کنید");
+    }
+
+    if (!lastName) {
+      errors.push("نام خانوادگی را وارد کنید");
+    }
+
+    if (!password) {
+      errors.push("رمز عبور را وارد کنید");
+    } else if (password.length < 8) {
+      errors.push("رمز عبور باید حداقل 8 کاراکتر باشد");
+    }
+
+    if (!confirmPassword) {
+      errors.push("تکرار رمز عبور را وارد کنید");
+    } else if (password !== confirmPassword) {
+      errors.push("رمز عبور و تکرار آن مطابقت ندارند");
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((error) => {
+        toast.error(error, {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          rtl: true, 
+        });
+      });
+      return false;
+    }
+
+    return true;
   };
 
-  // Toggle password visibility
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (validateForm()) {
+      console.log("Form Data:", formData); 
+      toast.success("ثبت نام با موفقیت انجام شد", {
+        position: "bottom-right",
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        rtl: true, 
+      });
+    }
+  };
+
   const handleTogglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
-  // Toggle confirm password visibility
   const handleToggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword((prev) => !prev);
   };
@@ -54,21 +109,19 @@ const SignUpForm: React.FC = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: { xs: "5px", sm: "10px" }, // Responsive gap
-          width: "100%", // Take up full width
-          // textAlign: "right",
+          gap: { xs: "5px", sm: "10px" },
+          width: "100%",
           direction: "rtl",
         }}
       >
-        {/* Responsive h1 */}
         <Box
           component="h1"
           sx={{
-            fontSize: { xs: "16px", sm: "18px", md: "20px" }, // Responsive font size
-            marginBottom: { xs: "5px", sm: "5px" }, // Responsive margin
+            fontSize: { xs: "16px", sm: "18px", md: "20px" },
+            marginBottom: { xs: "5px", sm: "5px" },
             textAlign: "center",
             direction: "rtl",
-            color: "white",
+            color: "black",
           }}
         >
           فرم ثبت نام
@@ -81,7 +134,7 @@ const SignUpForm: React.FC = () => {
           onChange={handleInputChange}
           type="email"
           placeholder="example@gmail.com"
-          icon={<EmailIcon />} // Email icon at the end
+          icon={<EmailIcon />}
         />
 
         <InputBox
@@ -90,10 +143,9 @@ const SignUpForm: React.FC = () => {
           value={formData.firstName}
           onChange={handleInputChange}
           placeholder="نام خود را وارد کنید"
-          icon={<PersonIcon />} // Person icon at the end
+          icon={<PersonIcon />}
         />
 
-        {/* Last Name Field */}
         <InputBox
           label="نام خانوادگی"
           name="lastName"
@@ -102,7 +154,6 @@ const SignUpForm: React.FC = () => {
           placeholder="نام خانوداگی خود را وارد کنید"
         />
 
-        {/* Password Field */}
         <InputBox
           label="رمز عبور"
           name="password"
@@ -111,7 +162,7 @@ const SignUpForm: React.FC = () => {
           type={showPassword ? "text" : "password"}
           placeholder="********"
           endAdornment={
-            <InputAdornment position="start" sx={{}}>
+            <InputAdornment position="start">
               <IconButton onClick={handleTogglePasswordVisibility} edge="end">
                 {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
               </IconButton>
@@ -119,7 +170,6 @@ const SignUpForm: React.FC = () => {
           }
         />
 
-        {/* Confirm Password Field */}
         <InputBox
           label="تکرار رمز عبور"
           name="confirmPassword"
@@ -143,7 +193,6 @@ const SignUpForm: React.FC = () => {
           }
         />
 
-        {/* Submit Button */}
         <Box
           sx={{
             display: "flex",
@@ -151,44 +200,41 @@ const SignUpForm: React.FC = () => {
             marginTop: { xs: "5px", sm: "10px" },
           }}
         >
-          <ConfirmButton  type="submit" children="ثبت نام" />
+          <ConfirmButton type="submit" children="ثبت نام" />
         </Box>
 
-        {/*Links below Button /*/}
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between", // Space out the links
-            alignItems: "center", // Vertically center the links
-            marginTop: { xs: "1px", sm: "5px" }, // Add margin above the box
-            marginBottom: { xs: "4px", sm: "10px" }, // Add margin above the box
-            fontSize: { xs: "0.8rem", sm: "0.9rem" }, // Responsive font size
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: { xs: "1px", sm: "5px" },
+            marginBottom: { xs: "4px", sm: "10px" },
+            fontSize: { xs: "0.8rem", sm: "0.9rem" },
             padding: { xs: "0px 5px", sm: "0px 5px" },
           }}
         >
-          {/* "Already have an account" Link */}
           <Box
             component="a"
-            href="/login" // Replace with the actual link
+            href="/login"
             sx={{
-              color: "white", // Custom color
-              textDecoration: "none", // Remove underline
+              color: "black",
+              textDecoration: "none",
               "&:hover": {
-                textDecoration: "underline", // Add underline on hover
+                textDecoration: "underline",
               },
             }}
           >
             اکانت دارم
           </Box>
-          {/* "Go to X" Link */}
           <Box
             component="a"
-            href="/go-to-x" // Replace with the actual link
+            href="/go-to-x"
             sx={{
-              color: "white", // Custom color
-              textDecoration: "none", // Remove underline
+              color: "black",
+              textDecoration: "none",
               "&:hover": {
-                textDecoration: "underline", // Add underline on hover
+                textDecoration: "underline",
               },
             }}
           >
