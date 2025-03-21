@@ -1,15 +1,31 @@
+import React, { useState, useEffect } from "react";
 import InputBox from "@/components/common/inputbox";
 import ConfirmButton from "@/components/common/ConfirmButton";
-import React, { useState } from "react";
 import Box from "@mui/material/Box";
-import Link from "@mui/material/Link"; // برای ایجاد لینک
+import Link from "@mui/material/Link";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Email from "@mui/icons-material/Email";
 import './Login.css';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showImage, setShowImage] = useState(window.innerWidth >= 600);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setShowImage(window.innerWidth >= 600);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -21,34 +37,29 @@ const Login: React.FC = () => {
 
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100%" }}>
-      {/* پس‌زمینه کلی */}
-      <div className="area" style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: -1}}>
+      <div
+        className="area"
+        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: -1 }}
+      >
         <ul className="circles">
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
+          {[...Array(10)].map((_, i) => (
+            <li key={i}></li>
+          ))}
         </ul>
       </div>
 
-      {/* محتوای اصلی */}
-      <div style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        width: "100%",
-        padding: "20px",
-        boxSizing: "border-box",
-        position: "relative", // برای قرار دادن محتوا در لایه بالاتر
-      }}>
-        {/* فرم در سمت چپ */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          width: "100%",
+          padding: "20px",
+          boxSizing: "border-box",
+          position: "relative",
+        }}
+      >
         <form style={{ width: "100%", maxWidth: "400px" }}>
           <Box
             sx={{
@@ -57,35 +68,22 @@ const Login: React.FC = () => {
               gap: "14px",
               width: "100%",
               backgroundColor: "rgb(255, 255, 255)",
-              borderRadius: "12px 0 0 12px", // گوشه‌های گرد برای سمت چپ
+              borderRadius: showImage ? "12px 0 0 12px" : "12px",
               padding: "20px",
               boxSizing: "border-box",
-              height: "500px", // ارتفاع فرم برابر با عکس
-              
+              height: "500px",
             }}
           >
-            {/* لوگو */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                marginBottom: "16px",
-              }}
-            >
+            <Box sx={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
               <img
-                src="./src/assets/react.svg" // مسیر لوگوی شما
+                src="./src/assets/react.svg"
                 alt="Logo"
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  borderRadius: "50%",
-                }}
+                style={{ width: "80px", height: "80px", borderRadius: "50%" }}
               />
             </Box>
 
             <h1 style={{ textAlign: "center", color: "black" }}>ورود</h1>
 
-            {/* Email Field */}
             <InputBox
               label="ایمیل"
               name="email"
@@ -93,87 +91,78 @@ const Login: React.FC = () => {
               onChange={handleInputChange}
               type="email"
               placeholder="example@gmail.com"
+              startAdornment={
+                <InputAdornment position="start">
+                  <Email sx={{ marginLeft: "-2px", marginTop: "5px" }} />
+                </InputAdornment>
+              }
             />
 
-            {/* Password Field */}
             <InputBox
               label="رمز عبور"
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              type="password"
-              placeholder="********"
+              type={showPassword ? "text" : "password"}
+              placeholder="**********"
+              startAdornment={
+                <InputAdornment position="start">
+                  <IconButton sx={{ marginLeft: "-10px" }} onClick={() => setShowPassword((prev) => !prev)} edge="end">
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
             />
 
-            {/* Submit Button */}
-            <Box
-              sx={{ display: "flex", justifyContent: "center", marginTop: "40px" }}
-            >
+            <Box sx={{ display: "flex", justifyContent: "center", marginTop: "40px" }}>
               <ConfirmButton name="ورود" />
             </Box>
 
-            {/* لینک زیر دکمه */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between", // فاصله بین دو لینک
-                marginTop: "8px",
-              }}
-            >
-              {/* لینک "فراموشی رمز عبور" در سمت چپ */}
+            <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: "8px" }}>
               <Link
-                href="/forgot-password" // لینک مورد نظر
+                href="/forgot-password"
                 sx={{
-                  textDecoration: "none", // حذف underline پیش‌فرض
-                  color: "black", // رنگ متن
-                  fontSize: "0.9rem", // اندازه فونت
-                  "&:hover": {
-                    color: "rgb(183, 28, 124)", // تغییر رنگ هنگام hover
-                  },
+                  textDecoration: "none",
+                  color: "black",
+                  fontSize: "0.9rem",
+                  "&:hover": { color: "rgb(183, 28, 124)" },
                 }}
               >
                 فراموشی رمز عبور
               </Link>
 
-              {/* لینک "اکانت ندارم" در سمت راست */}
               <Link
-                href="www.google.com" // لینک مورد نظر
+                href="www.google.com"
                 sx={{
-                  textDecoration: "none", // حذف underline پیش‌فرض
-                  color: "black", // رنگ متن
-                  fontSize: "0.9rem", // اندازه فونت
-                  "&:hover": {
-                    color: "rgb(47, 7, 61)", // تغییر رنگ هنگام hover
-                  },
+                  textDecoration: "none",
+                  color: "black",
+                  fontSize: "0.9rem",
+                  "&:hover": { color: "rgb(47, 7, 61)" },
                 }}
               >
                 اکانت ندارم
               </Link>
             </Box>
-
           </Box>
         </form>
 
-        {/* عکس در سمت راست */}
-        <Box
-          sx={{
-            width: "400px", // عرض عکس
-            height: "500px", // ارتفاع عکس
-            backgroundColor: " #BFD9D9", // رنگ پس‌زمینه عکس (اختیاری)
-            borderRadius: "0 12px 12px 0", // گوشه‌های گرد برای سمت راست
-            overflow: "hidden", // برای جلوگیری از بیرون زدن عکس
-          }}
-        >
-          <img
-            src="./src/assets/goodboy.jfif" // مسیر عکس شما
-            alt="Side Image"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover", // برای پوشش کامل فضای باکس
+        {showImage && (
+          <Box
+            sx={{
+              width: "400px",
+              height: "500px",
+              backgroundColor: " #BFD9D9",
+              borderRadius: "0 12px 12px 0",
+              overflow: "hidden",
             }}
-          />
-        </Box>
+          >
+            <img
+              src="./src/assets/goodboy.jfif"
+              alt="Side Image"
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </Box>
+        )}
       </div>
     </div>
   );
