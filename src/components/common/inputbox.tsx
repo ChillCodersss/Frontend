@@ -25,6 +25,9 @@ const InputBox: React.FC<InputBoxProps> = ({
   direction = "ltr",
   ...props
 }) => {
+  const labelParts = label.split("*");
+  const mainLabel = labelParts[0];
+  const hasAsterisk = labelParts.length > 1;
   return (
     <Box sx={{ maxWidth: { xs: "100%"}}}>
       <Box
@@ -40,7 +43,10 @@ const InputBox: React.FC<InputBoxProps> = ({
           direction: "rtl",
         }}
       >
-        {label}
+        {mainLabel}
+        {hasAsterisk && (
+          <span style={{ color: "red", marginLeft: "2px" }}>*</span>
+        )}
       </Box>
 
       <TextField
