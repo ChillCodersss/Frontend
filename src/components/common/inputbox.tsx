@@ -62,11 +62,11 @@ const InputBox: React.FC<InputBoxProps> = ({
             transition: "box-shadow 0.3s ease, border-color 0.3s ease",
             "&:hover .MuiOutlinedInput-notchedOutline": {
               borderColor: "rgba(0, 0, 0, 0.5)",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.25)",
+              boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: "rgba(0, 0, 0, 0.23)",
-              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.25)",
+              boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.25)",
             },
           },
           "& .MuiOutlinedInput-input": {

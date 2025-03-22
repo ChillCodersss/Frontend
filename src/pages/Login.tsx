@@ -82,7 +82,7 @@ const Login: React.FC = () => {
               />
             </Box>
 
-            <h1 style={{ textAlign: "center", color: "black" }}>ورود</h1>
+            <h1 style={{ textAlign: "center", color: "black" }}>!خوش برگشتی</h1>
 
             <InputBox
               label="ایمیل"
@@ -114,11 +114,11 @@ const Login: React.FC = () => {
               }
             />
 
-            <Box sx={{ display: "flex", justifyContent: "center", marginTop: "40px" }}>
+            <Box sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
               <ConfirmButton name="ورود" />
             </Box>
 
-            <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: "8px" }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: "12px" }}>
               <Link
                 href="/forgot-password"
                 sx={{
