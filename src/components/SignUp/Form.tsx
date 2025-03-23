@@ -35,28 +35,14 @@ const SignUpForm: React.FC = () => {
     const { firstName, lastName, email, password, confirmPassword } = formData;
     const errors: string[] = [];
 
-    if (!email) {
-      errors.push("ایمیل را وارد کنید");
+    if (!email || !firstName || !lastName || !password || !confirmPassword) {
+      errors.push("لطفا همه‌‌ فیلد ها را پر کنید");
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       errors.push("ایمیل معتبر نیست");
-    }
-
-    if (!firstName) {
-      errors.push("نام را وارد کنید");
-    }
-
-    if (!lastName) {
-      errors.push("نام خانوادگی را وارد کنید");
-    }
-
-    if (!password) {
-      errors.push("رمز عبور را وارد کنید");
-    } else if (password.length < 8) {
-      errors.push("رمز عبور باید حداقل 8 کاراکتر باشد");
-    }
-
-    if (!confirmPassword) {
-      errors.push("تکرار رمز عبور را وارد کنید");
+    } else if (/[^a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password)) {
+      errors.push("رمز عبور باید انگلیسی باشد");
+    } else if (password.length < 8 || !/\d/.test(password)) {
+      errors.push("رمز عبور باید حداقل 8 کاراکتر و شامل عدد باشد");
     } else if (password !== confirmPassword) {
       errors.push("رمز عبور و تکرار آن مطابقت ندارند");
     }
@@ -70,7 +56,7 @@ const SignUpForm: React.FC = () => {
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
-          rtl: true, 
+          rtl: true,
         });
       });
       return false;
@@ -83,24 +69,16 @@ const SignUpForm: React.FC = () => {
     event.preventDefault();
 
     if (validateForm()) {
-      console.log("Form Data:", formData); 
+      console.log("Form Data:", formData);
       toast.success("ثبت نام با موفقیت انجام شد", {
         position: "bottom-right",
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
-        rtl: true, 
+        rtl: true,
       });
     }
-  };
-
-  const handleTogglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
-
-  const handleToggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword((prev) => !prev);
   };
 
   return (
@@ -111,7 +89,7 @@ const SignUpForm: React.FC = () => {
           flexDirection: "column",
           gap: { xs: "5px", sm: "10px" },
           width: "100%",
-          direction: "rtl",
+          //direction: "rtl",
         }}
       >
         <Box
@@ -132,9 +110,12 @@ const SignUpForm: React.FC = () => {
           name="email"
           value={formData.email}
           onChange={handleInputChange}
-          type="email"
           placeholder="example@gmail.com"
-          icon={<EmailIcon />}
+          startAdornment={
+            <InputAdornment position="start">
+              <EmailIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+            </InputAdornment>
+          }
         />
 
         <InputBox
@@ -143,7 +124,12 @@ const SignUpForm: React.FC = () => {
           value={formData.firstName}
           onChange={handleInputChange}
           placeholder="نام خود را وارد کنید"
-          icon={<PersonIcon />}
+          startAdornment={
+            <InputAdornment position="start">
+              <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+            </InputAdornment>
+          }
+          direction="rtl"
         />
 
         <InputBox
@@ -152,6 +138,12 @@ const SignUpForm: React.FC = () => {
           value={formData.lastName}
           onChange={handleInputChange}
           placeholder="نام خانوداگی خود را وارد کنید"
+          startAdornment={
+            <InputAdornment position="start">
+              <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+            </InputAdornment>
+          }
+          direction="rtl"
         />
 
         <InputBox
@@ -160,10 +152,14 @@ const SignUpForm: React.FC = () => {
           value={formData.password}
           onChange={handleInputChange}
           type={showPassword ? "text" : "password"}
-          placeholder="********"
-          endAdornment={
+          placeholder="••••••••"
+          startAdornment={
             <InputAdornment position="start">
-              <IconButton onClick={handleTogglePasswordVisibility} edge="end">
+              <IconButton
+                sx={{ marginLeft: "-10px" }}
+                onClick={() => setShowPassword((prev) => !prev)}
+                edge="end"
+              >
                 {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
               </IconButton>
             </InputAdornment>
@@ -176,18 +172,15 @@ const SignUpForm: React.FC = () => {
           value={formData.confirmPassword}
           onChange={handleInputChange}
           type={showConfirmPassword ? "text" : "password"}
-          placeholder="********"
-          endAdornment={
-            <InputAdornment position="start" sx={{ paddingRight: "5px" }}>
+          placeholder="••••••••"
+          startAdornment={
+            <InputAdornment position="start">
               <IconButton
-                onClick={handleToggleConfirmPasswordVisibility}
+                sx={{ marginLeft: "-10px" }}
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
                 edge="end"
               >
-                {showConfirmPassword ? (
-                  <VisibilityOffIcon />
-                ) : (
-                  <VisibilityIcon />
-                )}
+                {showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
               </IconButton>
             </InputAdornment>
           }
@@ -197,10 +190,10 @@ const SignUpForm: React.FC = () => {
           sx={{
             display: "flex",
             justifyContent: "center",
-            marginTop: { xs: "5px", sm: "10px" },
+            marginTop: { xs: "5px", sm: "20px" },
           }}
         >
-          <ConfirmButton type="submit" children="ثبت نام" />
+          <ConfirmButton type="submit" name="ثبت نام" height={"35px"} />
         </Box>
 
         <Box
@@ -212,21 +205,12 @@ const SignUpForm: React.FC = () => {
             marginBottom: { xs: "4px", sm: "10px" },
             fontSize: { xs: "0.8rem", sm: "0.9rem" },
             padding: { xs: "0px 5px", sm: "0px 5px" },
+            // gap: { xs: "20px", sm: "40px" }, // Add more space between the links
+            // marginLeft : "-8px",
+            // marginRight : "-8px",       
+            
           }}
         >
-          <Box
-            component="a"
-            href="/login"
-            sx={{
-              color: "black",
-              textDecoration: "none",
-              "&:hover": {
-                textDecoration: "underline",
-              },
-            }}
-          >
-            اکانت دارم
-          </Box>
           <Box
             component="a"
             href="/go-to-x"
@@ -239,6 +223,19 @@ const SignUpForm: React.FC = () => {
             }}
           >
             فرم استخدام مشاور
+          </Box>
+          <Box
+            component="a"
+            href="/login"
+            sx={{
+              color: "black",
+              textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+          >
+            اکانت دارم
           </Box>
         </Box>
       </Box>
