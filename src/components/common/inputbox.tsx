@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
-import InputAdornment from "@mui/material/InputAdornment";
 
 interface InputBoxProps {
   name?: string;
@@ -11,8 +10,8 @@ interface InputBoxProps {
   type?: string;
   fullWidth?: boolean;
   placeholder?: string;
-  icon?: React.ReactNode; // For end adornment (e.g., email, person icons)
-  endAdornment?: React.ReactNode; // For additional end adornment (e.g., password visibility toggle)
+  startAdornment?: React.ReactNode; // جدید
+  direction?: "ltr" | "rtl";
 }
 
 const InputBox: React.FC<InputBoxProps> = ({
@@ -22,8 +21,8 @@ const InputBox: React.FC<InputBoxProps> = ({
   type = "text",
   fullWidth = true,
   placeholder = "",
-  icon,
-  endAdornment,
+  startAdornment,
+  direction = "ltr",
   ...props
 }) => {
   const labelParts = label.split("*");
@@ -31,17 +30,18 @@ const InputBox: React.FC<InputBoxProps> = ({
   const hasAsterisk = labelParts.length > 1;
 
   return (
-    <Box sx={{ width: "100%" }}>
-      {/* Label */}
+    <Box sx={{ maxWidth: { xs: "100%"}}}>
       <Box
         component="label"
         sx={{
           display: "block",
-          fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+          fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
           fontWeight: "500",
-          marginBottom: "4px",
-          color: "white",
-          paddingRight: "4px",
+          marginBottom: "7px",
+          color: "black",
+          paddingLeft: "4px",
+          textAlign: "right",
+          direction: "rtl",
         }}
       >
         {mainLabel}
@@ -50,7 +50,6 @@ const InputBox: React.FC<InputBoxProps> = ({
         )}
       </Box>
 
-      {/* Input Field */}
       <TextField
         value={value}
         onChange={onChange}
@@ -60,61 +59,33 @@ const InputBox: React.FC<InputBoxProps> = ({
         margin="none"
         placeholder={placeholder}
         InputProps={{
-          endAdornment: (
-            <>
-              {icon && (
-                <InputAdornment position="end">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "1rem", // Consistent icon size
-                      color: "action.active", // Icon color
-                      height: { xs: "4px", sm: "4px", md: "6px" },
-                    }}
-                  >
-                    {icon}
-                  </Box>
-                </InputAdornment>
-              )}
-              {endAdornment} {/* Additional end adornment (e.g., password visibility toggle) */}
-            </>
-          ),
-          sx: {
-            backgroundColor: "white", // Set input background color to white
-          },
+          startAdornment, // حالا این مقدار را از props می‌گیرد
         }}
         sx={{
           "& .MuiOutlinedInput-root": {
-            borderRadius: { xs: "6px", sm: "8px", md: "10px" },
+            backgroundColor: "white",
+            borderRadius: { xs: "8px", sm: "10px", md: "12px" },
             boxShadow: { xs: "0px 1px 2px rgba(0, 0, 0, 0.1)", sm: "0px 2px 4px rgba(0, 0, 0, 0.25)" },
             transition: "box-shadow 0.3s ease, border-color 0.3s ease",
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(0, 0, 0, 0.23)",
-              borderWidth: "1px",
-            },
             "&:hover .MuiOutlinedInput-notchedOutline": {
               borderColor: "rgba(0, 0, 0, 0.5)",
-              borderWidth: "1px",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.25)",
+              boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
               borderColor: "rgba(0, 0, 0, 0.23)",
-              borderWidth: "1px",
-              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.25)",
+              boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.25)",
             },
           },
           "& .MuiOutlinedInput-input": {
-            height: { xs: "10px", sm: "10px", md: "6px" },
-            padding: { xs: "10px 14px", sm: "12px 16px", md: "14px 18px" }, // Adjusted padding
+            height: "2px",
+            px: { xs: 1, sm: 1.5, md: 2 },
             textAlign: "right",
+            direction,
           },
           "& .MuiInputBase-input::placeholder": {
-            fontSize: { xs: "0.6rem", sm: "0.7rem", md: "0.9rem" },
-            opacity : 0.5,
-            // paddingRight : "0",
-            
+            fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+            textAlign: "right",
+            direction: "rtl",
           },
         }}
         {...props}
@@ -124,3 +95,4 @@ const InputBox: React.FC<InputBoxProps> = ({
 };
 
 export default InputBox;
+
