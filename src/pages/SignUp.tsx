@@ -4,7 +4,6 @@ import "./background.css";
 import logo from "../assets/preview.png";
 import { toast, ToastContainer } from "react-toastify";
 import "./toast.css";
-import { useEffect, useState } from "react";
 import "@/index.css"
 
 const Signup = () => {
@@ -26,11 +25,11 @@ const Signup = () => {
       </ul>
       <Box
         sx={{
-          minHeight: "100vh", // Ensure it covers the full viewport height
+          minHeight: "100vh", 
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          padding: { xs: "20px", sm: "0" }, // Add padding on small screens
+          padding: { xs: "20px", sm: "0" }, 
           margin: 0,
         }}
       >
@@ -38,14 +37,14 @@ const Signup = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" }, // Stack vertically on small screens
-            width: { xs: "100%", sm: "900px" }, // Full width on small screens
-            height: { xs: "auto", sm: "600px" }, // Auto height on small screens
-            maxWidth: "1200px", // Max width for PC
-            maxHeight: { xs: "none", sm: "600px" }, // Max height for PC
+            flexDirection: { xs: "column", sm: "row" }, 
+            width: { xs: "100%", sm: "950px" }, 
+            height: { xs: "auto", sm: "600px" },
+            maxWidth: "1200px", 
+            maxHeight: { xs: "none", sm: "600px" }, 
             backgroundColor: "rgb(255, 255, 255)",
-            borderRadius: "12px", // Rounded corners
-            overflow: "hidden", // Prevent content from overflowing
+            borderRadius: "12px", 
+            overflow: "hidden", 
             boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
             backdropFilter: "blur(100px)",
           }}
@@ -55,11 +54,9 @@ const Signup = () => {
             sx={{
               width: { xs: "100%", sm: "50%" },
               height: { xs: "100px", sm: "100%" },
-              display: { xs: "none", sm: "flex" }, // Hide on screens smaller than 600px
+              display: { xs: "none", sm: "flex" }, 
               justifyContent: "center",
               alignItems: "center",
-              // backgroundColor: " #f4c417", // Semi-transparent background
-              // backgroundColor: "rgba(224, 224, 224, 0.74)",
               backgroundColor : " #d5e0e5",
               backdropFilter: "blur(10px)",
               borderRight: {
@@ -88,9 +85,9 @@ const Signup = () => {
               height: { xs: "auto", sm: "100%" },
               display: "flex",
               justifyContent: "center",
-              // alignItems: "center",
+              alignItems: "center",
               backdropFilter: "blur(10px)",
-              borderRadius: "12px", // Rounded corners
+              borderRadius: "12px", 
               marginBottom : { xs: "20px", sm: "0px" },
               marginTop : { xs: "20px", sm: "0px" },
               

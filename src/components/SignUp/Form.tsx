@@ -10,7 +10,6 @@ import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
 
 const SignUpForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -89,9 +88,9 @@ const SignUpForm: React.FC = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: { xs: "5px", sm: "10px" }, // Reduced gap between inputs
-          width: { xs: "90%", sm: "100%" }, // Wider form area inside the container
-          maxWidth: "400px", // Ensures it doesn't get too wide on large screens
+          gap: { xs: "5px", sm: "10px" }, 
+          width: { xs: "90%", sm: "100%" }, 
+          maxWidth: "400px", 
           height: "100%",
           justifyContent: "center",
           marginRight : { xs: "auto", sm: "40px" },
