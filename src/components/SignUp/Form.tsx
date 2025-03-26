@@ -174,7 +174,7 @@ const SignUpForm: React.FC = () => {
 
           <InputBox
             label="تکرار رمز عبور"
-            name="confirmPassword"
+            name="confirmedPassword"
             value={formData.confirmedPassword}
             onChange={handleInputChange}
             type={showConfirmPassword ? "text" : "password"}
