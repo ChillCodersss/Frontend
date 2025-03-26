@@ -130,129 +130,135 @@ const Login: React.FC = () => {
           position: "relative",
         }}
       >
-        <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: "450px" }}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "14px",
-              width: "100%",
-              backgroundColor: "rgb(255, 255, 255)",
-              borderRadius: showImage ? "12px 0 0 12px" : "12px",
-              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
-              padding: {xs: "30px" , sm:"30px 60px"},
-              boxSizing: "border-box",
-              height: "500px",
-            }}
-          >
-            <Box sx={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
-              <img
-                src="./src/assets/react.svg"
-                alt="Logo"
-                style={{ width: "80px", height: "80px", borderRadius: "50%" }}
-              />
-            </Box>
-
-            <h1 style={{ textAlign: "center", color: "black" }}>ورود</h1>
-
-            <InputBox
-              label="ایمیل"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              type="email"
-              placeholder="example@gmail.com"
-              startAdornment={
-                <InputAdornment position="start">
-                  <Email sx={{ marginLeft: "-2px", marginTop: "5px" }} />
-                </InputAdornment>
-              }
-            />
-
-            <InputBox
-              label="رمز عبور"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              startAdornment={
-                <InputAdornment position="start">
-                  <IconButton sx={{ marginLeft: "-10px" }} onClick={() => setShowPassword((prev) => !prev)} edge="end">
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              }
-            />
-
-            {/* لینک فراموشی رمز عبور زیر باکس رمز عبور */}
-            <Box sx={{ 
-              display: "flex", 
-              justifyContent: "flex-end",
-              marginBottom: "10px"
-            }}>
-              <Link
-                href="/forgot-password"
-                sx={{
-                  textDecoration: "none",
-                  marginRight: "7px",
-                  color: "gray",
-                  fontSize: "0.9rem",
-                  "&:hover": { color: "rgb(3, 37, 107)" },
-                }}
-              >
-                فراموشی رمز عبور
-              </Link>
-            </Box>
-
-            <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <ConfirmButton name="ورود" type="submit" />
-            </Box>
-
-                      <Box sx={{ 
-            display: "flex", 
-            justifyContent: "center", 
-            marginTop: "1px",
-            alignItems: "center" // برای تراز عمودی بهتر
-          }}>
-                        <Link
-              href="/register"
+        <div style={{ 
+          display: "flex",
+          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
+          width:"900px",
+          borderRadius: "12px"
+        }}>
+          <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: "450px" }}>
+            <Box
               sx={{
-                textDecorationColor: "gray",
-                color: "gray",
-                fontSize: "0.9rem",
-                "&:hover": { color: "rgb(3, 37, 107)" },
+                display: "flex",
+                flexDirection: "column",
+                gap: "14px",
+                width: "100%",
+                backgroundColor: "rgb(255, 255, 255)",
+                borderRadius: showImage ? "12px 0 0 12px" : "12px",
+                padding: {xs: "30px" , sm:"30px 60px"},
+                boxSizing: "border-box",
+                height: "500px",
               }}
             >
-              ثبت نام
-            </Link>
-            <span style={{ fontSize: "0.9rem", marginLeft: "4px", color: "black" }}>
-              اکانت نداری؟
-            </span>
+              <Box sx={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
+                <img
+                  src="./src/assets/logo.jpg"
+                  alt="Logo"
+                  style={{ width: "120px", height: "120px", borderRadius: "50%" , marginRight: "-7px"}}
+                />
+              </Box>
 
-          </Box>
-          </Box>
-        </form>
+              <h1 style={{ textAlign: "center", color: "black" , marginTop: "-25px" }}>ورود</h1>
 
-        {showImage && (
-          <Box
-          sx={{
-            width: "450px",
-            height: "500px",
-            backgroundColor: "#BFD9D9",
-            boxShadow: "4px 4px 20px rgba(0, 0, 0, 0.4)", // حذف سایه از چپ
-            borderRadius: "0 12px 12px 0",
-            //borderLeft: "3px solid #BFD9D9",
-            overflow: "hidden",
-          }}
-          >
-            <img
-              src="./src/assets/login.webp"
-              alt="Side Image"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          </Box>
-        )}
+              <InputBox
+                label="ایمیل"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                type="email"
+                placeholder="example@gmail.com"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <Email sx={{ marginLeft: "-2px", marginTop: "5px" }} />
+                  </InputAdornment>
+                }
+              />
+
+              <InputBox
+                label="رمز عبور"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <IconButton sx={{ marginLeft: "-10px" }} onClick={() => setShowPassword((prev) => !prev)} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+
+              <Box sx={{ 
+                display: "flex", 
+                justifyContent: "flex-end",
+                marginBottom: "10px"
+              }}>
+                <Link
+                  href="/forgot-password"
+                  sx={{
+                    textDecoration: "none",
+                    marginRight: "7px",
+                    color: "gray",
+                    fontSize: "0.9rem",
+                    "&:hover": { color: "rgb(3, 37, 107)" },
+                  }}
+                >
+                  فراموشی رمز عبور
+                </Link>
+              </Box>
+
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <ConfirmButton name="ورود" type="submit" />
+              </Box>
+
+              <Box sx={{ 
+                display: "flex", 
+                justifyContent: "center", 
+                marginTop: "1px",
+                alignItems: "center"
+              }}>
+                <Link
+                  href="/register"
+                  sx={{
+                    textDecorationColor: "gray",
+                    color: "gray",
+                    fontSize: "0.9rem",
+                    "&:hover": { color: "rgb(3, 37, 107)" },
+                  }}
+                >
+                  ثبت نام
+                </Link>
+                <span style={{ fontSize: "0.9rem", marginLeft: "4px", color: "black" }}>
+                  اکانت نداری؟
+                </span>
+              </Box>
+            </Box>
+          </form>
+
+          {showImage && (
+            <Box
+              sx={{
+                width: "450px",
+                height: "500px",
+                backgroundColor: " #BFD9D9",
+                borderLeft: {
+                  xs: "none",
+                  sm: "3px solid #BFD9D9",
+                },
+                borderRadius: "0 12px 12px 0",
+                overflow: "hidden",
+              }}
+            >
+              <img
+                src="./src/assets/login.png"
+                alt="Side Image"
+                style={{ width: "100%", height: "100%" }}
+              />
+            </Box>
+          )}
+        </div>
       </div>
     </div>
   );
