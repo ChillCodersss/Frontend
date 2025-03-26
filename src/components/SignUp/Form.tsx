@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const SignUpForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -17,7 +18,7 @@ const SignUpForm: React.FC = () => {
     lastName: "",
     email: "",
     password: "",
-    confirmPassword: "",
+    confirmedPassword: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -32,10 +33,11 @@ const SignUpForm: React.FC = () => {
   };
 
   const validateForm = () => {
-    const { firstName, lastName, email, password, confirmPassword } = formData;
+    const { firstName, lastName, email, password, confirmedPassword } =
+      formData;
     const errors: string[] = [];
 
-    if (!email || !firstName || !lastName || !password || !confirmPassword) {
+    if (!email || !firstName || !lastName || !password || !confirmedPassword) {
       errors.push("لطفا همه‌‌ فیلد ها را پر کنید");
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       errors.push("ایمیل معتبر نیست");
@@ -43,7 +45,7 @@ const SignUpForm: React.FC = () => {
       errors.push("رمز عبور باید انگلیسی باشد");
     } else if (password.length < 8 || !/\d/.test(password)) {
       errors.push("رمز عبور باید حداقل 8 کاراکتر و شامل عدد باشد");
-    } else if (password !== confirmPassword) {
+    } else if (password !== confirmedPassword) {
       errors.push("رمز عبور و تکرار آن مطابقت ندارند");
     }
 
@@ -87,104 +89,113 @@ const SignUpForm: React.FC = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: { xs: "5px", sm: "10px" },
-          width: "100%",
-          //direction: "rtl",
+          gap: { xs: "5px", sm: "10px" }, // Reduced gap between inputs
+          width: { xs: "90%", sm: "100%" }, // Wider form area inside the container
+          maxWidth: "400px", // Ensures it doesn't get too wide on large screens
+          height: "100%",
+          justifyContent: "center",
+          marginRight : { xs: "auto", sm: "40px" },
+          marginLeft : { xs: "auto", sm: "0" },
+
         }}
       >
         <Box
           component="h1"
           sx={{
-            fontSize: { xs: "16px", sm: "18px", md: "20px" },
+            fontSize: { xs: "16px", sm: "18px", md: "28px" },
             marginBottom: { xs: "5px", sm: "5px" },
             textAlign: "center",
             direction: "rtl",
             color: "black",
+            fontWeight: "bold",
           }}
         >
-          فرم ثبت نام
+          ثبت نام
         </Box>
 
-        <InputBox
-          label="ایمیل"
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          placeholder="example@gmail.com"
-          startAdornment={
-            <InputAdornment position="start">
-              <EmailIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
-            </InputAdornment>
-          }
-        />
+          <InputBox
+            label="ایمیل"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="example@gmail.com"
+            startAdornment={
+              <InputAdornment position="start">
+                <EmailIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+              </InputAdornment>
+            }
+          />
+          <InputBox
+            label="نام"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleInputChange}
+            placeholder="نام خود را وارد کنید"
+            startAdornment={
+              <InputAdornment position="start">
+                <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+              </InputAdornment>
+            }
+            direction="rtl"
+          />
 
-        <InputBox
-          label="نام"
-          name="firstName"
-          value={formData.firstName}
-          onChange={handleInputChange}
-          placeholder="نام خود را وارد کنید"
-          startAdornment={
-            <InputAdornment position="start">
-              <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
-            </InputAdornment>
-          }
-          direction="rtl"
-        />
+          <InputBox
+            label="نام خانوادگی"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleInputChange}
+            placeholder="نام خانوداگی خود را وارد کنید"
+            startAdornment={
+              <InputAdornment position="start">
+                <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+              </InputAdornment>
+            }
+            direction="rtl"
+          />
 
-        <InputBox
-          label="نام خانوادگی"
-          name="lastName"
-          value={formData.lastName}
-          onChange={handleInputChange}
-          placeholder="نام خانوداگی خود را وارد کنید"
-          startAdornment={
-            <InputAdornment position="start">
-              <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
-            </InputAdornment>
-          }
-          direction="rtl"
-        />
+          <InputBox
+            label="رمز عبور"
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            startAdornment={
+              <InputAdornment position="start">
+                <IconButton
+                  sx={{ marginLeft: "-10px" }}
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              </InputAdornment>
+            }
+          />
 
-        <InputBox
-          label="رمز عبور"
-          name="password"
-          value={formData.password}
-          onChange={handleInputChange}
-          type={showPassword ? "text" : "password"}
-          placeholder="••••••••"
-          startAdornment={
-            <InputAdornment position="start">
-              <IconButton
-                sx={{ marginLeft: "-10px" }}
-                onClick={() => setShowPassword((prev) => !prev)}
-                edge="end"
-              >
-                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-              </IconButton>
-            </InputAdornment>
-          }
-        />
-
-        <InputBox
-          label="تکرار رمز عبور"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleInputChange}
-          type={showConfirmPassword ? "text" : "password"}
-          placeholder="••••••••"
-          startAdornment={
-            <InputAdornment position="start">
-              <IconButton
-                sx={{ marginLeft: "-10px" }}
-                onClick={() => setShowConfirmPassword((prev) => !prev)}
-                edge="end"
-              >
-                {showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-              </IconButton>
-            </InputAdornment>
-          }
-        />
+          <InputBox
+            label="تکرار رمز عبور"
+            name="confirmPassword"
+            value={formData.confirmedPassword}
+            onChange={handleInputChange}
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="••••••••"
+            startAdornment={
+              <InputAdornment position="start">
+                <IconButton
+                  sx={{ marginLeft: "-10px" }}
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  edge="end"
+                >
+                  {showConfirmPassword ? (
+                    <VisibilityOffIcon />
+                  ) : (
+                    <VisibilityIcon />
+                  )}
+                </IconButton>
+              </InputAdornment>
+            }
+          />
 
         <Box
           sx={{
@@ -205,10 +216,6 @@ const SignUpForm: React.FC = () => {
             marginBottom: { xs: "4px", sm: "10px" },
             fontSize: { xs: "0.8rem", sm: "0.9rem" },
             padding: { xs: "0px 5px", sm: "0px 5px" },
-            // gap: { xs: "20px", sm: "40px" }, // Add more space between the links
-            // marginLeft : "-8px",
-            // marginRight : "-8px",       
-            
           }}
         >
           <Box

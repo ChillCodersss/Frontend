@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import SignUpForm from "@/components/SignUp/Form";
 import "./background.css";
-import logo from "@/assets/0669059b94bcaa07e8a8443ee02252e7.png";
+import logo from "../assets/preview.png";
 import { toast, ToastContainer } from "react-toastify";
 import "./toast.css";
 import { useEffect, useState } from "react";
@@ -38,17 +38,15 @@ const Signup = () => {
           sx={{
             display: "flex",
             flexDirection: { xs: "column", sm: "row" }, // Stack vertically on small screens
-            width: { xs: "100%", sm: "800px" }, // Full width on small screens
+            width: { xs: "100%", sm: "900px" }, // Full width on small screens
             height: { xs: "auto", sm: "600px" }, // Auto height on small screens
             maxWidth: "1200px", // Max width for PC
             maxHeight: { xs: "none", sm: "600px" }, // Max height for PC
-            // backgroundColor: "rgba(255, 255, 255, 0.2)",
             backgroundColor: "rgb(255, 255, 255)",
             borderRadius: "12px", // Rounded corners
-            //overflow: "hidden", // Prevent content from overflowing
+            overflow: "hidden", // Prevent content from overflowing
             boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
             backdropFilter: "blur(100px)",
-            // border: "3px solid rgb(101, 243, 224)",
           }}
         >
           {/* Left Side: Logo with Glassy Background */}
@@ -61,7 +59,7 @@ const Signup = () => {
               alignItems: "center",
               // backgroundColor: " #f4c417", // Semi-transparent background
               // backgroundColor: "rgba(224, 224, 224, 0.74)",
-              backgroundColor : " #d7e2e8",
+              backgroundColor : " #d5e0e5",
               backdropFilter: "blur(10px)",
               borderRight: {
                 xs: "none",
@@ -76,7 +74,8 @@ const Signup = () => {
               alt="Logo"
               sx={{
                 width: { xs: "60%", sm: "100%" },
-                height: { xs: "80%", sm: "80%" },
+                height: { xs: "80%", sm: "100%" },
+                borderRadius: "10px 0 0 10px"
               }}
             />
           </Box>
@@ -88,11 +87,12 @@ const Signup = () => {
               height: { xs: "auto", sm: "100%" },
               display: "flex",
               justifyContent: "center",
-              alignItems: "center",
+              // alignItems: "center",
               backdropFilter: "blur(10px)",
               borderRadius: "12px", // Rounded corners
               marginBottom : { xs: "20px", sm: "0px" },
               marginTop : { xs: "20px", sm: "0px" },
+              
             }}
           >
             <SignUpForm />

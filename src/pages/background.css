@@ -22,8 +22,8 @@ body {
 }
 
 .area {
-    background: #4e54c8;
-    background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);
+    background: #f2f4f7;
+    /* background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);  */
     width: 100%;
     min-height: 100vh; /* Minimum height of the viewport */
     height: auto; /* Grow with content */
@@ -46,7 +46,8 @@ body {
     list-style: none;
     width: 20px;
     height: 20px;
-    background: rgba(255, 255, 255, 0.2);
+    /* background: linear-gradient(to right, #a8c0ff, #3f2b96); */
+    background: rgba(115, 123, 125, 0.0802);
     animation: animate 25s linear infinite;
     bottom: -150px;
 }

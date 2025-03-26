@@ -38,6 +38,7 @@ const InputBox: React.FC<InputBoxProps> = ({
           fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
           fontWeight: "500",
           marginBottom: "7px",
+          marginRight: "5px",
           color: "black",
           paddingLeft: "4px",
           textAlign: "right",
