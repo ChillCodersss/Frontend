@@ -5,6 +5,7 @@ import logo from "../assets/preview.png";
 import { toast, ToastContainer } from "react-toastify";
 import "./toast.css";
 import { useEffect, useState } from "react";
+import "@/index.css"
 
 const Signup = () => {
 
