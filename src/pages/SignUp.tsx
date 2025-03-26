@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import SignUpForm from "@/components/SignUp/Form";
-import "./background.css";
+import "./Signup.css";
 import logo from "../assets/preview.png";
 import { toast, ToastContainer } from "react-toastify";
 import "./toast.css";
