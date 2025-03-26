@@ -10,8 +10,10 @@ interface InputBoxProps {
   type?: string;
   fullWidth?: boolean;
   placeholder?: string;
+
   startAdornment?: React.ReactNode; // جدید
   direction?: "ltr" | "rtl";
+
 }
 
 const InputBox: React.FC<InputBoxProps> = ({
@@ -21,32 +23,39 @@ const InputBox: React.FC<InputBoxProps> = ({
   type = "text",
   fullWidth = true,
   placeholder = "",
+
   startAdornment,
   direction = "ltr",
   ...props
 }) => {
+
   const labelParts = label.split("*");
   const mainLabel = labelParts[0];
   const hasAsterisk = labelParts.length > 1;
 
   return (
+
     <Box sx={{ maxWidth: { xs: "100%"}}}>
+
       <Box
         component="label"
         sx={{
           display: "block",
           fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
           fontWeight: "500",
+
           marginBottom: "7px",
           marginRight: "5px",
           color: "black",
           paddingLeft: "4px",
           textAlign: "right",
           direction: "rtl",
+
         }}
       >
         {mainLabel}
         {hasAsterisk && (
+
           <span style={{ color: "red", marginRight: "2px" }}>*</span>
         )}
       </Box>
@@ -55,11 +64,13 @@ const InputBox: React.FC<InputBoxProps> = ({
         value={value}
         onChange={onChange}
         type={type}
+
         fullWidth={fullWidth}
         variant="outlined"
         margin="none"
         placeholder={placeholder}
         InputProps={{
+
           startAdornment, // حالا این مقدار را از props می‌گیرد
         }}
         sx={{
@@ -87,6 +98,7 @@ const InputBox: React.FC<InputBoxProps> = ({
             fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
             textAlign: "right",
             direction: "rtl",
+
           },
         }}
         {...props}
@@ -96,4 +108,5 @@ const InputBox: React.FC<InputBoxProps> = ({
 };
 
 export default InputBox;
+
 

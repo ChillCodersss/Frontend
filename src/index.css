@@ -6,6 +6,7 @@ body, html {
   }
 
 
+
   @font-face {
     font-family: 'vazir';
     src: url('../public/Fonts/Vazir.woff2') format('woff2'),
@@ -17,3 +18,4 @@ body, html {
   * {
     font-family: 'vazir', sans-serif;
   }
+
