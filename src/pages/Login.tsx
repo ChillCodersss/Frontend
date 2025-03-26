@@ -8,7 +8,10 @@ import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Email from "@mui/icons-material/Email";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import './Login.css';
+import "@/index.css";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -35,8 +38,75 @@ const Login: React.FC = () => {
     }));
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validation
+    if (!formData.email || !formData.password) {
+      toast.error("لطفا ایمیل و رمز عبور را وارد کنید", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        rtl: true,
+      });
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      toast.error("لطفا یک ایمیل معتبر وارد کنید", {
+        position: "bottom-right",
+        rtl: true,
+      });
+      return;
+    }
+
+    // Simulate login API call
+    toast.promise(
+      new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (formData.password.length < 8) {
+            reject("رمز عبور باید حداقل 8 کاراکتر باشد");
+          } else if (formData.email === "test@example.com" && formData.password === "password") {
+            resolve("success");
+          } else {
+            reject("ایمیل یا رمز عبور اشتباه است");
+          }
+        }, 1500);
+      }),
+      {
+        pending: 'در حال بررسی اطلاعات...',
+        success: {
+          render() {
+            return 'ورود با موفقیت انجام شد!';
+          },
+        },
+        error: {
+          render({ data }: any) {
+            return data;
+          },
+        },
+      }
+    );
+  };
+
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100%" }}>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      
       <div
         className="area"
         style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: -1 }}
@@ -60,7 +130,7 @@ const Login: React.FC = () => {
           position: "relative",
         }}
       >
-        <form style={{ width: "100%", maxWidth: "400px" }}>
+        <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: "450px" }}>
           <Box
             sx={{
               display: "flex",
@@ -69,7 +139,8 @@ const Login: React.FC = () => {
               width: "100%",
               backgroundColor: "rgb(255, 255, 255)",
               borderRadius: showImage ? "12px 0 0 12px" : "12px",
-              padding: "20px",
+              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
+              padding: {xs: "30px" , sm:"30px 60px"},
               boxSizing: "border-box",
               height: "500px",
             }}
@@ -82,7 +153,7 @@ const Login: React.FC = () => {
               />
             </Box>
 
-            <h1 style={{ textAlign: "center", color: "black" }}>!خوش برگشتی</h1>
+            <h1 style={{ textAlign: "center", color: "black" }}>ورود</h1>
 
             <InputBox
               label="ایمیل"
@@ -104,60 +175,79 @@ const Login: React.FC = () => {
               value={formData.password}
               onChange={handleInputChange}
               type={showPassword ? "text" : "password"}
-              placeholder="**********"
+              placeholder="••••••••"
               startAdornment={
                 <InputAdornment position="start">
                   <IconButton sx={{ marginLeft: "-10px" }} onClick={() => setShowPassword((prev) => !prev)} edge="end">
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               }
             />
 
-            <Box sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-              <ConfirmButton name="ورود" />
-            </Box>
-
-            <Box sx={{ display: "flex", justifyContent: "space-between", marginTop: "12px" }}>
+            {/* لینک فراموشی رمز عبور زیر باکس رمز عبور */}
+            <Box sx={{ 
+              display: "flex", 
+              justifyContent: "flex-end",
+              marginBottom: "10px"
+            }}>
               <Link
                 href="/forgot-password"
                 sx={{
                   textDecoration: "none",
-                  color: "black",
+                  marginRight: "7px",
+                  color: "gray",
                   fontSize: "0.9rem",
-                  "&:hover": { color: "rgb(183, 28, 124)" },
+                  "&:hover": { color: "rgb(3, 37, 107)" },
                 }}
               >
                 فراموشی رمز عبور
               </Link>
-
-              <Link
-                href="www.google.com"
-                sx={{
-                  textDecoration: "none",
-                  color: "black",
-                  fontSize: "0.9rem",
-                  "&:hover": { color: "rgb(47, 7, 61)" },
-                }}
-              >
-                اکانت ندارم
-              </Link>
             </Box>
+
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <ConfirmButton name="ورود" type="submit" />
+            </Box>
+
+                      <Box sx={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            marginTop: "1px",
+            alignItems: "center" // برای تراز عمودی بهتر
+          }}>
+                        <Link
+              href="/register"
+              sx={{
+                textDecorationColor: "gray",
+                color: "gray",
+                fontSize: "0.9rem",
+                "&:hover": { color: "rgb(3, 37, 107)" },
+              }}
+            >
+              ثبت نام
+            </Link>
+            <span style={{ fontSize: "0.9rem", marginLeft: "4px", color: "black" }}>
+              اکانت نداری؟
+            </span>
+
+          </Box>
           </Box>
         </form>
 
         {showImage && (
           <Box
-            sx={{
-              width: "400px",
-              height: "500px",
-              backgroundColor: " #BFD9D9",
-              borderRadius: "0 12px 12px 0",
-              overflow: "hidden",
-            }}
+          sx={{
+            width: "450px",
+            height: "500px",
+            backgroundColor: "#BFD9D9",
+            boxShadow: "4px 4px 20px rgba(0, 0, 0, 0.4)", // حذف سایه از چپ
+            borderRadius: "0 12px 12px 0",
+            //borderLeft: "3px solid #BFD9D9",
+            overflow: "hidden",
+          }}
           >
             <img
-              src="./src/assets/goodboy.jfif"
+              src="./src/assets/login.webp"
               alt="Side Image"
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
