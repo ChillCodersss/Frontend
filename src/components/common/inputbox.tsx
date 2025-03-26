@@ -10,9 +10,9 @@ interface InputBoxProps {
   type?: string;
   fullWidth?: boolean;
   placeholder?: string;
+
   startAdornment?: React.ReactNode; // جدید
   direction?: "ltr" | "rtl";
-}
 
 const InputBox: React.FC<InputBoxProps> = ({
   label,
@@ -25,8 +25,10 @@ const InputBox: React.FC<InputBoxProps> = ({
   direction = "ltr",
   ...props
 }) => {
+
   return (
     <Box sx={{ maxWidth: { xs: "100%"}}}>
+
       <Box
         component="label"
         sx={{
@@ -89,4 +91,3 @@ const InputBox: React.FC<InputBoxProps> = ({
 };
 
 export default InputBox;
-

@@ -1,11 +1,22 @@
-@font-face {
-  font-family: 'shabnam';
-  src: url('./assets/fonts/shabnam-font-v2.4.0/Shabnam.woff2') format('woff2'),
-       url('./assets/fonts/shabnam-font-v2.4.0/Shabnam.woff') format('woff');
-  font-weight:normal;
-  font-style: normal;
-}
 
-* {
-  font-family: 'shabnam', sans-serif;
-}
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+
+
+  @font-face {
+    font-family: 'vazir';
+    src: url('../public/Fonts/Vazir.woff2') format('woff2'),
+         url('../public/Fonts/Vazir.woff') format('woff');
+    font-weight:normal;
+    font-style: normal;
+  }
+  
+  * {
+    font-family: 'vazir', sans-serif;
+  }
+
