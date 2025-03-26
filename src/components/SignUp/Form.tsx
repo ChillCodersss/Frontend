@@ -22,7 +22,6 @@ const SignUpForm: React.FC = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
@@ -84,6 +83,7 @@ const SignUpForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit}>
+
       <Box
         sx={{
           display: "flex",
