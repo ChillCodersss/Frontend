@@ -201,7 +201,7 @@ const SignUpForm: React.FC = () => {
           sx={{
             display: "flex",
             justifyContent: "center",
-            marginTop: { xs: "5px", sm: "20px" },
+            marginTop: { xs: "15px", sm: "20px" },
           }}
         >
           <ConfirmButton type="submit" name="ثبت نام" height={"35px"} />
