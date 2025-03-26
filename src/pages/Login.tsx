@@ -150,7 +150,7 @@ const Login: React.FC = () => {
                 height: "500px",
               }}
             >
-              <Box sx={{ display: "flex", justifyContent: "center", marginBottom: "10px" }}>
+              <Box sx={{ display: "flex", justifyContent: "center", marginBottom: "10px" , marginTop: "-10px" }}>
                 <img
                   src="./src/assets/logo.jpg"
                   alt="Logo"
@@ -158,7 +158,7 @@ const Login: React.FC = () => {
                 />
               </Box>
 
-              <h1 style={{ textAlign: "center", color: "black" , marginTop: "-25px" }}>ورود</h1>
+              <h1 style={{ textAlign: "center", color: "black" , marginTop: "-35px" }}>ورود</h1>
 
               <InputBox
                 label="ایمیل"
@@ -220,7 +220,7 @@ const Login: React.FC = () => {
                 alignItems: "center"
               }}>
                 <Link
-                  href="/register"
+                  href="/signup"
                   sx={{
                     textDecorationColor: "gray",
                     color: "gray",

@@ -12,7 +12,8 @@ interface InputBoxProps {
   placeholder?: string;
 
   startAdornment?: React.ReactNode; // جدید
-  direction?: "ltr" | "rtl";
+    direction?: "ltr" | "rtl";
+  }
 
 const InputBox: React.FC<InputBoxProps> = ({
   label,
