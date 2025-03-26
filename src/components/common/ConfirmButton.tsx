@@ -1,30 +1,64 @@
-import React from 'react';
-import { Button, ButtonProps } from '@mui/material';
-import Box from '@mui/material/Box';
+import React from "react";
+import { Button, ButtonProps } from "@mui/material";
+import Box from "@mui/material/Box";
 
 interface ConfirmButtonProps extends ButtonProps {
   name: string;
+  width?: string | number;
+  height?: string | number;
 }
 
-function ConfirmButton({ name, ...props }: ConfirmButtonProps) {
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
+const theme = createTheme({
+  typography: {
+    fontFamily: "vazir, sans-serif",
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontFamily: "vazir, sans-serif",
+        },
+      },
+    },
+  },
+});
+
+function ConfirmButton({ name, width = "240px", height = "40px", ...props }: ConfirmButtonProps) {
   return (
-    <Box sx={{ width: '100%', maxWidth: { xs: "100%", sm: "500px", md: "700px", lg: "900px" }}}>
+    <>
+    <ThemeProvider theme={theme}>
+    <Box display="flex" justifyContent="center">
       <Button
         variant="contained"
         sx={{
-          borderRadius: '12px', // Consistent border radius
-          color: 'white',
-          paddingLeft: "4px",
-          backgroundColor: '# 057abe',
-          width: '100%', // Full width of the parent container
-          padding: { xs: '8px 16px', sm: '10px 20px', md: '12px 24px' }, // Responsive padding
-          fontSize: { xs: '14px', sm: '16px', md: '18px' }, // Responsive font size
-          height: '32px', // Responsive height
-          '&:hover': {
-            backgroundColor: '#0A155C', // Darker shade for hover
+          width: { xs: "200px", sm: width }, 
+          height: { xs: "35px", sm: height }, 
+          fontSize: { xs: "16px", sm: "18px" } ,
+          textAlign: "center",
+          textTransform: "uppercase",
+          transition: "0.5s",
+          backgroundSize: "200% auto",
+          color: "white",
+          borderRadius: "30px",
+          border: 0,
+          fontWeight: 500,
+          boxShadow: "0px 0px 14px -7px rgb(25, 57, 240)",
+          backgroundImage:
+            "linear-gradient(45deg,rgb(47, 50, 255) 0%,rgb(25, 154, 240) 51%,rgb(1, 7, 98) 100%)",
+          cursor: "pointer",
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          touchAction: "manipulation",
+          "&:hover": {
+            backgroundPosition: "right center",
+            color: "#fff",
+            textDecoration: "none",
           },
-          '&:active': {
-            backgroundColor: '#070F3D', // Even darker shade for active state
+          "&:active": {
+            transform: "scale(0.95)",
+
           },
         }}
         {...props}
@@ -32,7 +66,10 @@ function ConfirmButton({ name, ...props }: ConfirmButtonProps) {
         {name}
       </Button>
     </Box>
+    </ThemeProvider>
+    </>
   );
 }
 
 export default ConfirmButton;
+
