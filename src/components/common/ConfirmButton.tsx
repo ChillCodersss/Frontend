@@ -9,6 +9,8 @@ interface ConfirmButtonProps extends ButtonProps {
 }
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
 const theme = createTheme({
   typography: {
     fontFamily: "vazir, sans-serif",
@@ -28,7 +30,6 @@ function ConfirmButton({ name, width = "240px", height = "40px", ...props }: Con
   return (
     <>
     <ThemeProvider theme={theme}>
-
     <Box display="flex" justifyContent="center">
       <Button
         variant="contained"

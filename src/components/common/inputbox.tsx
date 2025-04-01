@@ -12,8 +12,11 @@ interface InputBoxProps {
   placeholder?: string;
 
   startAdornment?: React.ReactNode; // جدید
-    direction?: "ltr" | "rtl";
-  }
+
+  direction?: "ltr" | "rtl";
+
+}
+
 
 const InputBox: React.FC<InputBoxProps> = ({
   label,
@@ -27,7 +30,13 @@ const InputBox: React.FC<InputBoxProps> = ({
   ...props
 }) => {
 
+  const labelParts = label.split("*");
+  const mainLabel = labelParts[0];
+  const hasAsterisk = labelParts.length > 1;
+
   return (
+    <Box sx={{ maxWidth: { xs: "100%"}}}>
+
     <Box sx={{ maxWidth: { xs: "100%"}}}>
 
       <Box
@@ -36,15 +45,22 @@ const InputBox: React.FC<InputBoxProps> = ({
           display: "block",
           fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
           fontWeight: "500",
+
           marginBottom: "7px",
           marginRight: "5px",
           color: "black",
-          //paddingLeft: "4px",
+          paddingLeft: "4px",
           textAlign: "right",
           direction: "rtl",
+
         }}
       >
-        {label}
+        {mainLabel}
+        {hasAsterisk && (
+
+          <span style={{ color: "red", marginRight: "2px" }}>*</span>
+        )}
+
       </Box>
 
       <TextField

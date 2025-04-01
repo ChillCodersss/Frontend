@@ -10,18 +10,22 @@ import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom"; 
 
 const SignUpForm: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    email: "",
     firstName: "",
     lastName: "",
-    email: "",
     password: "",
     confirmedPassword: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
@@ -30,47 +34,50 @@ const SignUpForm: React.FC = () => {
     }));
   };
 
-  const validateForm = () => {
-    const { firstName, lastName, email, password, confirmedPassword } =
-      formData;
-    const errors: string[] = [];
-
-    if (!email || !firstName || !lastName || !password || !confirmedPassword) {
-      errors.push("لطفا همه‌‌ فیلد ها را پر کنید");
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.push("ایمیل معتبر نیست");
-    } else if (/[^a-zA-Z0-9!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password)) {
-      errors.push("رمز عبور باید انگلیسی باشد");
-    } else if (password.length < 8 || !/\d/.test(password)) {
-      errors.push("رمز عبور باید حداقل 8 کاراکتر و شامل عدد باشد");
-    } else if (password !== confirmedPassword) {
-      errors.push("رمز عبور و تکرار آن مطابقت ندارند");
-    }
-
-    if (errors.length > 0) {
-      errors.forEach((error) => {
-        toast.error(error, {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          rtl: true,
-        });
-      });
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setIsSubmitting(true);
 
-    if (validateForm()) {
-      console.log("Form Data:", formData);
-      toast.success("ثبت نام با موفقیت انجام شد", {
+    try {
+      const response = await fetch("http://localhost:8080/api/Auth/Register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.isFailure) {
+        // Handle validation errors from backend
+        if (data.errors && Array.isArray(data.errors)) {
+          data.errors.forEach((error: { code: string; message: string }) => {
+            toast.error(error.message, {
+              position: "bottom-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              rtl: true,
+            });
+          });
+        } else {
+          toast.error(data.error?.message || "خطایی در ثبت نام رخ داد", {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            rtl: true,
+          });
+        }
+        return;
+      }
+
+      toast.success(".ثبت نام با موفقیت انجام شد", {
         position: "bottom-right",
         hideProgressBar: false,
         closeOnClick: true,
@@ -78,24 +85,46 @@ const SignUpForm: React.FC = () => {
         draggable: true,
         rtl: true,
       });
+
+      setTimeout(() => {
+        navigate("/login"); // This will now work properly
+      }, 2000);
+
+      setFormData({
+        email: "",
+        firstName: "",
+        lastName: "",
+        password: "",
+        confirmedPassword: "",
+      });
+    } catch (error) {
+      console.error("Error during registration:", error);
+      toast.error("خطایی در ارتباط با سرور رخ داد", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        rtl: true,
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
   return (
     <form onSubmit={handleSubmit}>
-
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: { xs: "5px", sm: "10px" }, 
-          width: { xs: "90%", sm: "100%" }, 
-          maxWidth: "400px", 
+          gap: { xs: "5px", sm: "10px" },
+          width: { xs: "90%", sm: "100%" },
+          maxWidth: "400px",
           height: "100%",
           justifyContent: "center",
-          marginRight : { xs: "auto", sm: "40px" },
-          marginLeft : { xs: "auto", sm: "0" },
-
+          marginRight: { xs: "auto", sm: "40px" },
+          marginLeft: { xs: "auto", sm: "0" },
         }}
       >
         <Box
@@ -112,89 +141,89 @@ const SignUpForm: React.FC = () => {
           ثبت نام
         </Box>
 
-          <InputBox
-            label="ایمیل"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            placeholder="example@gmail.com"
-            startAdornment={
-              <InputAdornment position="start">
-                <EmailIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
-              </InputAdornment>
-            }
-          />
-          <InputBox
-            label="نام"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            placeholder="نام خود را وارد کنید"
-            startAdornment={
-              <InputAdornment position="start">
-                <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
-              </InputAdornment>
-            }
-            direction="rtl"
-          />
+        <InputBox
+          label="ایمیل"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          placeholder="example@gmail.com"
+          startAdornment={
+            <InputAdornment position="start">
+              <EmailIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+            </InputAdornment>
+          }
+        />
+        <InputBox
+          label="نام"
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleInputChange}
+          placeholder="نام خود را وارد کنید"
+          startAdornment={
+            <InputAdornment position="start">
+              <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+            </InputAdornment>
+          }
+          direction="rtl"
+        />
 
-          <InputBox
-            label="نام خانوادگی"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            placeholder="نام خانوداگی خود را وارد کنید"
-            startAdornment={
-              <InputAdornment position="start">
-                <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
-              </InputAdornment>
-            }
-            direction="rtl"
-          />
+        <InputBox
+          label="نام خانوادگی"
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleInputChange}
+          placeholder="نام خانوداگی خود را وارد کنید"
+          startAdornment={
+            <InputAdornment position="start">
+              <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+            </InputAdornment>
+          }
+          direction="rtl"
+        />
 
-          <InputBox
-            label="رمز عبور"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            type={showPassword ? "text" : "password"}
-            placeholder="••••••••"
-            startAdornment={
-              <InputAdornment position="start">
-                <IconButton
-                  sx={{ marginLeft: "-10px" }}
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                </IconButton>
-              </InputAdornment>
-            }
-          />
+        <InputBox
+          label="رمز عبور"
+          name="password"
+          value={formData.password}
+          onChange={handleInputChange}
+          type={showPassword ? "text" : "password"}
+          placeholder="••••••••"
+          startAdornment={
+            <InputAdornment position="start">
+              <IconButton
+                sx={{ marginLeft: "-10px" }}
+                onClick={() => setShowPassword((prev) => !prev)}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+              </IconButton>
+            </InputAdornment>
+          }
+        />
 
-          <InputBox
-            label="تکرار رمز عبور"
-            name="confirmedPassword"
-            value={formData.confirmedPassword}
-            onChange={handleInputChange}
-            type={showConfirmPassword ? "text" : "password"}
-            placeholder="••••••••"
-            startAdornment={
-              <InputAdornment position="start">
-                <IconButton
-                  sx={{ marginLeft: "-10px" }}
-                  onClick={() => setShowConfirmPassword((prev) => !prev)}
-                  edge="end"
-                >
-                  {showConfirmPassword ? (
-                    <VisibilityOffIcon />
-                  ) : (
-                    <VisibilityIcon />
-                  )}
-                </IconButton>
-              </InputAdornment>
-            }
-          />
+        <InputBox
+          label="تکرار رمز عبور"
+          name="confirmedPassword"
+          value={formData.confirmedPassword}
+          onChange={handleInputChange}
+          type={showConfirmPassword ? "text" : "password"}
+          placeholder="••••••••"
+          startAdornment={
+            <InputAdornment position="start">
+              <IconButton
+                sx={{ marginLeft: "-10px" }}
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                edge="end"
+              >
+                {showConfirmPassword ? (
+                  <VisibilityOffIcon />
+                ) : (
+                  <VisibilityIcon />
+                )}
+              </IconButton>
+            </InputAdornment>
+          }
+        />
 
         <Box
           sx={{
@@ -203,7 +232,12 @@ const SignUpForm: React.FC = () => {
             marginTop: { xs: "15px", sm: "20px" },
           }}
         >
-          <ConfirmButton type="submit" name="ثبت نام" height={"35px"} />
+          <ConfirmButton
+            type="submit"
+            name={isSubmitting ? "...در حال ثبت" : "ثبت نام"}
+            height={"35px"}
+            disabled={isSubmitting}
+          />
         </Box>
 
         <Box
