@@ -280,6 +280,7 @@ const SignUpForm: React.FC = () => {
         </Box>
       </Box>
     </form>
+
   );
 };
 
