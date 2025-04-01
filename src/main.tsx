@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
 import Signup from "./pages/SignUp";
+import Login from "./pages/Login";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

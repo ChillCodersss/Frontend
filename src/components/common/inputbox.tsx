@@ -104,6 +104,7 @@ const InputBox: React.FC<InputBoxProps> = ({
         {...props}
       />
     </Box>
+    </Box>
   );
 };
 
