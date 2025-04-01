@@ -2,14 +2,6 @@
     margin: 0px;
     padding: 0px;
 
-
-}
-
-body{
-    font-family: 'Exo', sans-serif;
-}
-
-
 .context {
     width: 100%;
     position: absolute;
@@ -25,7 +17,7 @@ body{
 
 
 .area{
-    background: #057abe;  
+    background: #f2f4f7;  
     background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);  
     width: 100%;
     height:100vh;
@@ -50,7 +42,9 @@ body{
     list-style: none;
     width: 20px;
     height: 20px;
-    background: rgba(255, 255, 255 ,0.2);
+
+    background: rgba(115, 123, 125 ,0.0802);
+
     animation: animate 25s linear infinite;
     bottom: -150px;
     
@@ -148,4 +142,5 @@ body{
         border-radius: 50%;
     }
 
+}
 }

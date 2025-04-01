@@ -7,6 +7,7 @@ interface ConfirmButtonProps extends ButtonProps {
   width?: string | number;
   height?: string | number;
 }
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
@@ -58,7 +59,6 @@ function ConfirmButton({ name, width = "240px", height = "40px", ...props }: Con
           },
           "&:active": {
             transform: "scale(0.95)",
-
           },
         }}
         {...props}

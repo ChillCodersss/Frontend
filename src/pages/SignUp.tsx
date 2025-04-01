@@ -39,6 +39,7 @@ const Signup = () => {
             display: "flex",
             flexDirection: { xs: "column", sm: "row" }, 
             width: { xs: "100%", sm: "950px" }, 
+
             height: { xs: "auto", sm: "600px" },
             maxWidth: "1200px", 
             maxHeight: { xs: "none", sm: "600px" }, 

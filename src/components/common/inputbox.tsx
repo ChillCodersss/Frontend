@@ -12,9 +12,11 @@ interface InputBoxProps {
   placeholder?: string;
 
   startAdornment?: React.ReactNode; // جدید
+
   direction?: "ltr" | "rtl";
 
 }
+
 
 const InputBox: React.FC<InputBoxProps> = ({
   label,
@@ -23,7 +25,6 @@ const InputBox: React.FC<InputBoxProps> = ({
   type = "text",
   fullWidth = true,
   placeholder = "",
-
   startAdornment,
   direction = "ltr",
   ...props
@@ -34,6 +35,7 @@ const InputBox: React.FC<InputBoxProps> = ({
   const hasAsterisk = labelParts.length > 1;
 
   return (
+    <Box sx={{ maxWidth: { xs: "100%"}}}>
 
     <Box sx={{ maxWidth: { xs: "100%"}}}>
 
@@ -58,19 +60,18 @@ const InputBox: React.FC<InputBoxProps> = ({
 
           <span style={{ color: "red", marginRight: "2px" }}>*</span>
         )}
+
       </Box>
 
       <TextField
         value={value}
         onChange={onChange}
         type={type}
-
         fullWidth={fullWidth}
         variant="outlined"
         margin="none"
         placeholder={placeholder}
         InputProps={{
-
           startAdornment, // حالا این مقدار را از props می‌گیرد
         }}
         sx={{
@@ -98,7 +99,6 @@ const InputBox: React.FC<InputBoxProps> = ({
             fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
             textAlign: "right",
             direction: "rtl",
-
           },
         }}
         {...props}
@@ -108,5 +108,3 @@ const InputBox: React.FC<InputBoxProps> = ({
 };
 
 export default InputBox;
-
-
