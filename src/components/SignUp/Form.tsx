@@ -10,7 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 const SignUpForm: React.FC = () => {
   const navigate = useNavigate();
@@ -123,8 +123,8 @@ const SignUpForm: React.FC = () => {
           maxWidth: "400px",
           height: "100%",
           justifyContent: "center",
-          marginRight: { xs: "auto", sm: "40px" },
-          marginLeft: { xs: "auto", sm: "0" },
+          marginRight: { xs: "30px", sm: "40px" },
+          marginLeft: { xs: "15px", sm: "0" },
         }}
       >
         <Box
@@ -280,7 +280,6 @@ const SignUpForm: React.FC = () => {
         </Box>
       </Box>
     </form>
-
   );
 };
 

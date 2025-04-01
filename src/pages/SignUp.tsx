@@ -4,11 +4,9 @@ import "./Signup.css";
 import logo from "../assets/preview.png";
 import { toast, ToastContainer } from "react-toastify";
 import "./toast.css";
-import "@/index.css"
+import "@/index.css";
 
 const Signup = () => {
-
-
   return (
     <div className="area">
       <ul className="circles">
@@ -25,27 +23,28 @@ const Signup = () => {
       </ul>
       <Box
         sx={{
-          minHeight: "100vh", 
+          minHeight: "100vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          padding: { xs: "20px", sm: "0" }, 
-          margin: 0,
+          padding: { xs: "0 10px", sm: "0" }, // More flexible padding
+          margin: "auto", // Center content better
+          width: "90%", // Ensure full width usage
+          maxWidth: "1200px",
         }}
       >
         {/* Box containing form and image */}
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" }, 
-            width: { xs: "100%", sm: "950px" }, 
-
+            flexDirection: { xs: "column", sm: "row" },
+            width: { xs: "100%", sm: "950px" },
             height: { xs: "auto", sm: "600px" },
-            maxWidth: "1200px", 
-            maxHeight: { xs: "none", sm: "600px" }, 
+            maxWidth: "1200px",
+            maxHeight: { xs: "none", sm: "600px" },
             backgroundColor: "rgb(255, 255, 255)",
-            borderRadius: "12px", 
-            overflow: "hidden", 
+            borderRadius: "12px",
+            overflow: "hidden",
             boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
             backdropFilter: "blur(100px)",
           }}
@@ -55,16 +54,16 @@ const Signup = () => {
             sx={{
               width: { xs: "100%", sm: "50%" },
               height: { xs: "100px", sm: "100%" },
-              display: { xs: "none", sm: "flex" }, 
+              display: { xs: "none", sm: "flex" },
               justifyContent: "center",
               alignItems: "center",
-              backgroundColor : " #d5e0e5",
+              backgroundColor: " #d5e0e5",
               backdropFilter: "blur(10px)",
               borderRight: {
                 xs: "none",
                 sm: "3px solid #BFD9D9",
               },
-             borderRadius: "10px 0 0 10px"
+              borderRadius: "10px 0 0 10px",
             }}
           >
             <Box
@@ -74,7 +73,7 @@ const Signup = () => {
               sx={{
                 width: { xs: "60%", sm: "100%" },
                 height: { xs: "80%", sm: "100%" },
-                borderRadius: "10px 0 0 10px"
+                borderRadius: "10px 0 0 10px",
               }}
             />
           </Box>
@@ -88,10 +87,9 @@ const Signup = () => {
               justifyContent: "center",
               alignItems: "center",
               backdropFilter: "blur(10px)",
-              borderRadius: "12px", 
-              marginBottom : { xs: "20px", sm: "0px" },
-              marginTop : { xs: "20px", sm: "0px" },
-              
+              borderRadius: "12px",
+              marginBottom: { xs: "20px", sm: "0px" },
+              marginTop: { xs: "20px", sm: "0px" },
             }}
           >
             <SignUpForm />
