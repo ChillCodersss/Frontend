@@ -118,7 +118,7 @@ const SignUpForm: React.FC = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: { xs: "5px", sm: "10px" },
+          gap: { xs: "8px", sm: "10px" },
           width: { xs: "90%", sm: "100%" },
           maxWidth: "400px",
           height: "100%",
@@ -130,7 +130,7 @@ const SignUpForm: React.FC = () => {
         <Box
           component="h1"
           sx={{
-            fontSize: { xs: "16px", sm: "18px", md: "28px" },
+            fontSize: { xs: "22px", sm: "18px", md: "28px" },
             marginBottom: { xs: "5px", sm: "5px" },
             textAlign: "center",
             direction: "rtl",
@@ -172,7 +172,7 @@ const SignUpForm: React.FC = () => {
           name="lastName"
           value={formData.lastName}
           onChange={handleInputChange}
-          placeholder="نام خانوداگی خود را وارد کنید"
+          placeholder="نام خانوادگی خود را وارد کنید"
           startAdornment={
             <InputAdornment position="start">
               <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
@@ -245,7 +245,7 @@ const SignUpForm: React.FC = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginTop: { xs: "1px", sm: "5px" },
+            marginTop: { xs: "10px", sm: "5px" },
             marginBottom: { xs: "4px", sm: "10px" },
             fontSize: { xs: "0.8rem", sm: "0.9rem" },
             padding: { xs: "0px 5px", sm: "0px 5px" },
