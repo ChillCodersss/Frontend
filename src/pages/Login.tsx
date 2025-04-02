@@ -12,8 +12,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import './Login.css';
 import "@/index.css";
+import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,6 +23,7 @@ const Login: React.FC = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showImage, setShowImage] = useState(window.innerWidth >= 600);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,9 +41,10 @@ const Login: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setIsSubmitting(true);
+
     // Validation
     if (!formData.email || !formData.password) {
       toast.error("لطفا ایمیل و رمز عبور را وارد کنید", {
@@ -53,6 +57,7 @@ const Login: React.FC = () => {
         progress: undefined,
         rtl: true,
       });
+      setIsSubmitting(false);
       return;
     }
 
@@ -61,36 +66,80 @@ const Login: React.FC = () => {
         position: "bottom-right",
         rtl: true,
       });
+      setIsSubmitting(false);
       return;
     }
 
-    // Simulate login API call
-    toast.promise(
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (formData.password.length < 8) {
-            reject("رمز عبور باید حداقل 8 کاراکتر باشد");
-          } else if (formData.email === "test@example.com" && formData.password === "password") {
-            resolve("success");
-          } else {
-            reject("ایمیل یا رمز عبور اشتباه است");
-          }
-        }, 1500);
-      }),
-      {
-        pending: 'در حال بررسی اطلاعات...',
-        success: {
-          render() {
-            return 'ورود با موفقیت انجام شد!';
-          },
+    try {
+      const response = await fetch("http://localhost:8080/api/Auth/Login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        error: {
-          render({ data }: any) {
-            return data;
-          },
-        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.isFailure) {
+        if (data.errors && Array.isArray(data.errors)) {
+          data.errors.forEach((error: { code: string; message: string }) => {
+            toast.error(error.message, {
+              position: "bottom-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              rtl: true,
+            });
+          });
+        } else {
+          toast.error(data.error?.message || "خطایی در ورود رخ داد", {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            rtl: true,
+          });
+        }
+        setIsSubmitting(false);
+        return;
       }
-    );
+
+      toast.success("ورود با موفقیت انجام شد", {
+        position: "bottom-right",
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        rtl: true,
+      });
+
+      setTimeout(() => {
+        navigate("/dashboard"); // مسیر مورد نظر پس از ورود موفق
+      }, 2000);
+
+      setFormData({
+        email: "",
+        password: "",
+      });
+    } catch (error) {
+      console.error("Error during login:", error);
+      toast.error("خطایی در ارتباط با سرور رخ داد", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        rtl: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -210,7 +259,7 @@ const Login: React.FC = () => {
               </Box>
 
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <ConfirmButton name="ورود" type="submit" />
+                <ConfirmButton name={isSubmitting ? "...در حال ورود" : "ورود"} type="submit" disabled={isSubmitting} />
               </Box>
 
               <Box sx={{ 
