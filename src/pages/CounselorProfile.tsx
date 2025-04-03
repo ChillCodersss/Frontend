@@ -12,6 +12,7 @@ import {
   ListItemText,
   Divider,
   TextField,
+  Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -20,6 +21,7 @@ import InputBox from "@/components/common/inputbox";
 
 const CounselorProfile = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [isEditMode, setIsEditMode] = React.useState(false);
   const [formData, setFormData] = React.useState({
     Name: "",
     phone: "",
@@ -31,6 +33,7 @@ const CounselorProfile = () => {
     province: "",
     workExperience: "",
     description_text: "",
+    profileImage: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,6 +42,35 @@ const CounselorProfile = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setFormData((prev) => ({
+            ...prev,
+            profileImage: event.target?.result as string,
+          }));
+        }
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditMode(true);
+  };
+
+  const handleSave = () => {
+    // Here you would typically save the data to your backend
+    setIsEditMode(false);
+  };
+
+  const handleCancel = () => {
+    setIsEditMode(false);
+    // Optionally reset form data here
   };
 
   const toggleSidebar = () => {
@@ -173,10 +205,75 @@ const CounselorProfile = () => {
               borderRadius: "8px",
             }}
           >
-            <h1>پروفایل من</h1>
-            <Avatar sx={{ width: "100px", height: "100px" }}>
-              <AccountCircleIcon fontSize="large" />
-            </Avatar>
+            <h1>{isEditMode ? "تغییر اطلاعات پروفایل" : "پروفایل من"}</h1>
+            <Box sx={{ position: "relative" }}>
+              <Avatar
+                sx={{
+                  width: "120px",
+                  height: "120px",
+                  cursor: isEditMode ? "pointer" : "default",
+                  transition: "filter 0.3s ease",
+                  "&:hover": {
+                    filter: isEditMode ? "blur(20px) brightness(0.5)" : "none",
+                  },
+                }}
+                src={formData.profileImage}
+                onClick={() =>
+                  isEditMode &&
+                  document.getElementById("profile-image-input")?.click()
+                }
+              >
+                {!formData.profileImage && (
+                  <AccountCircleIcon fontSize="large" />
+                )}
+              </Avatar>
+              {isEditMode && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    opacity: 0,
+                    transition: "opacity 0.3s ease",
+                    borderRadius: "50%",
+                    "&:hover": {
+                      opacity: 1,
+                      backgroundColor: "rgba(0, 0, 0, 0.3)",
+                    },
+                    cursor: "pointer",
+                  }}
+                  onClick={() =>
+                    document.getElementById("profile-image-input")?.click()
+                  }
+                >
+                  <Typography
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      textShadow: "0 0 8px rgba(0,0,0,0.8)",
+                      backgroundColor: "rgba(0, 0, 0, 0.3)",
+                      fontSize: "1rem",
+                      padding: "8px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    تغییر تصویر
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+            <input
+              type="file"
+              id="profile-image-input"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleImageChange}
+            />
           </Box>
 
           {/* Fields Container - Tighter spacing */}
@@ -196,6 +293,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.Name}
                   onChange={handleChange}
+                  readOnly={true}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -205,6 +303,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.phone}
                   onChange={handleChange}
+                  readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -224,6 +323,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.email}
                   onChange={handleChange}
+                  readOnly={!isEditMode}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -233,6 +333,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.university}
                   onChange={handleChange}
+                  readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -252,6 +353,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.major}
                   onChange={handleChange}
+                  readOnly={!isEditMode}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -261,6 +363,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.universityYear}
                   onChange={handleChange}
+                  readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -279,6 +382,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.countryRank}
                   onChange={handleChange}
+                  readOnly={!isEditMode}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -288,6 +392,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.province}
                   onChange={handleChange}
+                  readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -306,6 +411,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.workExperience}
                   onChange={handleChange}
+                  readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -337,6 +443,9 @@ const CounselorProfile = () => {
                 fullWidth
                 variant="outlined"
                 margin="none"
+                InputProps={{
+                  readOnly: !isEditMode,
+                }}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: "white",
@@ -368,15 +477,33 @@ const CounselorProfile = () => {
             sx={{
               display: "flex",
               justifyContent: "flex-start",
+              gap: 2,
               marginTop: "32px",
             }}
           >
-            <ConfirmButton
-              name="تغییر اطلاعات"
-              variant="contained"
-              color="primary"
-              onClick={() => {}}
-            />
+            {isEditMode ? (
+              <>
+                <ConfirmButton
+                  name="دخیره تغییرات"
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSave}
+                />
+                <ConfirmButton
+                  name="انصراف"
+                  variant="contained"
+                  color="primary"
+                  onClick={handleCancel}
+                />
+              </>
+            ) : (
+              <ConfirmButton
+                name="تغییر اطلاعات"
+                variant="contained"
+                color="primary"
+                onClick={handleEdit}
+              />
+            )}
           </Box>
         </Box>
       </Box>
