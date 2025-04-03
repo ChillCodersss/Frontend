@@ -11,6 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  TextField,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -19,6 +20,26 @@ import InputBox from "@/components/common/inputbox";
 
 const CounselorProfile = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [formData, setFormData] = React.useState({
+    Name: "",
+    phone: "",
+    email: "",
+    university: "",
+    major: "",
+    universityYear: "",
+    countryRank: "",
+    province: "",
+    workExperience: "",
+    description_text: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -173,12 +194,8 @@ const CounselorProfile = () => {
                   label="نام و نام خانوادگی"
                   name="Name"
                   direction="rtl"
-                  value={""}
-                  onChange={function (
-                    event: React.ChangeEvent<HTMLInputElement>
-                  ): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  value={formData.Name}
+                  onChange={handleChange}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -186,12 +203,8 @@ const CounselorProfile = () => {
                   label="شماره تماس"
                   name="phone"
                   direction="ltr"
-                  value={""}
-                  onChange={function (
-                    event: React.ChangeEvent<HTMLInputElement>
-                  ): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  value={formData.phone}
+                  onChange={handleChange}
                 />
               </Box>
             </Box>
@@ -209,12 +222,8 @@ const CounselorProfile = () => {
                   label="ایمیل"
                   name="email"
                   direction="ltr"
-                  value={""}
-                  onChange={function (
-                    event: React.ChangeEvent<HTMLInputElement>
-                  ): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  value={formData.email}
+                  onChange={handleChange}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -222,12 +231,8 @@ const CounselorProfile = () => {
                   label="دانشگاه"
                   name="university"
                   direction="rtl"
-                  value={""}
-                  onChange={function (
-                    event: React.ChangeEvent<HTMLInputElement>
-                  ): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  value={formData.university}
+                  onChange={handleChange}
                 />
               </Box>
             </Box>
@@ -245,12 +250,8 @@ const CounselorProfile = () => {
                   label="رشته تحصیلی"
                   name="major"
                   direction="rtl"
-                  value={""}
-                  onChange={function (
-                    event: React.ChangeEvent<HTMLInputElement>
-                  ): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  value={formData.major}
+                  onChange={handleChange}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -258,12 +259,8 @@ const CounselorProfile = () => {
                   label="سال ورود به دانشگاه"
                   name="universityYear"
                   direction="ltr"
-                  value={""}
-                  onChange={function (
-                    event: React.ChangeEvent<HTMLInputElement>
-                  ): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  value={formData.universityYear}
+                  onChange={handleChange}
                 />
               </Box>
             </Box>
@@ -280,12 +277,8 @@ const CounselorProfile = () => {
                   label="رتبه کشوری"
                   name="countryRank"
                   direction="ltr"
-                  value={""}
-                  onChange={function (
-                    event: React.ChangeEvent<HTMLInputElement>
-                  ): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  value={formData.countryRank}
+                  onChange={handleChange}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -293,12 +286,8 @@ const CounselorProfile = () => {
                   label="استان"
                   name="province"
                   direction="rtl"
-                  value={""}
-                  onChange={function (
-                    event: React.ChangeEvent<HTMLInputElement>
-                  ): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  value={formData.province}
+                  onChange={handleChange}
                 />
               </Box>
             </Box>
@@ -315,14 +304,62 @@ const CounselorProfile = () => {
                   label="سابقه کار"
                   name="workExperience"
                   direction="rtl"
-                  value={""}
-                  onChange={function (
-                    event: React.ChangeEvent<HTMLInputElement>
-                  ): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  value={formData.workExperience}
+                  onChange={handleChange}
                 />
               </Box>
+            </Box>
+
+            {/* Motivational Text Box */}
+            <Box sx={{ width: "100%" }}>
+              <Box
+                component="label"
+                sx={{
+                  display: "block",
+                  fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+                  fontWeight: "500",
+                  marginBottom: "7px",
+                  marginRight: "5px",
+                  color: "black",
+                  paddingLeft: "4px",
+                  textAlign: "right",
+                  direction: "rtl",
+                }}
+              >
+                متن معرفی
+              </Box>
+              <TextField
+                name="description_text"
+                value={formData.description_text || ""}
+                onChange={handleChange}
+                multiline
+                rows={6}
+                fullWidth
+                variant="outlined"
+                margin="none"
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    backgroundColor: "white",
+                    boxShadow: {
+                      xs: "0px 1px 2px rgba(0, 0, 0, 0.1)",
+                      sm: "0px 2px 4px rgba(0, 0, 0, 0.25)",
+                    },
+                    transition: "box-shadow 0.3s ease, border-color 0.3s ease",
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgba(0, 0, 0, 0.5)",
+                      boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "rgba(0, 0, 0, 0.23)",
+                      boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.25)",
+                    },
+                  },
+                  "& .MuiOutlinedInput-input": {
+                    textAlign: "right",
+                    direction: "rtl",
+                  },
+                }}
+              />
             </Box>
           </Box>
 
