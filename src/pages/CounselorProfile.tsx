@@ -293,7 +293,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.Name}
                   onChange={handleChange}
-                  readOnly={true}
+                  // readOnly={true}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -303,7 +303,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.phone}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  // readOnly={!isEditMode} 
                 />
               </Box>
             </Box>
@@ -323,7 +323,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.email}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  // readOnly={!isEditMode}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -333,7 +333,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.university}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  // readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -353,7 +353,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.major}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  // readOnly={!isEditMode}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -363,7 +363,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.universityYear}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  // readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -382,7 +382,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.countryRank}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  // readOnly={!isEditMode}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -392,7 +392,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.province}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  // readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -411,7 +411,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.workExperience}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  // readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -444,7 +444,7 @@ const CounselorProfile = () => {
                 variant="outlined"
                 margin="none"
                 InputProps={{
-                  readOnly: !isEditMode,
+                  // readOnly: !isEditMode,
                 }}
                 sx={{
                   "& .MuiOutlinedInput-root": {
