@@ -30,7 +30,7 @@ function SecondaryButton({
           fontSize,
           appearance: "none",
           backfaceVisibility: "hidden",
-          borderRadius: "8px",
+          borderRadius: "3px",
           borderStyle: "none",
           boxShadow: "rgba(39, 174, 96, 0.15) 0 4px 9px",
           boxSizing: "border-box",
@@ -61,7 +61,6 @@ function SecondaryButton({
 
             opacity: 1,
             transform: "translateY(0)",
-            boxShadow: "none",
           },
 
           "&:active": {
