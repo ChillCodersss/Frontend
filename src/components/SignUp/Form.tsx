@@ -1,19 +1,31 @@
-import InputBox from "@/components/common/inputbox";
-import ConfirmButton from "@/components/common/ConfirmButton";
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
-import './Form.css'
+import InputBox from "@/components/common/inputbox";
+import ConfirmButton from "@/components/common/ConfirmButton";
+import EmailIcon from "@mui/icons-material/Email";
+import PersonIcon from "@mui/icons-material/Person";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
+
 const SignUpForm: React.FC = () => {
-  // State to manage form inputs
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    firstName: "", 
-    lastName: "", 
     email: "",
+    firstName: "",
+    lastName: "",
     password: "",
-    confirmPassword: "",
+    confirmedPassword: "",
   });
 
-  // Handle input changes
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
@@ -22,95 +34,252 @@ const SignUpForm: React.FC = () => {
     }));
   };
 
-  return (
-    
-<div className="area" >
-            <ul className="circles">
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-            </ul>
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsSubmitting(true);
 
-    <form>
+    try {
+      const response = await fetch("http://localhost:8080/api/Auth/Register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.isFailure) {
+        // Handle validation errors from backend
+        if (data.errors && Array.isArray(data.errors)) {
+          data.errors.forEach((error: { code: string; message: string }) => {
+            toast.error(error.message, {
+              position: "bottom-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              rtl: true,
+            });
+          });
+        } else {
+          toast.error(data.error?.message || "خطایی در ثبت نام رخ داد", {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            rtl: true,
+          });
+        }
+        return;
+      }
+
+      toast.success(".ثبت نام با موفقیت انجام شد", {
+        position: "bottom-right",
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        rtl: true,
+      });
+
+      setTimeout(() => {
+        navigate("/login"); // This will now work properly
+      }, 2000);
+
+      setFormData({
+        email: "",
+        firstName: "",
+        lastName: "",
+        password: "",
+        confirmedPassword: "",
+      });
+    } catch (error) {
+      console.error("Error during registration:", error);
+      toast.error("خطایی در ارتباط با سرور رخ داد", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        rtl: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  return (
+    <form onSubmit={handleSubmit}>
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: "14px",
-          maxWidth: { xs: "100%", sm: "300px", md: "400px" }, // Responsive maxWidth
-          width: "100%",
-          margin: "0 auto",
-          backgroundColor: "#BFD9D9",
-          borderRadius: "12px",
-          padding: "20px",
+          gap: { xs: "8px", sm: "10px" },
+          width: { xs: "90%", sm: "100%" },
+          maxWidth: "400px",
+          height: "100%",
+          justifyContent: "center",
+          marginRight: { xs: "30px", sm: "40px" },
+          marginLeft: { xs: "15px", sm: "0" },
         }}
-
       >
-        <h1 style={{ textAlign: "left" }}>Signup Form</h1>
-        {/* Email Field */}
+        <Box
+          component="h1"
+          sx={{
+            fontSize: { xs: "22px", sm: "18px", md: "28px" },
+            marginBottom: { xs: "5px", sm: "5px" },
+            textAlign: "center",
+            direction: "rtl",
+            color: "black",
+            fontWeight: "bold",
+          }}
+        >
+          ثبت نام
+        </Box>
+
         <InputBox
-          label="Email*"
+          label="ایمیل"
           name="email"
           value={formData.email}
           onChange={handleInputChange}
-          type="email"
           placeholder="example@gmail.com"
+          startAdornment={
+            <InputAdornment position="start">
+              <EmailIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+            </InputAdornment>
+          }
         />
-
-        {/* First Name Field */}
         <InputBox
-          label="First Name"
+          label="نام"
           name="firstName"
           value={formData.firstName}
           onChange={handleInputChange}
-          placeholder="Enter your first name"
+          placeholder="نام خود را وارد کنید"
+          startAdornment={
+            <InputAdornment position="start">
+              <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+            </InputAdornment>
+          }
+          direction="rtl"
         />
 
-        {/* Last Name Field */}
         <InputBox
-          label="Last Name"
+          label="نام خانوادگی"
           name="lastName"
           value={formData.lastName}
           onChange={handleInputChange}
-          placeholder="Enter your last name"
+          placeholder="نام خانوادگی خود را وارد کنید"
+          startAdornment={
+            <InputAdornment position="start">
+              <PersonIcon sx={{ marginLeft: "-2px", marginTop: "2px" }} />
+            </InputAdornment>
+          }
+          direction="rtl"
         />
 
-        {/* Password Field */}
         <InputBox
-          label="Password*"
+          label="رمز عبور"
           name="password"
           value={formData.password}
           onChange={handleInputChange}
-          type="password"
-          placeholder="********"
+          type={showPassword ? "text" : "password"}
+          placeholder="••••••••"
+          startAdornment={
+            <InputAdornment position="start">
+              <IconButton
+                sx={{ marginLeft: "-10px" }}
+                onClick={() => setShowPassword((prev) => !prev)}
+                edge="end"
+              >
+                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+              </IconButton>
+            </InputAdornment>
+          }
         />
 
-        {/* Confirm Password Field */}
         <InputBox
-          label="Confirm Password*"
-          name="confirmPassword"
-          value={formData.confirmPassword}
+          label="تکرار رمز عبور"
+          name="confirmedPassword"
+          value={formData.confirmedPassword}
           onChange={handleInputChange}
-          type="password"
-          placeholder="********"
+          type={showConfirmPassword ? "text" : "password"}
+          placeholder="••••••••"
+          startAdornment={
+            <InputAdornment position="start">
+              <IconButton
+                sx={{ marginLeft: "-10px" }}
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
+                edge="end"
+              >
+                {showConfirmPassword ? (
+                  <VisibilityOffIcon />
+                ) : (
+                  <VisibilityIcon />
+                )}
+              </IconButton>
+            </InputAdornment>
+          }
         />
 
-        {/* Submit Button */}
         <Box
-          sx={{ display: "flex", justifyContent: "center", marginTop: "10px"  }}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: { xs: "15px", sm: "20px" },
+          }}
         >
-          <ConfirmButton name="ورود"  />
+          <ConfirmButton
+            type="submit"
+            name={isSubmitting ? "...در حال ثبت" : "ثبت نام"}
+            height={"35px"}
+            disabled={isSubmitting}
+          />
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: { xs: "10px", sm: "5px" },
+            marginBottom: { xs: "4px", sm: "10px" },
+            fontSize: { xs: "0.8rem", sm: "0.9rem" },
+            padding: { xs: "0px 5px", sm: "0px 5px" },
+          }}
+        >
+          <Box
+            component="a"
+            href="/go-to-x"
+            sx={{
+              color: "black",
+              textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+          >
+            فرم استخدام مشاور
+          </Box>
+          <Box
+            component="a"
+            href="/login"
+            sx={{
+              color: "black",
+              textDecoration: "none",
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+          >
+            اکانت دارم
+          </Box>
         </Box>
       </Box>
     </form>
-    </div >
   );
 };
 
