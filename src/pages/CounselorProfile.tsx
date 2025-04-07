@@ -16,7 +16,6 @@ import {
   Autocomplete,
   useMediaQuery,
   useTheme,
-  CircularProgress,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -24,6 +23,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseIcon from "@mui/icons-material/Close";
 import InputBox from "@/components/common/inputbox";
 import SecondaryButton from "@/components/common/SecondaryButton";
+import EditIcon from "@mui/icons-material/Edit";
 
 const CounselorProfile = () => {
   const theme = useTheme();
@@ -258,12 +258,18 @@ const CounselorProfile = () => {
             <h1 style={{ margin: isMobile ? "16px 0 0 0" : 0 }}>
               {isEditMode ? "تغییر پروفایل" : "پروفایل من"}
             </h1>
-            <Box sx={{ position: "relative" }}>
+            <Box
+              sx={{
+                position: "relative",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               <Avatar
                 sx={{
-                  width: isMobile ? "100px" : "150px",
-                  height: isMobile ? "100px" : "150px",
-                  cursor: isEditMode ? "pointer" : "default",
+                  width: isMobile ? "150px" : "150px",
+                  height: isMobile ? "150px" : "150px",
+                  cursor: isEditMode ? "poiner" : "default",
                   transition: "filter 0.3s ease",
                   "&:hover": {
                     filter: isEditMode ? "blur(20px) brightness(0.5)" : "none",
@@ -279,6 +285,24 @@ const CounselorProfile = () => {
                   <AccountCircleIcon fontSize="large" />
                 )}
               </Avatar>
+              <EditIcon
+                sx={{
+                  color: "black",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  position: "absolute",
+                  bottom: "5px",
+                  right: "5px",
+                  backgroundColor: "rgba(203, 203, 203, 0.67)",
+                  borderRadius: "50%",
+                  padding: "4px",
+                  backdropFilter: "blur(4px)",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                }}
+                onClick={() =>
+                  document.getElementById("profile-image-input")?.click()
+                }
+              />
               {isEditMode && (
                 <Box
                   sx={{
@@ -293,30 +317,8 @@ const CounselorProfile = () => {
                     opacity: 0,
                     transition: "opacity 0.3s ease",
                     borderRadius: "50%",
-                    "&:hover": {
-                      opacity: 1,
-                      backgroundColor: "rgba(0, 0, 0, 0.3)",
-                    },
-                    cursor: "pointer",
                   }}
-                  onClick={() =>
-                    document.getElementById("profile-image-input")?.click()
-                  }
-                >
-                  <Typography
-                    sx={{
-                      color: "white",
-                      fontWeight: "bold",
-                      textShadow: "0 0 8px rgba(0,0,0,0.8)",
-                      backgroundColor: "rgba(0, 0, 0, 0.3)",
-                      fontSize: isMobile ? "0.8rem" : "1rem",
-                      padding: "8px",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    تغییر تصویر
-                  </Typography>
-                </Box>
+                ></Box>
               )}
             </Box>
             <input
