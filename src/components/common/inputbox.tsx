@@ -58,6 +58,8 @@ const InputBox: React.FC<InputBoxProps> = ({
         variant="outlined"
         margin="none"
         placeholder={placeholder}
+        disabled={readOnly}
+        inputProps={{ readOnly }}
         InputProps={{
           startAdornment,
         }}

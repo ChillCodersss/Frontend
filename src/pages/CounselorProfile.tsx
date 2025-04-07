@@ -13,11 +13,15 @@ import {
   Divider,
   TextField,
   Typography,
+  Autocomplete,
+  CircularProgress,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ConfirmButton from "@/components/common/ConfirmButton";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import CloseIcon from "@mui/icons-material/Close";
 import InputBox from "@/components/common/inputbox";
+import SecondaryButton from "@/components/common/SecondaryButton";
 
 const CounselorProfile = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
@@ -82,7 +86,7 @@ const CounselorProfile = () => {
       sx={{
         display: "flex",
         minHeight: "100vh",
-        backgroundColor: "rgb(236, 246, 248)",
+        backgroundColor: "rgb(255, 255, 255)",
         direction: "rtl",
       }}
     >
@@ -293,7 +297,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.Name}
                   onChange={handleChange}
-                  // readOnly={true}
+                  readOnly={true}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -303,7 +307,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.phone}
                   onChange={handleChange}
-                  // readOnly={!isEditMode} 
+                  readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -323,7 +327,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.email}
                   onChange={handleChange}
-                  // readOnly={!isEditMode}
+                  readOnly={!isEditMode}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -333,7 +337,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.university}
                   onChange={handleChange}
-                  // readOnly={!isEditMode}
+                  readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -353,7 +357,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.major}
                   onChange={handleChange}
-                  // readOnly={!isEditMode}
+                  readOnly={!isEditMode}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -363,7 +367,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.universityYear}
                   onChange={handleChange}
-                  // readOnly={!isEditMode}
+                  readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -382,18 +386,105 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.countryRank}
                   onChange={handleChange}
-                  // readOnly={!isEditMode}
+                  readOnly={!isEditMode}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="استان"
-                  name="province"
-                  direction="rtl"
-                  value={formData.province}
-                  onChange={handleChange}
-                  // readOnly={!isEditMode}
-                />
+                {isEditMode ? (
+                  <Box>
+                    <Box
+                      component="label"
+                      sx={{
+                        display: "block",
+                        fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+                        fontWeight: "500",
+                        marginBottom: "7px",
+                        marginRight: "5px",
+                        color: "black",
+                        textAlign: "right",
+                        direction: "rtl",
+                      }}
+                    >
+                      استان
+                    </Box>
+                    <Autocomplete
+                      value={formData.province}
+                      onChange={(event, newValue) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          province: newValue || "",
+                        }));
+                      }}
+                      options={["اصفهان", "تهران", "مشهد", "شیراز"]}
+                      freeSolo
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          fullWidth
+                          variant="outlined"
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              backgroundColor: "white",
+                              borderRadius: "0px",
+                              height: "35px",
+                              padding: "8px 40px 8px 14px !important", 
+                              "& .MuiOutlinedInput-input": {
+                                textAlign: "right",
+                                direction: "rtl",
+                                height: "19px",
+                              },
+                              "&:hover .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#1976d2",
+                                borderWidth: "1px",
+                              },
+                              "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                {
+                                  borderColor: "#1976d2",
+                                  borderWidth: "1px",
+                                },
+                            },
+                          }}
+                        />
+                      )}
+                      popupIcon={<ArrowDropDownIcon />}
+                      clearIcon={<CloseIcon />}
+                      forcePopupIcon={true}
+                      sx={{
+                        "& .MuiAutocomplete-endAdornment": {
+                          left: 0,
+                          right: "auto",
+                          display: "flex",
+                          flexDirection: "row",
+                          position: "absolute",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          height: "100%",
+                          alignItems: "center",
+                        },
+                        "& .MuiAutocomplete-clearIndicator": {
+                          position: "absolute",
+                          right: "0px",
+                          padding: "2px",
+                          paddingLeft: "0px",
+                        },
+                        "& .MuiAutocomplete-popupIndicator": {
+                          position: "absolute",
+                          left: "8px",
+                          padding: "2px",
+                        },
+                      }}
+                    />
+                  </Box>
+                ) : (
+                  <InputBox
+                    label="استان"
+                    name="province"
+                    direction="rtl"
+                    value={formData.province}
+                    onChange={handleChange}
+                    readOnly={true}
+                  />
+                )}
               </Box>
             </Box>
             <Box
@@ -411,7 +502,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.workExperience}
                   onChange={handleChange}
-                  // readOnly={!isEditMode}
+                  readOnly={!isEditMode}
                 />
               </Box>
             </Box>
@@ -427,7 +518,6 @@ const CounselorProfile = () => {
                   marginBottom: "7px",
                   marginRight: "5px",
                   color: "black",
-                  paddingLeft: "4px",
                   textAlign: "right",
                   direction: "rtl",
                 }}
@@ -443,24 +533,20 @@ const CounselorProfile = () => {
                 fullWidth
                 variant="outlined"
                 margin="none"
-                InputProps={{
-                  // readOnly: !isEditMode,
-                }}
+                disabled={!isEditMode}
+                inputProps={{ readOnly: !isEditMode }}
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: "white",
-                    boxShadow: {
-                      xs: "0px 1px 2px rgba(0, 0, 0, 0.1)",
-                      sm: "0px 2px 4px rgba(0, 0, 0, 0.25)",
-                    },
-                    transition: "box-shadow 0.3s ease, border-color 0.3s ease",
+                    borderRadius: "0px",
+                    transition: "border-color 0.3s ease",
                     "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgba(0, 0, 0, 0.5)",
-                      boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                      borderColor: "#1976d2",
+                      borderWidth: "1px",
                     },
                     "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgba(0, 0, 0, 0.23)",
-                      boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.25)",
+                      borderColor: "#1976d2",
+                      borderWidth: "1px",
                     },
                   },
                   "& .MuiOutlinedInput-input": {
@@ -483,24 +569,32 @@ const CounselorProfile = () => {
           >
             {isEditMode ? (
               <>
-                <ConfirmButton
-                  name="دخیره تغییرات"
+                <SecondaryButton
+                  name="ذخیره تغییرات"
                   variant="contained"
-                  color="primary"
+                  backgroundColor="rgb(0, 140, 190)"
                   onClick={handleSave}
+                  fontSize="1rem"
+                  width={"200px"}
+                  height={"40px"}
                 />
-                <ConfirmButton
+                <SecondaryButton
                   name="انصراف"
                   variant="contained"
-                  color="primary"
+                  backgroundColor="rgb(229, 111, 111)"
                   onClick={handleCancel}
+                  fontSize="1rem"
+                  width={"200px"}
+                  height={"40px"}
                 />
               </>
             ) : (
-              <ConfirmButton
+              <SecondaryButton
                 name="تغییر اطلاعات"
-                variant="contained"
-                color="primary"
+                backgroundColor="rgb(0, 140, 190)"
+                fontSize="1rem"
+                width={"200px"}
+                height={"40px"}
                 onClick={handleEdit}
               />
             )}
