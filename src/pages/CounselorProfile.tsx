@@ -532,6 +532,25 @@ const CounselorProfile = () => {
                           padding: "2px",
                         },
                       }}
+                      slotProps={{
+                        popper: {
+                          sx: {
+                            "& .MuiPaper-root": {
+                              direction: "rtl",
+                              textAlign: "right",
+                            },
+                            "& .MuiAutocomplete-listbox": {
+                              direction: "rtl",
+                              textAlign: "right",
+                            },
+                            "& .MuiAutocomplete-option": {
+                              direction: "rtl",
+                              textAlign: "right",
+                              padding: "8px 16px",
+                            },
+                          },
+                        },
+                      }}
                     />
                   </Box>
                 ) : (
@@ -637,7 +656,7 @@ const CounselorProfile = () => {
                   fontSize={isMobile ? "0.9rem" : "1rem"}
                   width={isMobile ? "100%" : "200px"}
                   height={"40px"}
-                  borderRadius = {{ xs: "0px", sm: "0px", md: "0px" }}
+                  borderRadius={{ xs: "0px", sm: "0px", md: "0px" }}
                 />
                 <SecondaryButton
                   name="انصراف"
@@ -647,7 +666,7 @@ const CounselorProfile = () => {
                   fontSize={isMobile ? "0.9rem" : "1rem"}
                   width={isMobile ? "100%" : "200px"}
                   height={"40px"}
-                  borderRadius = {{ xs: "0px", sm: "0px", md: "0px" }}
+                  borderRadius={{ xs: "0px", sm: "0px", md: "0px" }}
                 />
               </>
             ) : (
@@ -657,7 +676,7 @@ const CounselorProfile = () => {
                 fontSize={isMobile ? "0.9rem" : "1rem"}
                 width={isMobile ? "100%" : "200px"}
                 height={"40px"}
-                borderRadius = {{ xs: "0px", sm: "0px", md: "0px" }}
+                borderRadius={{ xs: "0px", sm: "0px", md: "0px" }}
                 onClick={handleEdit}
               />
             )}
