@@ -36,7 +36,7 @@ const CounselorProfile = () => {
   const [provinceInputValue, setProvinceInputValue] = React.useState("");
   const [loadingProvinces, setLoadingProvinces] = React.useState(false);
 
-  const [formData, setFormData] = React.useState({
+  const [initialFormData, setInitialFormData] = React.useState({
     Name: "",
     phone: "",
     email: "",
@@ -49,6 +49,15 @@ const CounselorProfile = () => {
     description_text: "",
     profileImage: "",
   });
+
+  const [formData, setFormData] = React.useState(initialFormData);
+
+  // Save initial form data when component mounts
+  useEffect(() => {
+    // Here you would typically fetch the initial data from your API
+    // For now, we'll just set it to the current formData
+    setInitialFormData(formData);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -83,6 +92,9 @@ const CounselorProfile = () => {
 
   const handleCancel = () => {
     setIsEditMode(false);
+    setFormData(initialFormData);
+    setProvinceInputValue("");
+    setProvinceOptions([]);
   };
 
   const toggleSidebar = () => {
@@ -267,9 +279,6 @@ const CounselorProfile = () => {
                   height: isMobile ? "150px" : "150px",
                   cursor: isEditMode ? "poiner" : "default",
                   transition: "filter 0.3s ease",
-                  "&:hover": {
-                    filter: isEditMode ? "blur(20px) brightness(0.5)" : "none",
-                  },
                 }}
                 src={formData.profileImage}
                 onClick={() =>
@@ -281,40 +290,25 @@ const CounselorProfile = () => {
                   <AccountCircleIcon fontSize="large" />
                 )}
               </Avatar>
-              <EditIcon
-                sx={{
-                  color: "black",
-                  fontSize: "20px",
-                  cursor: "pointer",
-                  position: "absolute",
-                  bottom: "5px",
-                  right: "5px",
-                  backgroundColor: "rgba(203, 203, 203, 0.67)",
-                  borderRadius: "50%",
-                  padding: "4px",
-                  backdropFilter: "blur(4px)",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                }}
-                onClick={() =>
-                  document.getElementById("profile-image-input")?.click()
-                }
-              />
               {isEditMode && (
-                <Box
+                <EditIcon
                   sx={{
+                    color: "black",
+                    fontSize: "20px",
+                    cursor: "pointer",
                     position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    opacity: 0,
-                    transition: "opacity 0.3s ease",
+                    bottom: "5px",
+                    right: "5px",
+                    backgroundColor: "rgba(203, 203, 203, 0.67)",
                     borderRadius: "50%",
+                    padding: "4px",
+                    backdropFilter: "blur(4px)",
+                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                   }}
-                ></Box>
+                  onClick={() =>
+                    document.getElementById("profile-image-input")?.click()
+                  }
+                />
               )}
             </Box>
             <input
