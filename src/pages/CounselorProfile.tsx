@@ -92,25 +92,21 @@ const CounselorProfile = () => {
   // Fetch provinces when input changes
   useEffect(() => {
     const fetchProvinces = async () => {
-      if (provinceInputValue.length > 0) {
-        setLoadingProvinces(true);
-        try {
-          const response = await fetch(
-            `http://localhost:8080/api/Provinces/Dropdown?input=${encodeURIComponent(
-              provinceInputValue
-            )}`
-          );
-          const data = await response.json();
-          if (data.isSuccess) {
-            setProvinceOptions(data.value);
-          }
-        } catch (error) {
-          console.error("Error fetching provinces:", error);
-        } finally {
-          setLoadingProvinces(false);
+      setLoadingProvinces(true);
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/Provinces/Dropdown?input=${encodeURIComponent(
+            provinceInputValue || ""
+          )}`
+        );
+        const data = await response.json();
+        if (data.isSuccess) {
+          setProvinceOptions(data.value);
         }
-      } else {
-        setProvinceOptions([]);
+      } catch (error) {
+        console.error("Error fetching provinces:", error);
+      } finally {
+        setLoadingProvinces(false);
       }
     };
 
