@@ -14,7 +14,8 @@ import {
   TextField,
   Typography,
   Autocomplete,
-  CircularProgress,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -24,6 +25,10 @@ import InputBox from "@/components/common/inputbox";
 import SecondaryButton from "@/components/common/SecondaryButton";
 
 const CounselorProfile = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+  
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [isEditMode, setIsEditMode] = React.useState(false);
   const [formData, setFormData] = React.useState({
@@ -68,13 +73,11 @@ const CounselorProfile = () => {
   };
 
   const handleSave = () => {
-    // Here you would typically save the data to your backend
     setIsEditMode(false);
   };
 
   const handleCancel = () => {
     setIsEditMode(false);
-    // Optionally reset form data here
   };
 
   const toggleSidebar = () => {
@@ -93,7 +96,11 @@ const CounselorProfile = () => {
       {/* Header */}
       <AppBar
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ 
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backdropFilter: "blur(10px)",
+          color: "black",
+        }}
       >
         <Toolbar>
           <IconButton
@@ -114,12 +121,12 @@ const CounselorProfile = () => {
         open={sidebarOpen}
         onClose={toggleSidebar}
         sx={{
-          width: "240px",
+          width: isMobile ? "80vw" : "240px",
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: "240px",
+            width: isMobile ? "80vw" : "240px",
             boxSizing: "border-box",
-            backgroundColor: "rgba(255, 255, 255, 0.7)",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
             backdropFilter: "blur(10px)",
             borderLeft: "1px solid rgba(255, 255, 255, 0.3)",
           },
@@ -176,7 +183,7 @@ const CounselorProfile = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          padding: "48px",
+          padding: isMobile ? "24px 16px" : isTablet ? "36px 24px" : "48px",
           backgroundColor: "rgba(255, 255, 255, 0.2)",
           backdropFilter: "blur(12px)",
           border: "1px solid rgba(255, 255, 255, 0.3)",
@@ -190,7 +197,7 @@ const CounselorProfile = () => {
         <Box
           sx={{
             borderRadius: "16px",
-            padding: "40px 80px 40px 80px",
+            padding: isMobile ? "24px" : isTablet ? "32px" : "40px 80px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
             maxWidth: "800px",
             margin: "0 auto",
@@ -202,19 +209,23 @@ const CounselorProfile = () => {
           <Box
             sx={{
               display: "flex",
+              flexDirection: isMobile ? "column-reverse" : "row",
               alignItems: "center",
               justifyContent: "space-between",
               marginBottom: "18px",
               padding: "16px",
               borderRadius: "8px",
+              gap: isMobile ? "16px" : 0,
             }}
           >
-            <h1>{isEditMode ? "تغییر اطلاعات پروفایل" : "پروفایل من"}</h1>
+            <h1 style={{ margin: isMobile ? "16px 0 0 0" : 0 }}>
+              {isEditMode ? "تغییر پروفایل" : "پروفایل من"}
+            </h1>
             <Box sx={{ position: "relative" }}>
               <Avatar
                 sx={{
-                  width: "120px",
-                  height: "120px",
+                  width: isMobile ? "100px" : "150px",
+                  height: isMobile ? "100px" : "150px",
                   cursor: isEditMode ? "pointer" : "default",
                   transition: "filter 0.3s ease",
                   "&:hover": {
@@ -261,7 +272,7 @@ const CounselorProfile = () => {
                       fontWeight: "bold",
                       textShadow: "0 0 8px rgba(0,0,0,0.8)",
                       backgroundColor: "rgba(0, 0, 0, 0.3)",
-                      fontSize: "1rem",
+                      fontSize: isMobile ? "0.8rem" : "1rem",
                       padding: "8px",
                       borderRadius: "4px",
                     }}
@@ -286,7 +297,7 @@ const CounselorProfile = () => {
               sx={{
                 display: "flex",
                 flexDirection: { xs: "column", sm: "row" },
-                gap: "40px",
+                gap: isMobile ? "16px" : "40px",
                 justifyContent: "space-between",
               }}
             >
@@ -316,7 +327,7 @@ const CounselorProfile = () => {
               sx={{
                 display: "flex",
                 flexDirection: { xs: "column", sm: "row" },
-                gap: "40px",
+                gap: isMobile ? "16px" : "40px",
                 justifyContent: "space-between",
               }}
             >
@@ -346,7 +357,7 @@ const CounselorProfile = () => {
               sx={{
                 display: "flex",
                 flexDirection: { xs: "column", sm: "row" },
-                gap: "40px",
+                gap: isMobile ? "16px" : "40px",
                 justifyContent: "space-between",
               }}
             >
@@ -375,7 +386,7 @@ const CounselorProfile = () => {
               sx={{
                 display: "flex",
                 flexDirection: { xs: "column", sm: "row" },
-                gap: "40px",
+                gap: isMobile ? "16px" : "40px",
                 justifyContent: "space-between",
               }}
             >
@@ -491,7 +502,7 @@ const CounselorProfile = () => {
               sx={{
                 display: "flex",
                 flexDirection: { xs: "column", sm: "row" },
-                gap: "40px",
+                gap: isMobile ? "16px" : "40px",
                 justifyContent: "space-between",
               }}
             >
@@ -529,7 +540,7 @@ const CounselorProfile = () => {
                 value={formData.description_text || ""}
                 onChange={handleChange}
                 multiline
-                rows={6}
+                rows={isMobile ? 4 : 6}
                 fullWidth
                 variant="outlined"
                 margin="none"
@@ -562,6 +573,7 @@ const CounselorProfile = () => {
           <Box
             sx={{
               display: "flex",
+              flexDirection: isMobile ? "column" : "row",
               justifyContent: "flex-start",
               gap: 2,
               marginTop: "32px",
@@ -574,8 +586,8 @@ const CounselorProfile = () => {
                   variant="contained"
                   backgroundColor="rgb(0, 140, 190)"
                   onClick={handleSave}
-                  fontSize="1rem"
-                  width={"200px"}
+                  fontSize={isMobile ? "0.9rem" : "1rem"}
+                  width={isMobile ? "100%" : "200px"}
                   height={"40px"}
                 />
                 <SecondaryButton
@@ -583,8 +595,8 @@ const CounselorProfile = () => {
                   variant="contained"
                   backgroundColor="rgb(229, 111, 111)"
                   onClick={handleCancel}
-                  fontSize="1rem"
-                  width={"200px"}
+                  fontSize={isMobile ? "0.9rem" : "1rem"}
+                  width={isMobile ? "100%" : "200px"}
                   height={"40px"}
                 />
               </>
@@ -592,8 +604,8 @@ const CounselorProfile = () => {
               <SecondaryButton
                 name="تغییر اطلاعات"
                 backgroundColor="rgb(0, 140, 190)"
-                fontSize="1rem"
-                width={"200px"}
+                fontSize={isMobile ? "0.9rem" : "1rem"}
+                width={isMobile ? "100%" : "200px"}
                 height={"40px"}
                 onClick={handleEdit}
               />
