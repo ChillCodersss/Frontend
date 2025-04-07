@@ -35,6 +35,7 @@ const InputBox: React.FC<InputBoxProps> = ({
 }) => {
   return (
     <Box sx={{ maxWidth: { xs: "100%" } }}>
+      <Box sx={{ maxWidth: { xs: "100%" } }}>
       <Box
         component="label"
         sx={{
