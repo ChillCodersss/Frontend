@@ -5,6 +5,8 @@ import "./index.css";
 import Signup from "./pages/SignUp";
 import Login from "./pages/Login";
 import FPGetEmail from "./pages/ForgotPassword/FPGetEmail";
+import FPGetVerificationCode from "./pages/ForgotPassword/FPGetVerificationCode";
+import FPGetNewPassword from "./pages/ForgotPassword/FPGetNewPassword";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -13,6 +15,8 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/Signup" element={<Signup></Signup>} />
         <Route path="/login" element={<Login></Login>} />
         <Route path="/forgot-password" element={<FPGetEmail />} />
+        <Route path="/verification-code" element={<FPGetVerificationCode />} />
+        <Route path="/set-new-password" element={<FPGetNewPassword />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

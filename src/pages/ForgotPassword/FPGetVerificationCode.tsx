@@ -1,25 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import InputBox from "@/components/common/inputbox";
 import ConfirmButton from "@/components/common/ConfirmButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import Email from "@mui/icons-material/Email";
-import { useNavigate } from "react-router-dom";
 import "./BackgroundStyle.css";
 
-const FPGetEmail = () => {
-  const [email, setEmail] = useState("");
+const FPGetVerificationCode = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const email = location.state?.email || ""; // Retrieve email from state
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
+  const [formData, setFormData] = useState({
+    email: "",
+    verificationCode: "",
+  });
+  const [timer, setTimer] = useState(10);
+  // timer
+  useEffect(() => {
+    // Timer logic
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [timer]);
+
+  const handleCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, verificationCode: event.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Navigate to FPGetVerificationCode with email in state
-    navigate("/verification-code", { state: { email } });
+    // Navigate to FPGetNewPassword with email
+    navigate("/set-new-password", { state: { email } });
   };
 
   return (
@@ -66,32 +81,58 @@ const FPGetEmail = () => {
                 direction: "rtl",
               }}
             >
-              :برای بازیابی رمز عبور خود، لطفا آدرس ایمیل خود را وارد کنید
+              کد تایید ارسال شده به ایمیل {email} را وارد کنید
             </p>
             <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              sx={{ margin: "10px 0px" }}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                margin: "10px 0px",
+              }}
             >
               <InputBox
                 label=""
-                type="email"
-                placeholder="example@gmail.com"
+                type="text"
+                placeholder="XXXXXX"
                 fullWidth={true}
                 direction="ltr"
-                onChange={handleInputChange}
-                value={email}
-                startAdornment={
-                  <InputAdornment position="start">
-                    <Email sx={{ marginLeft: "-2px", marginTop: "2px" }} />
-                  </InputAdornment>
-                }
+                onChange={handleCodeChange}
+                value={formData.verificationCode}
               />
             </Box>
-            <ConfirmButton name="تایید" type="submit" width={"180px"} />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
+              <ConfirmButton
+                type="submit"
+                name="تایید"
+                onClick={() => {}}
+                width={"180px"}
+              />
+
+              {timer > 0 ? (
+                <p style={{ fontSize: "0.9rem", color: "gray" }}>
+                  ارسال مجدد کد تا {timer} ثانیه دیگر
+                </p>
+              ) : (
+                <ConfirmButton
+                  type="button"
+                  name="ارسال مجدد کد"
+                  onClick={() => setTimer(10)}
+                  width={"180px"}
+                >
+                  ارسال مجدد کد
+                </ConfirmButton>
+              )}
+            </Box>
             <Link
-              href="/login"
+              href="/forgot-password"
               underline="hover"
               color="#000000"
               sx={{
@@ -101,7 +142,7 @@ const FPGetEmail = () => {
                 marginTop: "20px",
               }}
             >
-              ←بازگشت به صفحه ورود
+              بازگشت
             </Link>
           </Box>
         </form>
@@ -127,4 +168,4 @@ const FPGetEmail = () => {
   );
 };
 
-export default FPGetEmail;
+export default FPGetVerificationCode;

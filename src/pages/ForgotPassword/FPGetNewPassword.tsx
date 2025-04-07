@@ -1,25 +1,30 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
-import Link from "@mui/material/Link";
 import InputBox from "@/components/common/inputbox";
 import ConfirmButton from "@/components/common/ConfirmButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import Email from "@mui/icons-material/Email";
-import { useNavigate } from "react-router-dom";
 import "./BackgroundStyle.css";
 
-const FPGetEmail = () => {
-  const [email, setEmail] = useState("");
-  const navigate = useNavigate();
+const FPGetNewPassword = () => {
+  const [formData, setFormData] = useState({
+    newPassword: "",
+    confirmedNewPassword: "",
+  });
+
+  const location = useLocation();
+  const email = location.state?.email || ""; // Retrieve email from state
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Navigate to FPGetVerificationCode with email in state
-    navigate("/verification-code", { state: { email } });
+    console.log("New password set for:", email);
   };
 
   return (
@@ -66,43 +71,43 @@ const FPGetEmail = () => {
                 direction: "rtl",
               }}
             >
-              :برای بازیابی رمز عبور خود، لطفا آدرس ایمیل خود را وارد کنید
+              رمز عبور جدید خود را وارد کنید
             </p>
             <Box
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              sx={{ margin: "10px 0px" }}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                flexDirection: "column",
+                gap: "10px",
+                margin: "10px 0px",
+              }}
             >
               <InputBox
-                label=""
-                type="email"
-                placeholder="example@gmail.com"
+                label="رمز عبور جدید"
+                type="password"
+                placeholder="••••••••"
                 fullWidth={true}
                 direction="ltr"
                 onChange={handleInputChange}
-                value={email}
-                startAdornment={
-                  <InputAdornment position="start">
-                    <Email sx={{ marginLeft: "-2px", marginTop: "2px" }} />
-                  </InputAdornment>
-                }
+                value={formData.newPassword}
+              />
+              <InputBox
+                label="تکرار رمز عبور جدید"
+                type="password"
+                placeholder="••••••••"
+                fullWidth={true}
+                direction="ltr"
+                onChange={handleInputChange}
+                value={formData.confirmedNewPassword}
               />
             </Box>
-            <ConfirmButton name="تایید" type="submit" width={"180px"} />
-            <Link
-              href="/login"
-              underline="hover"
-              color="#000000"
-              sx={{
-                color: "gray",
-                fontSize: "0.9rem",
-                "&:hover": { color: "rgb(3, 37, 107)" },
-                marginTop: "20px",
-              }}
-            >
-              ←بازگشت به صفحه ورود
-            </Link>
+            <ConfirmButton
+              type="submit"
+              name="تغییر رمز عبور"
+              onClick={() => {}}
+              width={"180px"}
+            />
           </Box>
         </form>
       </Box>
@@ -127,4 +132,4 @@ const FPGetEmail = () => {
   );
 };
 
-export default FPGetEmail;
+export default FPGetNewPassword;
