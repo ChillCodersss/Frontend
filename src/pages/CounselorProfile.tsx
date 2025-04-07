@@ -604,7 +604,7 @@ const CounselorProfile = () => {
                       borderWidth: "2px",
                     },
                     "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#1976d2",
+                      borderColor: " #1976d2",
                       borderWidth: "2.3px",
                     },
                   },
@@ -637,6 +637,7 @@ const CounselorProfile = () => {
                   fontSize={isMobile ? "0.9rem" : "1rem"}
                   width={isMobile ? "100%" : "200px"}
                   height={"40px"}
+                  borderRadius = {{ xs: "0px", sm: "0px", md: "0px" }}
                 />
                 <SecondaryButton
                   name="انصراف"
@@ -646,6 +647,7 @@ const CounselorProfile = () => {
                   fontSize={isMobile ? "0.9rem" : "1rem"}
                   width={isMobile ? "100%" : "200px"}
                   height={"40px"}
+                  borderRadius = {{ xs: "0px", sm: "0px", md: "0px" }}
                 />
               </>
             ) : (
@@ -655,6 +657,7 @@ const CounselorProfile = () => {
                 fontSize={isMobile ? "0.9rem" : "1rem"}
                 width={isMobile ? "100%" : "200px"}
                 height={"40px"}
+                borderRadius = {{ xs: "0px", sm: "0px", md: "0px" }}
                 onClick={handleEdit}
               />
             )}

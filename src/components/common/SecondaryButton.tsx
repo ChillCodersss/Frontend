@@ -8,7 +8,7 @@ interface SecondaryButtonProps extends ButtonProps {
   height?: string | number;
   backgroundColor: string;
   fontSize?: string;
-
+  borderRadius?: string | number | { xs: string; sm: string; md: string }; 
 }
 
 function SecondaryButton({
@@ -17,6 +17,7 @@ function SecondaryButton({
   fontSize = "20px",
   width = "240px",
   height = "40px",
+  borderRadius = 0, 
   ...props
 }: SecondaryButtonProps) {
   return (
@@ -26,21 +27,19 @@ function SecondaryButton({
         sx={{
           width,
           height,
-          backgroundColor, 
+          backgroundColor,
           fontSize,
+          borderRadius, // Apply the borderRadius prop
           appearance: "none",
           backfaceVisibility: "hidden",
-          borderRadius: "3px",
           borderStyle: "none",
           boxShadow: "rgba(39, 174, 96, 0.15) 0 4px 9px",
           boxSizing: "border-box",
           color: "#fff",
           cursor: "pointer",
           display: "flex",
-          alignItems: "center",        // vertically center the text
-          justifyContent: "center",    // horizontally center the text
-          fontFamily:
-            'Inter, -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif',
+          alignItems: "center",
+          justifyContent: "center",
           fontWeight: 600,
           letterSpacing: "normal",
           lineHeight: 1.5,
@@ -50,7 +49,6 @@ function SecondaryButton({
           position: "relative",
           textAlign: "center",
           textDecoration: "none",
-          transition: "all .3s",
           userSelect: "none",
           touchAction: "manipulation",
           verticalAlign: "top",
@@ -58,7 +56,6 @@ function SecondaryButton({
           transform: "translate3d(0, 0, 0)",
 
           "&:hover": {
-
             opacity: 1,
             transform: "translateY(0)",
           },

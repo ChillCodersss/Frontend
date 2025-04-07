@@ -12,8 +12,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import './Login.css';
 import "@/index.css";
+import { useNavigate } from "react-router";
 
 const Login: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,6 +23,7 @@ const Login: React.FC = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showImage, setShowImage] = useState(window.innerWidth >= 600);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -38,59 +41,68 @@ const Login: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation
-    if (!formData.email || !formData.password) {
-      toast.error("لطفا ایمیل و رمز عبور را وارد کنید", {
+    setIsSubmitting(true);
+  
+    try {
+      const response = await fetch("http://localhost:8080/api/Auth/Login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok || data.IsFailure) {
+        // نمایش ارورهای ولیدیشن (اگر وجود داشته باشن)
+        if (Array.isArray(data.errors)) {
+          data.errors.forEach((err: { message: string }) => {
+            toast.error(err.message, {
+              position: "bottom-right",
+              autoClose: 5000,
+              rtl: true,
+            });
+          });
+        }
+  
+        // اگر errors نبود، ولی فیلد Error وجود داشت
+        else if (data.message) {
+          const messageFromServer = data.message.split("|")[0]; // فقط پیام اول
+          toast.error(messageFromServer, {
+            position: "bottom-right",
+            autoClose: 5000,
+            rtl: true,
+          });
+        }
+  
+        setIsSubmitting(false);
+        return;
+      }
+  
+      // موفقیت
+      toast.success(data?.message || "با موفقیت وارد شدید", {
         position: "bottom-right",
         autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
         rtl: true,
       });
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error("لطفا یک ایمیل معتبر وارد کنید", {
+  
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
+  
+      setFormData({ email: "", password: "" });
+    } catch (error) {
+      toast.error("خطا در ارتباط با سرور", {
         position: "bottom-right",
+        autoClose: 5000,
         rtl: true,
       });
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Simulate login API call
-    toast.promise(
-      new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (formData.password.length < 8) {
-            reject("رمز عبور باید حداقل 8 کاراکتر باشد");
-          } else if (formData.email === "test@example.com" && formData.password === "password") {
-            resolve("success");
-          } else {
-            reject("ایمیل یا رمز عبور اشتباه است");
-          }
-        }, 1500);
-      }),
-      {
-        pending: 'در حال بررسی اطلاعات...',
-        success: {
-          render() {
-            return 'ورود با موفقیت انجام شد!';
-          },
-        },
-        error: {
-          render({ data }: any) {
-            return data;
-          },
-        },
-      }
-    );
   };
 
   return (
