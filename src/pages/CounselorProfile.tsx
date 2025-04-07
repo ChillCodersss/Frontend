@@ -471,7 +471,7 @@ const CounselorProfile = () => {
                           sx={{
                             "& .MuiOutlinedInput-root": {
                               backgroundColor: "white",
-                              borderRadius: "0px",
+                              borderRadius: "8px",
                               height: "35px",
                               padding: "8px 40px 8px 14px !important",
                               "& .MuiOutlinedInput-input": {
@@ -592,6 +592,7 @@ const CounselorProfile = () => {
                   color: "black",
                   textAlign: "right",
                   direction: "rtl",
+                  
                 }}
               >
                 متن معرفی
@@ -610,7 +611,7 @@ const CounselorProfile = () => {
                 sx={{
                   "& .MuiOutlinedInput-root": {
                     backgroundColor: "white",
-                    borderRadius: "0px",
+                    borderRadius: "8px",
                     transition: "border-color 0.3s ease",
                     "&:hover .MuiOutlinedInput-notchedOutline": {
                       borderColor: "rgb(204, 207, 209)",

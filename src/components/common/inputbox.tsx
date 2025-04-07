@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 
 interface InputBoxProps {
   name?: string;
-  tabIndex?: number;
   label: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -21,7 +20,6 @@ interface InputBoxProps {
 const InputBox: React.FC<InputBoxProps> = ({
   label,
   value,
-  tabIndex,
   onChange,
   type = "text",
   fullWidth = true,
@@ -30,7 +28,7 @@ const InputBox: React.FC<InputBoxProps> = ({
   direction = "ltr",
   readOnly = false,
   height = "2px",
-  borderRadius = { xs: "0px", sm: "0px", md: "0px" },
+  borderRadius = { xs: "6px", sm: "6px", md: "8px" },
   ...props
 }) => {
   return (
@@ -60,7 +58,6 @@ const InputBox: React.FC<InputBoxProps> = ({
         margin="none"
         placeholder={placeholder}
         disabled={readOnly}
-        tabIndex={tabIndex} 
         inputProps={{ readOnly }}
         InputProps={{
           startAdornment,
