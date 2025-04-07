@@ -495,13 +495,13 @@ const CounselorProfile = () => {
                                 opacity: 0.5,
                               },
                               "&:hover .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "#1976d2",
-                                borderWidth: "1px",
+                                borderColor: "rgb(204, 207, 209)",
+                                borderWidth: "2px",
                               },
                               "&.Mui-focused .MuiOutlinedInput-notchedOutline":
                                 {
                                   borderColor: "#1976d2",
-                                  borderWidth: "1px",
+                                  borderWidth: "2.3px",
                                 },
                             },
                           }}
@@ -602,12 +602,12 @@ const CounselorProfile = () => {
                     borderRadius: "0px",
                     transition: "border-color 0.3s ease",
                     "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#1976d2",
-                      borderWidth: "1px",
+                      borderColor: "rgb(204, 207, 209)",
+                      borderWidth: "2px",
                     },
                     "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                       borderColor: "#1976d2",
-                      borderWidth: "1px",
+                      borderWidth: "2.3px",
                     },
                   },
                   "& .MuiOutlinedInput-input": {
