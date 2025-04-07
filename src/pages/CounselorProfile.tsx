@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   AppBar,
@@ -16,6 +16,7 @@ import {
   Autocomplete,
   useMediaQuery,
   useTheme,
+  CircularProgress,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -28,9 +29,13 @@ const CounselorProfile = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
-  
+
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [isEditMode, setIsEditMode] = React.useState(false);
+  const [provinceOptions, setProvinceOptions] = React.useState<string[]>([]);
+  const [provinceInputValue, setProvinceInputValue] = React.useState("");
+  const [loadingProvinces, setLoadingProvinces] = React.useState(false);
+
   const [formData, setFormData] = React.useState({
     Name: "",
     phone: "",
@@ -84,6 +89,38 @@ const CounselorProfile = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  // Fetch provinces when input changes
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      if (provinceInputValue.length > 0) {
+        setLoadingProvinces(true);
+        try {
+          const response = await fetch(
+            `http://localhost:8080/api/Provinces/Dropdown?input=${encodeURIComponent(
+              provinceInputValue
+            )}`
+          );
+          const data = await response.json();
+          if (data.isSuccess) {
+            setProvinceOptions(data.value);
+          }
+        } catch (error) {
+          console.error("Error fetching provinces:", error);
+        } finally {
+          setLoadingProvinces(false);
+        }
+      } else {
+        setProvinceOptions([]);
+      }
+    };
+
+    const debounceTimer = setTimeout(() => {
+      fetchProvinces();
+    }, 300); // Debounce to avoid too many API calls
+
+    return () => clearTimeout(debounceTimer);
+  }, [provinceInputValue]);
+
   return (
     <Box
       sx={{
@@ -96,7 +133,7 @@ const CounselorProfile = () => {
       {/* Header */}
       <AppBar
         position="fixed"
-        sx={{ 
+        sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
           backdropFilter: "blur(10px)",
           color: "black",
@@ -426,23 +463,36 @@ const CounselorProfile = () => {
                           province: newValue || "",
                         }));
                       }}
-                      options={["اصفهان", "تهران", "مشهد", "شیراز"]}
+                      inputValue={provinceInputValue}
+                      onInputChange={(event, newInputValue) => {
+                        setProvinceInputValue(newInputValue);
+                      }}
+                      options={provinceOptions}
+                      loading={loadingProvinces}
                       freeSolo
                       renderInput={(params) => (
                         <TextField
                           {...params}
                           fullWidth
                           variant="outlined"
+                          placeholder="جستجوی استان..."
                           sx={{
                             "& .MuiOutlinedInput-root": {
                               backgroundColor: "white",
                               borderRadius: "0px",
                               height: "35px",
-                              padding: "8px 40px 8px 14px !important", 
+                              padding: "8px 40px 8px 14px !important",
                               "& .MuiOutlinedInput-input": {
                                 textAlign: "right",
                                 direction: "rtl",
                                 height: "19px",
+                                "&::placeholder": {
+                                  opacity: 0,
+                                  transition: "opacity 0.2s ease-in-out",
+                                },
+                              },
+                              "&:hover .MuiOutlinedInput-input::placeholder": {
+                                opacity: 0.5,
                               },
                               "&:hover .MuiOutlinedInput-notchedOutline": {
                                 borderColor: "#1976d2",
