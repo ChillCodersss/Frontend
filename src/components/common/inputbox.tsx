@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 
 interface InputBoxProps {
   name?: string;
+  tabIndex?: number;
   label: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -11,7 +12,7 @@ interface InputBoxProps {
   fullWidth?: boolean;
   placeholder?: string;
   readOnly?: boolean;
-  startAdornment?: React.ReactNode; // جدید
+  startAdornment?: React.ReactNode;
   direction?: "ltr" | "rtl";
   height?: string | number;
   borderRadius?: string | number | { xs: string; sm: string; md: string };
@@ -20,6 +21,7 @@ interface InputBoxProps {
 const InputBox: React.FC<InputBoxProps> = ({
   label,
   value,
+  tabIndex,
   onChange,
   type = "text",
   fullWidth = true,
@@ -42,7 +44,6 @@ const InputBox: React.FC<InputBoxProps> = ({
           marginBottom: "7px",
           marginRight: "5px",
           color: "black",
-          //paddingLeft: "4px",
           textAlign: "right",
           direction: "rtl",
         }}
@@ -59,6 +60,7 @@ const InputBox: React.FC<InputBoxProps> = ({
         margin="none"
         placeholder={placeholder}
         disabled={readOnly}
+        tabIndex={tabIndex} 
         inputProps={{ readOnly }}
         InputProps={{
           startAdornment,
@@ -69,12 +71,12 @@ const InputBox: React.FC<InputBoxProps> = ({
             borderRadius: borderRadius,
             transition: "border-color 0.3s ease",
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#1976d2",
-              borderWidth: "1px",
+              borderColor: "rgb(204, 207, 209)",
+              borderWidth: "2px",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#1976d2",
-              borderWidth: "1px",
+              borderColor: " #1976d2",
+              borderWidth: "2.3px",
             },
           },
           "& .MuiOutlinedInput-input": {

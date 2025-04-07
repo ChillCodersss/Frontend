@@ -161,6 +161,8 @@ const Login: React.FC = () => {
               <h1 style={{ textAlign: "center", color: "black" , marginTop: "-35px" }}>ورود</h1>
 
               <InputBox
+                tabIndex= {1}
+                borderRadius={{ xs: "6px", sm: "6px", md: "8px"}}
                 label="ایمیل"
                 name="email"
                 value={formData.email}
@@ -169,12 +171,15 @@ const Login: React.FC = () => {
                 placeholder="example@gmail.com"
                 startAdornment={
                   <InputAdornment position="start">
-                    <Email sx={{ marginLeft: "-2px", marginTop: "5px" }} />
+                    <Email sx={{ marginLeft: "-2px", marginTop: "2px" }} />
                   </InputAdornment>
                 }
+
               />
 
               <InputBox
+                tabIndex= {2}
+                borderRadius={{ xs: "6px", sm: "6px", md: "8px"}}
                 label="رمز عبور"
                 name="password"
                 value={formData.password}
