@@ -28,7 +28,7 @@
     width: 100%;
     box-sizing: border-box;
     position: relative;
-    margin-bottom: 8%;
+    padding-bottom: 8%;
 }
 
 .rec-bg {
@@ -42,6 +42,18 @@
     height: 100vh;
     width: 100vw;
     overflow-y: scroll;
+    z-index: -1;
+}
+
+.rec-bg-logo {
+    position: absolute;
+    background-position: center;
+    background-size: cover;
+    height: 700px;
+    width: 100vw;
+    top: 600px;
+    display: none;
+    z-index: -1;
 }
 
 @media (max-width: 50em) {
@@ -56,14 +68,23 @@
     }
 
     .rec-form {
-        padding: 0;
+        padding: 0 0 15% 0;
         justify-content: center;
+    }
+
+    .rec-bg {
+        position: absolute;
+        height: 700px;
+    }
+
+    .rec-bg-logo {
+        display: unset;
     }
 }
 
 @media (min-width: 50em) and (max-width: 80em) {
     .rec-form {
-        padding: 0;
+        padding: 0 0 8% 0;
         justify-content: center;
     }
 }
