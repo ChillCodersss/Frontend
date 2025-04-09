@@ -1,15 +1,14 @@
-import InputBox from "@/components/common/inputbox";
+// import InputBox from "@/components/common/inputbox";
 import ConfirmButton from "@/components/common/ConfirmButton";
+import FormItem from "@/components/Recruitment/FormItem";
 import React, { useState } from "react";
-import Box from "@mui/material/Box";
-import useMediaQuery from '@mui/material/useMediaQuery';
 import './Recruitment.css';
+import "react-toastify/dist/ReactToastify.css";
 import background from '../assets/recruitment_background_desktop.jpg';
 import mobile_background from '../assets/recruitment_background_mobile.jpg';
-import { TextField } from "@mui/material";
 import background_logo from '../assets/background_logo.jpg';
+import { TextField, Box, useMediaQuery, Fade } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router";
 
 
@@ -112,13 +111,13 @@ const Recruitment: React.FC = () => {
         }
     };
 
-    const mobile = useMediaQuery("(max-width: 50em)");
-    const tablet = useMediaQuery("(min-width: 50em) and (max-width: 80em)");
+    const mobile = useMediaQuery("(max-width: 550px)");
+    const tablet = useMediaQuery("(min-width: 550px) and (max-width: 80em)");
 
     const rec_header_text1 = "مشاور بشوید";
     const rec_header_text2 = "از طریق فرم زیر درخواست استخدام خود را ثبت کنید";
-    let form_width_percent = "60%";
 
+    let form_width_percent = "60%";
     if (tablet) {
         form_width_percent = "70%";
     }
@@ -126,40 +125,19 @@ const Recruitment: React.FC = () => {
         form_width_percent = "100%";
     }
 
-    // let form_box_sx = !mobile ? {
-    //     display: "grid",
-    //     gridAutoRows: '1fr',
-    //     gridAutoColumns: '1fr',
-    //     columnGap: "20px",
-    //     rowGap: "20px",
-    //     width: "100%",
-    //     backgroundColor: "#ffffff80",
-    //     borderRadius: "12px",
-    //     padding: "30px 50px",
-    //     boxSizing: "border-box"
-    // } : {
-    //     width: "100%",
-    //     padding: "0px 30px",
-    //     boxSizing: "border-box",
-    //     display: "grid",
-    //     gridAutoRows: '1fr',
-    //     gridAutoColumns: '1fr',
-    //     columnGap: "20px",
-    //     rowGap: "20px",
-    //     borderRadius: "12px",
-    // };
     let form_box_sx = {
         display: "grid",
         gridAutoRows: '1fr',
         gridAutoColumns: '1fr',
-        columnGap: "20px",
-        rowGap: "20px",
+        columnGap: "25px",
+        rowGap: "5px",
         width: "100%",
         backgroundColor: "#ffffff80",
         borderRadius: "12px",
         padding: "30px 50px",
-        boxSizing: "border-box"
-    } 
+        boxSizing: "border-box",
+        boxShadow: 5
+    };
     let form_box_sx_mobile = {
         width: "100%",
         padding: "0px 30px",
@@ -183,28 +161,153 @@ const Recruitment: React.FC = () => {
         direction: "rtl",
     };
 
+    let submit_button_box_sx = {
+        gridRow: '8', gridColumn: '2 / 4', padding: '35px 0px',
+        display: "flex", justifyContent: "center", alignItems: "center"
+    };
+    let submit_button_box_sx_mobile = {
+        gridRow: '12', display: "flex",
+        width: '100%', justifySelf: 'center',
+        padding: '0px 30px',
+        justifyContent: "center", alignItems: "center"
+    };
+
+    let form_items = {
+        item_types: [
+            "i", "i", "i", "i", "i", "i", "i", "i", "i", "t",
+        ],
+        rows: [
+            { m: '1', d: '1' },
+            { m: '2', d: '1' },
+            { m: '3', d: '2' },
+            { m: '4', d: '2' },
+            { m: '5', d: '3' },
+            { m: '6', d: '3' },
+            { m: '7', d: '4' },
+            { m: '8', d: '4' },
+            { m: '9', d: '5' },
+            { m: '10 / 12', d: '6 / 8' },
+        ],
+        columns: [
+            { m: '1', d: '3 / 5' },
+            { m: '1', d: '1 / 3' },
+            { m: '1', d: '3 / 5' },
+            { m: '1', d: '1 / 3' },
+            { m: '1', d: '3 / 5' },
+            { m: '1', d: '1 / 3' },
+            { m: '1', d: '3 / 5' },
+            { m: '1', d: '1 / 3' },
+            { m: '1', d: '2 / 4' },
+            { m: '1', d: '1 / 5' },
+        ],
+        labels: [
+            "نام",
+            "نام خانوادگی",
+            "شماره تماس (موبایل)",
+            "ایمیل",
+            "دانشگاه",
+            "رشته تحصیلی",
+            "سال ورود به دانشگاه",
+            "رتبه کشوری کنکور",
+            "استان",
+            "سابقه کار",
+        ],
+        values: [
+            formData.first_name,
+            formData.last_name,
+            formData.phone_number,
+            formData.email,
+            formData.university,
+            formData.field,
+            formData.uee_year,
+            formData.uee_rank,
+            formData.state,
+            formData.description,
+        ],
+        names: [
+            "first_name",
+            "last_name",
+            "phone_number",
+            "email",
+            "university",
+            "field",
+            "uee_year",
+            "uee_rank",
+            "state",
+            "description",
+        ],
+        type: [
+            "text",
+            "text",
+            "number",
+            "email",
+            "text",
+            "text",
+            "number",
+            "number",
+            "text",
+            "text",
+        ],
+        placeholder: [
+            "نام",
+            "نام خانوادگی",
+            "09123456789",
+            "ایمیل",
+            "دانشگاه",
+            "رشته",
+            "1404",
+            "رتبه",
+            "استان",
+            "",
+        ],
+        direction: [
+            "rtl",
+            "rtl",
+            "ltr",
+            "ltr",
+            "rtl",
+            "rtl",
+            "ltr",
+            "ltr",
+            "rtl",
+            "rtl",
+        ],
+        height: [
+            "10px",
+            "10px",
+            "10px",
+            "10px",
+            "10px",
+            "10px",
+            "10px",
+            "10px",
+            "10px",
+            "10px",
+        ]
+    };
+
     return (
         <>
-        <div
-            className="rec-bg"
-            style={{ backgroundImage: `url(${ mobile ? mobile_background : background })` }}
-        >
-        </div>
-        <div
-            className="rec-bg-logo"
-            style={{ backgroundImage: `url(${ background_logo })` }}
-        />
-        <ToastContainer
-            position="bottom-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={true}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-        />
+            <div
+                className="rec-bg"
+                style={{ backgroundImage: `url(${ mobile ? mobile_background : background })` }}
+            >
+            </div>
+            <div
+                className="rec-bg-logo"
+                style={{ backgroundImage: `url(${ background_logo })` }}
+            />
+            <ToastContainer
+                position="bottom-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={true}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
             {/* محتوای اصلی */}
             <div className="rec-header">
                 <h1 className="rec-header-text1">{ rec_header_text1 }</h1>
@@ -212,9 +315,29 @@ const Recruitment: React.FC = () => {
             </div>
             <div className="rec-form">
                 <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: form_width_percent}}>
+                <Fade timeout={500} in={true}>
                     <Box sx={ mobile ? form_box_sx_mobile : form_box_sx }>
+                        {form_items.item_types.map(
+                            (item, index) => <FormItem
+                                isMobile={mobile} 
+                                gridRow={form_items.rows[index]} 
+                                gridColumn={form_items.columns[index]}
+                                itemType={item}
+                                key={index}
+                            >
+                                {form_items.labels[index]}
+                                {form_items.values[index]}
+                                {form_items.names[index]}
+                                {form_items.type[index]}
+                                {form_items.placeholder[index]}
+                                {form_items.direction[index]}
+                                {form_items.height[index]}
+                                {handleInputChange}
+                            </FormItem>
+                        )}
+
                         {/* First Name Field */}
-                        <Box sx={mobile ? { gridRow: '1' } : { gridRow: '1', gridColumn: '3 / 5' }}>
+                        {/* <Box sx={mobile ? { gridRow: '1' } : { gridRow: '1', gridColumn: '3 / 5' }}>
                             <InputBox
                                 label="نام"
                                 name="first_name"
@@ -225,10 +348,10 @@ const Recruitment: React.FC = () => {
                                 direction="rtl"
                                 height={"10px"}
                             />
-                        </Box>
+                        </Box> */}
 
                         {/* Last Name Field */}
-                        <Box sx={mobile ? { gridRow: '2' } : { gridRow: '1', gridColumn: '1 / 3' }}>
+                        {/* <Box sx={mobile ? { gridRow: '2' } : { gridRow: '1', gridColumn: '1 / 3' }}>
                             <InputBox
                                 label="نام خانوادگی"
                                 name="last_name"
@@ -239,23 +362,23 @@ const Recruitment: React.FC = () => {
                                 direction="rtl"
                                 height={"10px"}
                             />
-                        </Box>
+                        </Box> */}
 
                         {/* Phone Number Field */}
-                        <Box sx={mobile ? { gridRow: '3' } : { gridRow: '2', gridColumn: '3 / 5' }}>
+                        {/* <Box sx={mobile ? { gridRow: '3' } : { gridRow: '2', gridColumn: '3 / 5' }}>
                             <InputBox
                                 label="شماره تماس (موبایل)"
                                 name="phone_number"
                                 value={formData.phone_number}
                                 onChange={handleInputChange}
-                                type="number"
+                                type="tel"
                                 placeholder="09123456789"
                                 height={"10px"}
                             />
-                        </Box>
+                        </Box> */}
 
                         {/* Email Field */}
-                        <Box sx={mobile ? { gridRow: '4' } : { gridRow: '2', gridColumn: '1 / 3' }}>
+                        {/* <Box sx={mobile ? { gridRow: '4' } : { gridRow: '2', gridColumn: '1 / 3' }}>
                             <InputBox
                                 label="ایمیل"
                                 name="email"
@@ -265,24 +388,10 @@ const Recruitment: React.FC = () => {
                                 placeholder="example@mail.com"
                                 height={"10px"}
                             />
-                        </Box>
-
-                        {/* State Dropdown */}
-                        <Box sx={mobile ? { gridRow: '5' } : { gridRow: '3', gridColumn: '2 / 4' }}>
-                            <InputBox
-                                label="استان"
-                                name="state"
-                                value={formData.state}
-                                onChange={handleInputChange}
-                                type="text"
-                                placeholder="استان"
-                                direction="rtl"
-                                height={"10px"}
-                            />
-                        </Box>
+                        </Box> */}
 
                         {/* University Field */}
-                        <Box sx={mobile ? { gridRow: '6' } : { gridRow: '4', gridColumn: '3 / 5' }}>
+                        {/* <Box sx={mobile ? { gridRow: '5' } : { gridRow: '3', gridColumn: '3 / 5' }}>
                             <InputBox
                                 label="دانشگاه"
                                 name="university"
@@ -293,10 +402,10 @@ const Recruitment: React.FC = () => {
                                 direction="rtl"
                                 height={"10px"}
                             />
-                        </Box>
+                        </Box> */}
 
                         {/* Field Field */}
-                        <Box sx={mobile ? { gridRow: '7' } : { gridRow: '4', gridColumn: '1 / 3' }}>
+                        {/* <Box sx={mobile ? { gridRow: '6' } : { gridRow: '3', gridColumn: '1 / 3' }}>
                             <InputBox
                                 label="رشته تحصیلی"
                                 name="field"
@@ -307,10 +416,10 @@ const Recruitment: React.FC = () => {
                                 direction="rtl"
                                 height={"10px"}
                             />
-                        </Box>
+                        </Box> */}
 
                         {/* UEE Year Field */}
-                        <Box sx={mobile ? { gridRow: '8' } : { gridRow: '5', gridColumn: '3 / 5' }}>
+                        {/* <Box sx={mobile ? { gridRow: '7' } : { gridRow: '4', gridColumn: '3 / 5' }}>
                             <InputBox
                                 label="سال ورود به دانشگاه"
                                 name="uee_year"
@@ -320,10 +429,10 @@ const Recruitment: React.FC = () => {
                                 placeholder="1404"
                                 height={"10px"}
                             />
-                        </Box>
+                        </Box> */}
 
                         {/* UEE Rank Field */}
-                        <Box sx={mobile ? { gridRow: '9' } : { gridRow: '5', gridColumn: '1 / 3' }}>
+                        {/* <Box sx={mobile ? { gridRow: '8' } : { gridRow: '4', gridColumn: '1 / 3' }}>
                             <InputBox
                                 label="رتبه کشوری کنکور"
                                 name="uee_rank"
@@ -333,20 +442,24 @@ const Recruitment: React.FC = () => {
                                 placeholder="رتبه"
                                 height={"10px"}
                             />
-                        </Box>
+                        </Box> */}
+
+                        {/* State Dropdown */}
+                        {/* <Box sx={mobile ? { gridRow: '9' } : { gridRow: '5', gridColumn: '2 / 4' }}>
+                            <InputBox
+                                label="استان"
+                                name="state"
+                                value={formData.state}
+                                onChange={handleInputChange}
+                                type="text"
+                                placeholder="استان"
+                                direction="rtl"
+                                height={"10px"}
+                            />
+                        </Box> */}
 
                         {/* Description Field */}
                         <Box sx={mobile ? { gridRow: '10 / 12' } : { gridRow: '6 / 8', gridColumn: '1 / 5' } }>
-                            {/* <InputBox
-                                label="سابقه کار"
-                                name="description"
-                                value={formData.description}
-                                onChange={handleInputChange}
-                                type="text"
-                                placeholder="توضیحات"
-                                direction="rtl"
-                                height={"100px"}
-                            /> */}
                             <Box component="label" sx={ description_label_sx }>
                                 سابقه کار
                             </Box>
@@ -362,7 +475,7 @@ const Recruitment: React.FC = () => {
                                 sx={{
                                 "& .MuiOutlinedInput-root": {
                                     backgroundColor: "white",
-                                    borderRadius: "0px",
+                                    borderRadius: { xs: "6px", sm: "8px", md: "8px" },
                                     transition: "border-color 0.3s ease",
                                     "&:hover .MuiOutlinedInput-notchedOutline": {
                                     borderColor: "rgb(204, 207, 209)",
@@ -383,22 +496,15 @@ const Recruitment: React.FC = () => {
 
                         {/* Submit Button */}
                         <Box
-                            sx={mobile ?
-                                {
-                                    gridRow: '12', display: "flex",
-                                    justifyContent: "center", alignItems: "center"
-                                } : {
-                                gridRow: '8', gridColumn: '2 / 4',
-                                display: "flex", justifyContent: "center", alignItems: "center"
-                            }}
+                            sx={mobile ? submit_button_box_sx_mobile : submit_button_box_sx}
                         >
-                            <ConfirmButton name="ارسال فرم" type="submit" />
+                            <ConfirmButton name="ارسال فرم" type="submit"/>
                         </Box>
                     </Box>
+                    </Fade>
                 </form>
             </div>
         </>
-        //</div>
     );
 };
 
