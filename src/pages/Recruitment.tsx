@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import background from '../assets/recruitment_background_desktop.jpg';
 import mobile_background from '../assets/recruitment_background_mobile.jpg';
 import background_logo from '../assets/background_logo.jpg';
-import { TextField, Box, useMediaQuery, Fade } from "@mui/material";
+import { TextField, Box, useMediaQuery, Fade, Grow, Zoom } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router";
 
@@ -30,6 +30,7 @@ const Recruitment: React.FC = () => {
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
+        console.log(name, value)
         setFormData((prevData) => ({
         ...prevData,
         [name]: value,
@@ -117,6 +118,12 @@ const Recruitment: React.FC = () => {
     const rec_header_text1 = "مشاور بشوید";
     const rec_header_text2 = "از طریق فرم زیر درخواست استخدام خود را ثبت کنید";
 
+    const form_transition_probs = {
+        timeout: 600,     // timeout in millisecond
+        in: true,
+        style: {transformOrigin: mobile ? "top" : "center"}
+    };
+
     let form_width_percent = "60%";
     if (tablet) {
         form_width_percent = "70%";
@@ -140,7 +147,7 @@ const Recruitment: React.FC = () => {
     };
     let form_box_sx_mobile = {
         width: "100%",
-        padding: "0px 30px",
+        padding: "0px 9%",
         boxSizing: "border-box",
         display: "grid",
         gridAutoRows: '1fr',
@@ -236,7 +243,7 @@ const Recruitment: React.FC = () => {
             "state",
             "description",
         ],
-        type: [
+        types: [
             "text",
             "text",
             "number",
@@ -248,7 +255,7 @@ const Recruitment: React.FC = () => {
             "text",
             "text",
         ],
-        placeholder: [
+        placeholders: [
             "نام",
             "نام خانوادگی",
             "09123456789",
@@ -260,7 +267,7 @@ const Recruitment: React.FC = () => {
             "استان",
             "",
         ],
-        direction: [
+        directions: [
             "rtl",
             "rtl",
             "ltr",
@@ -272,7 +279,7 @@ const Recruitment: React.FC = () => {
             "rtl",
             "rtl",
         ],
-        height: [
+        heights: [
             "10px",
             "10px",
             "10px",
@@ -315,11 +322,12 @@ const Recruitment: React.FC = () => {
             </div>
             <div className="rec-form">
                 <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: form_width_percent}}>
-                <Fade timeout={500} in={true}>
+                <Zoom {...form_transition_probs}>
                     <Box sx={ mobile ? form_box_sx_mobile : form_box_sx }>
                         {form_items.item_types.map(
-                            (item, index) => <FormItem
-                                isMobile={mobile} 
+                            (item, index) =>
+                            <FormItem
+                                isMobile={mobile}
                                 gridRow={form_items.rows[index]} 
                                 gridColumn={form_items.columns[index]}
                                 itemType={item}
@@ -328,10 +336,10 @@ const Recruitment: React.FC = () => {
                                 {form_items.labels[index]}
                                 {form_items.values[index]}
                                 {form_items.names[index]}
-                                {form_items.type[index]}
-                                {form_items.placeholder[index]}
-                                {form_items.direction[index]}
-                                {form_items.height[index]}
+                                {form_items.types[index]}
+                                {form_items.placeholders[index]}
+                                {form_items.directions[index]}
+                                {form_items.heights[index]}
                                 {handleInputChange}
                             </FormItem>
                         )}
@@ -459,7 +467,7 @@ const Recruitment: React.FC = () => {
                         </Box> */}
 
                         {/* Description Field */}
-                        <Box sx={mobile ? { gridRow: '10 / 12' } : { gridRow: '6 / 8', gridColumn: '1 / 5' } }>
+                        {/* <Box sx={mobile ? { gridRow: '10 / 12' } : { gridRow: '6 / 8', gridColumn: '1 / 5' } }>
                             <Box component="label" sx={ description_label_sx }>
                                 سابقه کار
                             </Box>
@@ -492,7 +500,7 @@ const Recruitment: React.FC = () => {
                                 },
                                 }}
                             />
-                        </Box>
+                        </Box> */}
 
                         {/* Submit Button */}
                         <Box
@@ -501,7 +509,7 @@ const Recruitment: React.FC = () => {
                             <ConfirmButton name="ارسال فرم" type="submit"/>
                         </Box>
                     </Box>
-                    </Fade>
+                    </Zoom>
                 </form>
             </div>
         </>
