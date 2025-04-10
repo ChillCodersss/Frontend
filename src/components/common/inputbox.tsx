@@ -30,7 +30,7 @@ const InputBox: React.FC<InputBoxProps> = ({
   direction = "ltr",
   readOnly = false,
   height = "2px",
-  borderRadius = { xs: "0px", sm: "0px", md: "0px" },
+  borderRadius = { xs: "6px", sm: "8px", md: "8px" },
   ...props
 }) => {
   return (
