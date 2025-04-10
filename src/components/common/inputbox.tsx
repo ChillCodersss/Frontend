@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 
@@ -11,13 +11,11 @@ interface InputBoxProps {
   fullWidth?: boolean;
   placeholder?: string;
   readOnly?: boolean;
-  startAdornment?: React.ReactNode; // جدید
-
+  startAdornment?: React.ReactNode;
   direction?: "ltr" | "rtl";
   height?: string | number;
   borderRadius?: string | number | { xs: string; sm: string; md: string };
 }
-
 
 const InputBox: React.FC<InputBoxProps> = ({
   label,
@@ -30,26 +28,22 @@ const InputBox: React.FC<InputBoxProps> = ({
   direction = "ltr",
   readOnly = false,
   height = "2px",
-  borderRadius = { xs: "6px", sm: "8px", md: "8px" },
+  borderRadius = { xs: "6px", sm: "6px", md: "8px" },
   ...props
 }) => {
   return (
     <Box sx={{ maxWidth: { xs: "100%" } }}>
-      <Box sx={{ maxWidth: { xs: "100%" } }}>
       <Box
         component="label"
         sx={{
           display: "block",
           fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
           fontWeight: "500",
-
           marginBottom: "7px",
           marginRight: "5px",
           color: "black",
-          //paddingLeft: "4px",
           textAlign: "right",
           direction: "rtl",
-
         }}
       >
         {label}
@@ -63,6 +57,8 @@ const InputBox: React.FC<InputBoxProps> = ({
         variant="outlined"
         margin="none"
         placeholder={placeholder}
+        disabled={readOnly}
+        inputProps={{ readOnly }}
         InputProps={{
           startAdornment,
         }}
@@ -72,12 +68,12 @@ const InputBox: React.FC<InputBoxProps> = ({
             borderRadius: borderRadius,
             transition: "border-color 0.3s ease",
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#1976d2",
-              borderWidth: "1px",
+              borderColor: "rgb(204, 207, 209)",
+              borderWidth: "2px",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#1976d2",
-              borderWidth: "1px",
+              borderColor: " #1976d2",
+              borderWidth: "2.3px",
             },
           },
           "& .MuiOutlinedInput-input": {
@@ -94,7 +90,6 @@ const InputBox: React.FC<InputBoxProps> = ({
         }}
         {...props}
       />
-    </Box>
     </Box>
   );
 };
