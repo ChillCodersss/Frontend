@@ -30,7 +30,6 @@ const Recruitment: React.FC = () => {
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        console.log(name, value)
         setFormData((prevData) => ({
         ...prevData,
         [name]: value,
@@ -155,6 +154,7 @@ const Recruitment: React.FC = () => {
         columnGap: "20px",
         rowGap: "20px",
         borderRadius: "12px",
+        overflowX: "hidden"
     };
 
     let description_label_sx = {
@@ -344,6 +344,13 @@ const Recruitment: React.FC = () => {
                             </FormItem>
                         )}
 
+                        {/* Submit Button */}
+                        <Box
+                            sx={mobile ? submit_button_box_sx_mobile : submit_button_box_sx}
+                        >
+                            <ConfirmButton name="ارسال فرم" type="submit"/>
+                        </Box>
+
                         {/* First Name Field */}
                         {/* <Box sx={mobile ? { gridRow: '1' } : { gridRow: '1', gridColumn: '3 / 5' }}>
                             <InputBox
@@ -353,114 +360,6 @@ const Recruitment: React.FC = () => {
                                 onChange={handleInputChange}
                                 type="text"
                                 placeholder="نام"
-                                direction="rtl"
-                                height={"10px"}
-                            />
-                        </Box> */}
-
-                        {/* Last Name Field */}
-                        {/* <Box sx={mobile ? { gridRow: '2' } : { gridRow: '1', gridColumn: '1 / 3' }}>
-                            <InputBox
-                                label="نام خانوادگی"
-                                name="last_name"
-                                value={formData.last_name}
-                                onChange={handleInputChange}
-                                type="text"
-                                placeholder="نام خانوادگی"
-                                direction="rtl"
-                                height={"10px"}
-                            />
-                        </Box> */}
-
-                        {/* Phone Number Field */}
-                        {/* <Box sx={mobile ? { gridRow: '3' } : { gridRow: '2', gridColumn: '3 / 5' }}>
-                            <InputBox
-                                label="شماره تماس (موبایل)"
-                                name="phone_number"
-                                value={formData.phone_number}
-                                onChange={handleInputChange}
-                                type="tel"
-                                placeholder="09123456789"
-                                height={"10px"}
-                            />
-                        </Box> */}
-
-                        {/* Email Field */}
-                        {/* <Box sx={mobile ? { gridRow: '4' } : { gridRow: '2', gridColumn: '1 / 3' }}>
-                            <InputBox
-                                label="ایمیل"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                type="email"
-                                placeholder="example@mail.com"
-                                height={"10px"}
-                            />
-                        </Box> */}
-
-                        {/* University Field */}
-                        {/* <Box sx={mobile ? { gridRow: '5' } : { gridRow: '3', gridColumn: '3 / 5' }}>
-                            <InputBox
-                                label="دانشگاه"
-                                name="university"
-                                value={formData.university}
-                                onChange={handleInputChange}
-                                type="text"
-                                placeholder="دانشگاه"
-                                direction="rtl"
-                                height={"10px"}
-                            />
-                        </Box> */}
-
-                        {/* Field Field */}
-                        {/* <Box sx={mobile ? { gridRow: '6' } : { gridRow: '3', gridColumn: '1 / 3' }}>
-                            <InputBox
-                                label="رشته تحصیلی"
-                                name="field"
-                                value={formData.field}
-                                onChange={handleInputChange}
-                                type="text"
-                                placeholder="رشته"
-                                direction="rtl"
-                                height={"10px"}
-                            />
-                        </Box> */}
-
-                        {/* UEE Year Field */}
-                        {/* <Box sx={mobile ? { gridRow: '7' } : { gridRow: '4', gridColumn: '3 / 5' }}>
-                            <InputBox
-                                label="سال ورود به دانشگاه"
-                                name="uee_year"
-                                value={formData.uee_year}
-                                onChange={handleInputChange}
-                                type="number"
-                                placeholder="1404"
-                                height={"10px"}
-                            />
-                        </Box> */}
-
-                        {/* UEE Rank Field */}
-                        {/* <Box sx={mobile ? { gridRow: '8' } : { gridRow: '4', gridColumn: '1 / 3' }}>
-                            <InputBox
-                                label="رتبه کشوری کنکور"
-                                name="uee_rank"
-                                value={formData.uee_rank}
-                                onChange={handleInputChange}
-                                type="number"
-                                placeholder="رتبه"
-                                height={"10px"}
-                            />
-                        </Box> */}
-
-                        {/* State Dropdown */}
-                        {/* <Box sx={mobile ? { gridRow: '9' } : { gridRow: '5', gridColumn: '2 / 4' }}>
-                            <InputBox
-                                label="استان"
-                                name="state"
-                                value={formData.state}
-                                onChange={handleInputChange}
-                                type="text"
-                                placeholder="استان"
                                 direction="rtl"
                                 height={"10px"}
                             />
@@ -501,15 +400,8 @@ const Recruitment: React.FC = () => {
                                 }}
                             />
                         </Box> */}
-
-                        {/* Submit Button */}
-                        <Box
-                            sx={mobile ? submit_button_box_sx_mobile : submit_button_box_sx}
-                        >
-                            <ConfirmButton name="ارسال فرم" type="submit"/>
-                        </Box>
                     </Box>
-                    </Zoom>
+                </Zoom>
                 </form>
             </div>
         </>
