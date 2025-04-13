@@ -19,6 +19,7 @@ const Recruitment: React.FC = () => {
         PhoneNumber: "",
         Email: "",
         Province: "",
+        SchoolMajor: "",
         UniName: "",
         Major: "",
         EntranceYear: "",
@@ -32,6 +33,7 @@ const Recruitment: React.FC = () => {
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
+        console.log(name, value);
         setFormData((prevData) => ({
         ...prevData,
         [name]: value,
@@ -111,6 +113,7 @@ const Recruitment: React.FC = () => {
                 PhoneNumber: "",
                 Email: "",
                 Province: "",
+                SchoolMajor: "",
                 UniName: "",
                 Major: "",
                 EntranceYear: "",
@@ -198,119 +201,74 @@ const Recruitment: React.FC = () => {
         justifyContent: "center", alignItems: "center"
     };
 
-    const form_items = {
-        item_types: [
-            "i", "i", "i", "i", "i", "i", "i", "i", "i", "t",
-        ],
-        rows: [
-            { m: '1', d: '1' },
-            { m: '2', d: '1' },
-            { m: '3', d: '2' },
-            { m: '4', d: '2' },
-            { m: '5', d: '3' },
-            { m: '6', d: '3' },
-            { m: '7', d: '4' },
-            { m: '8', d: '4' },
-            { m: '9', d: '5' },
-            { m: '10 / 12', d: '6 / 8' },
-        ],
-        columns: [
-            { m: '1', d: '3 / 5' },
-            { m: '1', d: '1 / 3' },
-            { m: '1', d: '3 / 5' },
-            { m: '1', d: '1 / 3' },
-            { m: '1', d: '3 / 5' },
-            { m: '1', d: '1 / 3' },
-            { m: '1', d: '3 / 5' },
-            { m: '1', d: '1 / 3' },
-            { m: '1', d: '2 / 4' },
-            { m: '1', d: '1 / 5' },
-        ],
-        labels: [
-            "نام",
-            "نام خانوادگی",
-            "شماره تماس (موبایل)",
-            "ایمیل",
-            "دانشگاه",
-            "رشته تحصیلی",
-            "سال ورود به دانشگاه",
-            "رتبه کشوری کنکور",
-            "استان",
-            "سابقه کار",
-        ],
-        values: [
-            formData.FirstName,
-            formData.LastName,
-            formData.PhoneNumber,
-            formData.Email,
-            formData.UniName,
-            formData.Major,
-            formData.EntranceYear,
-            formData.CountryRanking,
-            formData.Province,
-            formData.Employmenthistory,
-        ],
-        names: [
-            "FirstName",
-            "LastName",
-            "PhoneNumber",
-            "Email",
-            "UniName",
-            "Major",
-            "EntranceYear",
-            "CountryRanking",
-            "Province",
-            "Employmenthistory",
-        ],
-        types: [
-            "text",
-            "text",
-            "number",
-            "email",
-            "text",
-            "text",
-            "number",
-            "number",
-            "text",
-            "text",
-        ],
-        placeholders: [
-            "نام",
-            "نام خانوادگی",
-            "09123456789",
-            "example@mail.com",
-            "دانشگاه",
-            "رشته",
-            "1404",
-            "رتبه",
-            "استان",
-            "",
-        ],
-        directions: [
-            "rtl",
-            "rtl",
-            "ltr",
-            "ltr",
-            "rtl",
-            "rtl",
-            "ltr",
-            "ltr",
-            "rtl",
-            "rtl",
-        ],
-        heights: [
-            "10px",
-            "10px",
-            "10px",
-            "10px",
-            "10px",
-            "10px",
-            "10px",
-            "10px",
-            "10px",
-            "10px",
-        ]
-    };
+    const form_items = [
+        {
+            item_type: "i",
+            row: { m: '1', d: '1' }, column: { m: '1', d: '3 / 5' },
+            label: "نام", value: formData.FirstName, name: "FirstName",
+            type: "text", placeholder: "نام", direction: "rtl", height: "10px",
+        },
+        {
+            item_type: "i",
+            row: { m: '2', d: '1' }, column: { m: '1', d: '1 / 3' },
+            label: "نام خانوادگی", value: formData.LastName, name: "LastName",
+            type: "text", placeholder: "نام خانوادگی", direction: "rtl", height: "10px",
+        },
+        {
+            item_type: "i",
+            row: { m: '3', d: '2' }, column: { m: '1', d: '3 / 5' },
+            label: "شماره تماس (موبایل)", value: formData.PhoneNumber, name: "PhoneNumber",
+            type: "number", placeholder: "09123456789", direction: "ltr", height: "10px",
+        },
+        {
+            item_type: "i",
+            row: { m: '4', d: '2' }, column: { m: '1', d: '1 / 3' },
+            label: "ایمیل", value: formData.Email, name: "Email",
+            type: "email", placeholder: "example@mail.com", direction: "ltr", height: "10px",
+        },
+        {
+            item_type: "i",
+            row: { m: '5', d: '3' }, column: { m: '1', d: '3 / 5' },
+            label: "استان", value: formData.Province, name: "Province",
+            type: "text", placeholder: "استان", direction: "rtl", height: "10px",
+        },
+        {
+            item_type: "i",
+            row: { m: '6', d: '3' }, column: { m: '1', d: '1 / 3' },
+            label: "رشته تحصیلی", value: formData.SchoolMajor, name: "SchoolMajor",
+            type: "text", placeholder: "رشته", direction: "rtl", height: "10px",
+        },
+        {
+            item_type: "i",
+            row: { m: '7', d: '4' }, column: { m: '1', d: '3 / 5' },
+            label: "دانشگاه", value: formData.UniName, name: "UniName",
+            type: "text", placeholder: "دانشگاه", direction: "rtl", height: "10px",
+        },
+        {
+            item_type: "i",
+            row: { m: '8', d: '4' }, column: { m: '1', d: '1 / 3' },
+            label: "رشته دانشگاهی", value: formData.Major, name: "Major",
+            type: "text", placeholder: "رشته", direction: "rtl", height: "10px",
+        },
+        {
+            item_type: "i",
+            row: { m: '9', d: '5' }, column: { m: '1', d: '3 / 5' },
+            label: "سال ورود به دانشگاه", value: formData.EntranceYear, name: "EntranceYear",
+            type: "number", placeholder: "1404", direction: "ltr", height: "10px",
+        },
+        {
+            item_type: "i",
+            row: { m: '10', d: '5' }, column: { m: '1', d: '1 / 3' },
+            label: "رتبه کشوری کنکور", value: formData.CountryRanking, name: "CountryRanking",
+            type: "number", placeholder: "رتبه", direction: "ltr", height: "10px",
+        },
+        {
+            item_type: "t",
+            row: { m: '11 / 13', d: '6 / 8' }, column: { m: '1', d: '1 / 5' },
+            label: "سابقه کار", value: formData.Employmenthistory, name: "Employmenthistory",
+            type: "text", placeholder: "", direction: "rtl", height: "",
+        },
+    ];
 
     return (
         <>
@@ -343,22 +301,22 @@ const Recruitment: React.FC = () => {
                 <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: form_width_percent}}>
                 <Zoom {...form_transition_probs}>
                     <Box sx={ mobile ? form_box_sx_mobile : form_box_sx }>
-                        {form_items.item_types.map(
+                        {form_items.map(
                             (item, index) =>
                             <FormItem
                                 isMobile={mobile}
-                                gridRow={form_items.rows[index]} 
-                                gridColumn={form_items.columns[index]}
-                                itemType={item}
+                                gridRow={item.row} 
+                                gridColumn={item.column}
+                                itemType={item.item_type}
                                 key={index}
                             >
-                                {form_items.labels[index]}
-                                {form_items.values[index]}
-                                {form_items.names[index]}
-                                {form_items.types[index]}
-                                {form_items.placeholders[index]}
-                                {form_items.directions[index]}
-                                {form_items.heights[index]}
+                                {item.label}
+                                {item.value}
+                                {item.name}
+                                {item.type}
+                                {item.placeholder}
+                                {item.direction}
+                                {item.height}
                                 {handleInputChange}
                             </FormItem>
                         )}
