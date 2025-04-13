@@ -2,7 +2,7 @@ import { Box, TextField } from "@mui/material";
 import InputBox from "../common/inputbox";
 
 interface Probs {
-    isMobile: Boolean;
+    isMobile: boolean;
     gridRow: { m: string; d: string };
     gridColumn: { m: string; d: string };
     itemType: string;
@@ -19,7 +19,7 @@ interface Probs {
 }
 
 function FormItem({ isMobile, gridRow, gridColumn, itemType, children }: Probs) {
-    let description_label_sx = {
+    const description_label_sx = {
         display: "block",
         fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
         fontWeight: "500",
@@ -30,7 +30,7 @@ function FormItem({ isMobile, gridRow, gridColumn, itemType, children }: Probs) 
         direction: "rtl",
     };
 
-    if (itemType === "i") {
+    if (itemType === "i") { // itemTypes -> i: input box, d: drop down, t: text field
         return (
             <Box sx={isMobile ? { gridRow: gridRow.m, gridColumn: gridColumn.m } : { gridRow: gridRow.d, gridColumn: gridColumn.d }}>
                 <InputBox
