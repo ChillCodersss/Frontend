@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 
@@ -10,13 +10,12 @@ interface InputBoxProps {
   type?: string;
   fullWidth?: boolean;
   placeholder?: string;
-
-  startAdornment?: React.ReactNode; // جدید
-
+  readOnly?: boolean;
+  startAdornment?: React.ReactNode;
   direction?: "ltr" | "rtl";
-
+  height?: string | number;
+  borderRadius?: string | number | { xs: string; sm: string; md: string };
 }
-
 
 const InputBox: React.FC<InputBoxProps> = ({
   label,
@@ -27,40 +26,27 @@ const InputBox: React.FC<InputBoxProps> = ({
   placeholder = "",
   startAdornment,
   direction = "ltr",
+  readOnly = false,
+  height = "2px",
+  borderRadius = { xs: "6px", sm: "6px", md: "8px" },
   ...props
 }) => {
-
-  const labelParts = label.split("*");
-  const mainLabel = labelParts[0];
-  const hasAsterisk = labelParts.length > 1;
-
   return (
-    <Box sx={{ maxWidth: { xs: "100%"}}}>
-
-    <Box sx={{ maxWidth: { xs: "100%"}}}>
-
+    <Box sx={{ maxWidth: { xs: "100%" } }}>
       <Box
         component="label"
         sx={{
           display: "block",
           fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
           fontWeight: "500",
-
           marginBottom: "7px",
           marginRight: "5px",
           color: "black",
-          paddingLeft: "4px",
           textAlign: "right",
           direction: "rtl",
-
         }}
       >
-        {mainLabel}
-        {hasAsterisk && (
-
-          <span style={{ color: "red", marginRight: "2px" }}>*</span>
-        )}
-
+        {label}
       </Box>
 
       <TextField
@@ -71,26 +57,27 @@ const InputBox: React.FC<InputBoxProps> = ({
         variant="outlined"
         margin="none"
         placeholder={placeholder}
+        disabled={readOnly}
+        inputProps={{ readOnly }}
         InputProps={{
-          startAdornment, // حالا این مقدار را از props می‌گیرد
+          startAdornment,
         }}
         sx={{
           "& .MuiOutlinedInput-root": {
             backgroundColor: "white",
-            borderRadius: { xs: "8px", sm: "10px", md: "12px" },
-            boxShadow: { xs: "0px 1px 2px rgba(0, 0, 0, 0.1)", sm: "0px 2px 4px rgba(0, 0, 0, 0.25)" },
-            transition: "box-shadow 0.3s ease, border-color 0.3s ease",
+            borderRadius: borderRadius,
+            transition: "border-color 0.3s ease",
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(0, 0, 0, 0.5)",
-              boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+              borderColor: "rgb(204, 207, 209)",
+              borderWidth: "2px",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(0, 0, 0, 0.23)",
-              boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.25)",
+              borderColor: " #1976d2",
+              borderWidth: "2.3px",
             },
           },
           "& .MuiOutlinedInput-input": {
-            height: "2px",
+            height: height,
             px: { xs: 1, sm: 1.5, md: 2 },
             textAlign: "right",
             direction,
@@ -103,7 +90,6 @@ const InputBox: React.FC<InputBoxProps> = ({
         }}
         {...props}
       />
-    </Box>
     </Box>
   );
 };

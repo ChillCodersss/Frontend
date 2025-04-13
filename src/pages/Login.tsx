@@ -12,7 +12,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import './Login.css';
 import "@/index.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -44,32 +44,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Validation
-    if (!formData.email || !formData.password) {
-      toast.error("لطفا ایمیل و رمز عبور را وارد کنید", {
-        position: "bottom-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        rtl: true,
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error("لطفا یک ایمیل معتبر وارد کنید", {
-        position: "bottom-right",
-        rtl: true,
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
+  
     try {
       const response = await fetch("http://localhost:8080/api/Auth/Login", {
         method: "POST",
@@ -78,63 +53,51 @@ const Login: React.FC = () => {
         },
         body: JSON.stringify(formData),
       });
-
+  
       const data = await response.json();
-
-      if (data.isFailure) {
-        if (data.errors && Array.isArray(data.errors)) {
-          data.errors.forEach((error: { code: string; message: string }) => {
-            toast.error(error.message, {
+  
+      if (!response.ok || data.IsFailure) {
+        // نمایش ارورهای ولیدیشن (اگر وجود داشته باشن)
+        if (Array.isArray(data.errors)) {
+          data.errors.forEach((err: { message: string }) => {
+            toast.error(err.message, {
               position: "bottom-right",
               autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
               rtl: true,
             });
           });
-        } else {
-          toast.error(data.error?.message || "خطایی در ورود رخ داد", {
+        }
+  
+        // اگر errors نبود، ولی فیلد Error وجود داشت
+        else if (data.message) {
+          const messageFromServer = data.message.split("|")[0]; // فقط پیام اول
+          toast.error(messageFromServer, {
             position: "bottom-right",
             autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
             rtl: true,
           });
         }
+  
         setIsSubmitting(false);
         return;
       }
-
-      toast.success("ورود با موفقیت انجام شد", {
-        position: "bottom-right",
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        rtl: true,
-      });
-
-      setTimeout(() => {
-        navigate("/dashboard"); // مسیر مورد نظر پس از ورود موفق
-      }, 2000);
-
-      setFormData({
-        email: "",
-        password: "",
-      });
-    } catch (error) {
-      console.error("Error during login:", error);
-      toast.error("خطایی در ارتباط با سرور رخ داد", {
+  
+      // موفقیت
+      toast.success(data?.message || "با موفقیت وارد شدید", {
         position: "bottom-right",
         autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+        rtl: true,
+      });
+  
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
+  
+      setFormData({ email: "", password: "" });
+    } catch (error) {
+      toast.error("خطا در ارتباط با سرور", {
+        position: "bottom-right",
+        autoClose: 5000,
         rtl: true,
       });
     } finally {
@@ -210,6 +173,7 @@ const Login: React.FC = () => {
               <h1 style={{ textAlign: "center", color: "black" , marginTop: "-35px" }}>ورود</h1>
 
               <InputBox
+                borderRadius={{ xs: "6px", sm: "6px", md: "8px"}}
                 label="ایمیل"
                 name="email"
                 value={formData.email}
@@ -218,12 +182,14 @@ const Login: React.FC = () => {
                 placeholder="example@gmail.com"
                 startAdornment={
                   <InputAdornment position="start">
-                    <Email sx={{ marginLeft: "-2px", marginTop: "5px" }} />
+                    <Email sx={{ marginLeft: "-2px", marginTop: "2px" }} />
                   </InputAdornment>
                 }
+
               />
 
               <InputBox
+                borderRadius={{ xs: "6px", sm: "6px", md: "8px"}}
                 label="رمز عبور"
                 name="password"
                 value={formData.password}
@@ -259,7 +225,7 @@ const Login: React.FC = () => {
               </Box>
 
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <ConfirmButton name={isSubmitting ? "...در حال ورود" : "ورود"} type="submit" disabled={isSubmitting} />
+                <ConfirmButton name="ورود" type="submit" />
               </Box>
 
               <Box sx={{ 
