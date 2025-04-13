@@ -7,25 +7,27 @@ import "react-toastify/dist/ReactToastify.css";
 import background from '../assets/recruitment_background_desktop.jpg';
 import mobile_background from '../assets/recruitment_background_mobile.jpg';
 import background_logo from '../assets/background_logo.jpg';
-import { TextField, Box, useMediaQuery, Fade, Grow, Zoom } from "@mui/material";
+import { Box, useMediaQuery, Zoom } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router";
 
 
 const Recruitment: React.FC = () => {
     const [formData, setFormData] = useState({
-        first_name: "",
-        last_name: "",
-        phone_number: "",
-        email: "",
-        state: "",
-        university: "",
-        field: "",
-        uee_year: "",
-        uee_rank: "",
-        description: ""
+        FirstName: "",
+        LastName: "",
+        PhoneNumber: "",
+        Email: "",
+        Province: "",
+        UniName: "",
+        Major: "",
+        EntranceYear: "",
+        CountryRanking: "",
+        Employmenthistory: "",
+        StudentCardPic: "",
+        EntranceExamYear: ""
     });
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    //const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,78 +38,95 @@ const Recruitment: React.FC = () => {
         }));
     };
 
+    // const fetchProvinces = async () => {
+    //     try {
+    //         const response = await fetch(
+    //             `http://localhost:8080/api/Provinces/Dropdown?Text=${encodeURIComponent(formData.Province)}`
+    //         );
+    //         const data = await response.json();
+    //         if (data.isSuccess) {
+    //             console.log(data.value)
+    //         }
+    //     } catch (error) {
+    //         console.error("Error fetching provinces:", error);
+    //     }
+    // };
+    // fetchProvinces();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsSubmitting(true);
-      
+        //setIsSubmitting(true);
+
+        const newFormData = new FormData();
+        newFormData.append("FirstName", formData.FirstName);
+        newFormData.append("LastName", formData.LastName);
+        newFormData.append("PhoneNumber", formData.PhoneNumber);
+        newFormData.append("Email", formData.Email);
+        newFormData.append("Province", formData.Province);
+        newFormData.append("UniName", formData.UniName);
+        newFormData.append("Major", formData.Major);
+        newFormData.append("EntranceYear", formData.EntranceYear);
+        newFormData.append("CountryRanking", formData.CountryRanking);
+        newFormData.append("Employmenthistory", formData.Employmenthistory);
+        newFormData.append("StudentCardPic", formData.StudentCardPic);
+        newFormData.append("EntranceExamYear", formData.EntranceExamYear);
+
         try {
-            const response = await fetch("http://localhost:8080/api/Auth/Login", {
+            const response = await fetch("http://localhost:8080/api/CounselorRecruitments/Recruitment", {
                 method: "POST",
-                headers: {
-                "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
+                body: newFormData,
             });
-        
+
             const data = await response.json();
-        
+
             if (!response.ok || data.IsFailure) {
-                // نمایش ارورهای ولیدیشن (اگر وجود داشته باشن)
-                if (Array.isArray(data.errors)) {
-                    data.errors.forEach((err: { message: string }) => {
-                        toast.error(err.message, {
+                // اگر errors نبود، ولی فیلد Error وجود داشت
+                if (data.message) {
+                    const messageFromServer = data.message.split("|")[0]; // فقط پیام اول
+                    toast.error(messageFromServer, {
                         position: "bottom-right",
                         autoClose: 5000,
                         rtl: true,
-                        });
                     });
                 }
-      
-            // اگر errors نبود، ولی فیلد Error وجود داشت
-            else if (data.message) {
-                const messageFromServer = data.message.split("|")[0]; // فقط پیام اول
-                toast.error(messageFromServer, {
-                    position: "bottom-right",
-                    autoClose: 5000,
-                    rtl: true,
-                });
-            }
-      
-                setIsSubmitting(false);
+
+                //setIsSubmitting(false);
                 return;
             }
-      
+
             // موفقیت
             toast.success(data?.message || "با موفقیت وارد شدید", {
                 position: "bottom-right",
                 autoClose: 5000,
                 rtl: true,
             });
-      
+
             setTimeout(() => {
                 navigate("/Landing");
             }, 2000);
-      
+
             setFormData({
-                first_name: "",
-                last_name: "",
-                phone_number: "",
-                email: "",
-                state: "",
-                university: "",
-                field: "",
-                uee_year: "",
-                uee_rank: "",
-                description: ""
+                FirstName: "",
+                LastName: "",
+                PhoneNumber: "",
+                Email: "",
+                Province: "",
+                UniName: "",
+                Major: "",
+                EntranceYear: "",
+                CountryRanking: "",
+                Employmenthistory: "",
+                StudentCardPic: "",
+                EntranceExamYear: ""
             });
-        } catch (error) {
+        } catch {
             toast.error("خطا در ارتباط با سرور", {
                 position: "bottom-right",
                 autoClose: 5000,
                 rtl: true,
             });
         } finally {
-            setIsSubmitting(false);
+            //setIsSubmitting(false);
         }
     };
 
@@ -131,7 +150,7 @@ const Recruitment: React.FC = () => {
         form_width_percent = "100%";
     }
 
-    let form_box_sx = {
+    const form_box_sx = {
         display: "grid",
         gridAutoRows: '1fr',
         gridAutoColumns: '1fr',
@@ -144,7 +163,7 @@ const Recruitment: React.FC = () => {
         boxSizing: "border-box",
         boxShadow: 5
     };
-    let form_box_sx_mobile = {
+    const form_box_sx_mobile = {
         width: "100%",
         padding: "0px 9%",
         boxSizing: "border-box",
@@ -157,29 +176,29 @@ const Recruitment: React.FC = () => {
         overflowX: "hidden"
     };
 
-    let description_label_sx = {
-        display: "block",
-        fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
-        fontWeight: "500",
-        marginBottom: "7px",
-        marginRight: "5px",
-        color: "black",
-        textAlign: "right",
-        direction: "rtl",
-    };
+    // const description_label_sx = {
+    //     display: "block",
+    //     fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+    //     fontWeight: "500",
+    //     marginBottom: "7px",
+    //     marginRight: "5px",
+    //     color: "black",
+    //     textAlign: "right",
+    //     direction: "rtl",
+    // };
 
-    let submit_button_box_sx = {
+    const submit_button_box_sx = {
         gridRow: '8', gridColumn: '2 / 4', padding: '35px 0px',
         display: "flex", justifyContent: "center", alignItems: "center"
     };
-    let submit_button_box_sx_mobile = {
+    const submit_button_box_sx_mobile = {
         gridRow: '12', display: "flex",
         width: '100%', justifySelf: 'center',
         padding: '0px 30px',
         justifyContent: "center", alignItems: "center"
     };
 
-    let form_items = {
+    const form_items = {
         item_types: [
             "i", "i", "i", "i", "i", "i", "i", "i", "i", "t",
         ],
@@ -220,28 +239,28 @@ const Recruitment: React.FC = () => {
             "سابقه کار",
         ],
         values: [
-            formData.first_name,
-            formData.last_name,
-            formData.phone_number,
-            formData.email,
-            formData.university,
-            formData.field,
-            formData.uee_year,
-            formData.uee_rank,
-            formData.state,
-            formData.description,
+            formData.FirstName,
+            formData.LastName,
+            formData.PhoneNumber,
+            formData.Email,
+            formData.UniName,
+            formData.Major,
+            formData.EntranceYear,
+            formData.CountryRanking,
+            formData.Province,
+            formData.Employmenthistory,
         ],
         names: [
-            "first_name",
-            "last_name",
-            "phone_number",
-            "email",
-            "university",
-            "field",
-            "uee_year",
-            "uee_rank",
-            "state",
-            "description",
+            "FirstName",
+            "LastName",
+            "PhoneNumber",
+            "Email",
+            "UniName",
+            "Major",
+            "EntranceYear",
+            "CountryRanking",
+            "Province",
+            "Employmenthistory",
         ],
         types: [
             "text",
@@ -259,7 +278,7 @@ const Recruitment: React.FC = () => {
             "نام",
             "نام خانوادگی",
             "09123456789",
-            "ایمیل",
+            "example@mail.com",
             "دانشگاه",
             "رشته",
             "1404",
