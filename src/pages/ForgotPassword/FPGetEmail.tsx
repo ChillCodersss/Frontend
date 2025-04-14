@@ -6,6 +6,8 @@ import ConfirmButton from "@/components/common/ConfirmButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Email from "@mui/icons-material/Email";
 import { useNavigate } from "react-router-dom";
+// import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./BackgroundStyle.css";
 
 const FPGetEmail = () => {
@@ -18,12 +20,33 @@ const FPGetEmail = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Navigate to FPGetVerificationCode with email in state
+    // if (!email) {
+    //   toast.error("لطفا ایمیل خود را وارد کنید");
+    //   return;
+    // }
     navigate("/verification-code", { state: { email } });
   };
 
   return (
     <>
+      {/* <ToastContainer
+        position="bottom-right"
+        autoClose={30000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastStyle={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "7px",
+          fontSize: "0.5rem",
+        }}
+      /> */}
       <Box
         display="flex"
         justifyContent="center"
@@ -52,7 +75,7 @@ const FPGetEmail = () => {
               backgroundColor: "#ffffff",
               boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
               borderRadius: "12px",
-              width: "450px",
+              width: "280px",
               padding: { xs: "40px", sm: "30px 60px" },
               margin: "20px",
               gap: "14px",
@@ -66,7 +89,7 @@ const FPGetEmail = () => {
                 direction: "rtl",
               }}
             >
-              :برای بازیابی رمز عبور خود، لطفا آدرس ایمیل خود را وارد کنید
+              برای بازیابی رمز عبور خود، لطفا آدرس ایمیل خود را وارد کنید:
             </p>
             <Box
               display="flex"
@@ -79,6 +102,7 @@ const FPGetEmail = () => {
                 type="email"
                 placeholder="example@gmail.com"
                 fullWidth={true}
+                width="285px"
                 direction="ltr"
                 onChange={handleInputChange}
                 value={email}

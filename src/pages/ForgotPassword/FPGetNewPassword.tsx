@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import Box from "@mui/material/Box";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import InputBox from "@/components/common/inputbox";
 import ConfirmButton from "@/components/common/ConfirmButton";
 import "./BackgroundStyle.css";
@@ -10,6 +14,8 @@ const FPGetNewPassword = () => {
     newPassword: "",
     confirmedNewPassword: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const location = useLocation();
   const email = location.state?.email || ""; // Retrieve email from state
@@ -57,7 +63,6 @@ const FPGetNewPassword = () => {
               backgroundColor: "#ffffff",
               boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
               borderRadius: "12px",
-              width: "450px",
               padding: { xs: "40px", sm: "30px 60px" },
               margin: "20px",
               gap: "14px",
@@ -85,21 +90,47 @@ const FPGetNewPassword = () => {
             >
               <InputBox
                 label="رمز عبور جدید"
-                type="password"
+                name="newPassword"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 fullWidth={true}
+                width="280px"
                 direction="ltr"
                 onChange={handleInputChange}
                 value={formData.newPassword}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <IconButton
+                      sx={{ marginLeft: "-10px" }}
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
               <InputBox
-                label="تکرار رمز عبور جدید"
-                type="password"
+                label="تایید رمز عبور جدید"
+                name="confirmedNewPassword"
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="••••••••"
                 fullWidth={true}
+                width="280px"
                 direction="ltr"
                 onChange={handleInputChange}
                 value={formData.confirmedNewPassword}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <IconButton
+                      sx={{ marginLeft: "-10px" }}
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
               />
             </Box>
             <ConfirmButton

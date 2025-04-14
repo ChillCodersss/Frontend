@@ -15,6 +15,7 @@ interface InputBoxProps {
   direction?: "ltr" | "rtl";
   height?: string | number;
   borderRadius?: string | number | { xs: string; sm: string; md: string };
+  width?: string | number; // Added width prop
 }
 
 const InputBox: React.FC<InputBoxProps> = ({
@@ -29,10 +30,11 @@ const InputBox: React.FC<InputBoxProps> = ({
   readOnly = false,
   height = "2px",
   borderRadius = { xs: "6px", sm: "6px", md: "8px" },
+  width = "100%", // Default width value
   ...props
 }) => {
   return (
-    <Box sx={{ maxWidth: { xs: "100%" } }}>
+    <Box sx={{ maxWidth: { xs: "100%" }, width }}>
       <Box
         component="label"
         sx={{
@@ -87,6 +89,7 @@ const InputBox: React.FC<InputBoxProps> = ({
             textAlign: "right",
             direction: "rtl",
           },
+          width, // Apply the width prop here
         }}
         {...props}
       />

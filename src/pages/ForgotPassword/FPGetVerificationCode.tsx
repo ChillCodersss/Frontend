@@ -2,20 +2,23 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
-import InputBox from "@/components/common/inputbox";
+// import InputBox from "@/components/common/inputbox";
 import ConfirmButton from "@/components/common/ConfirmButton";
+// import SecondaryButton from "@/components/common/SecondaryButton";
+import PinInput from "@/components/common/PinInputBox";
 import "./BackgroundStyle.css";
 
 const FPGetVerificationCode = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const email = location.state?.email || ""; // Retrieve email from state
+  const email = location.state?.email || "";
 
   const [formData, setFormData] = useState({
     email: "",
     verificationCode: "",
   });
   const [timer, setTimer] = useState(10);
+  const [pin, setPin] = useState("");
   // timer
   useEffect(() => {
     // Timer logic
@@ -26,10 +29,6 @@ const FPGetVerificationCode = () => {
       return () => clearInterval(interval);
     }
   }, [timer]);
-
-  const handleCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, verificationCode: event.target.value });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +66,7 @@ const FPGetVerificationCode = () => {
               backgroundColor: "#ffffff",
               boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
               borderRadius: "12px",
-              width: "450px",
+              width: "280px",
               padding: { xs: "40px", sm: "30px 60px" },
               margin: "20px",
               gap: "14px",
@@ -81,7 +80,7 @@ const FPGetVerificationCode = () => {
                 direction: "rtl",
               }}
             >
-              کد تایید ارسال شده به ایمیل {email} را وارد کنید
+              کد تایید ارسال شده به ایمیل {email} را وارد کنید.
             </p>
             <Box
               sx={{
@@ -90,23 +89,21 @@ const FPGetVerificationCode = () => {
                 margin: "10px 0px",
               }}
             >
-              <InputBox
-                label=""
-                type="text"
-                placeholder="XXXXXX"
-                fullWidth={true}
-                direction="ltr"
-                onChange={handleCodeChange}
-                value={formData.verificationCode}
+              <PinInput
+                length={6}
+                inputSize={40}
+                boxGap="8px"
+                onChange={setPin}
               />
             </Box>
+
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "center",
+                justifyContent: "space-between",
                 alignItems: "center",
                 flexDirection: "column",
-                gap: "10px",
+                marginTop: "10px",
               }}
             >
               <ConfirmButton
@@ -115,35 +112,48 @@ const FPGetVerificationCode = () => {
                 onClick={() => {}}
                 width={"180px"}
               />
-
-              {timer > 0 ? (
-                <p style={{ fontSize: "0.9rem", color: "gray" }}>
-                  ارسال مجدد کد تا {timer} ثانیه دیگر
-                </p>
-              ) : (
-                <ConfirmButton
-                  type="button"
-                  name="ارسال مجدد کد"
-                  onClick={() => setTimer(10)}
-                  width={"180px"}
-                >
-                  ارسال مجدد کد
-                </ConfirmButton>
-              )}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "180px",
+                  height: "40px",
+                  marginTop: "10px",
+                }}
+              >
+                {timer > 0 ? (
+                  <p
+                    style={{
+                      fontSize: "0.9rem",
+                      color: "gray",
+                      direction: "ltr",
+                    }}
+                  >
+                    ارسال مجدد کد تا {timer} ثانیه دیگر
+                  </p>
+                ) : (
+                  <Link
+                    href="/verification-code"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setTimer(10);
+                    }}
+                    color="#000000"
+                    sx={{
+                      color: "gray",
+                      textDecoration: "none",
+                      fontSize: "0.9rem",
+                      width: "180px",
+                      "&:hover": { color: "rgb(3, 37, 107)" },
+                      textAlign: "center",
+                    }}
+                  >
+                    ارسال مجدد
+                  </Link>
+                )}
+              </Box>
             </Box>
-            <Link
-              href="/forgot-password"
-              underline="hover"
-              color="#000000"
-              sx={{
-                color: "gray",
-                fontSize: "0.9rem",
-                "&:hover": { color: "rgb(3, 37, 107)" },
-                marginTop: "20px",
-              }}
-            >
-              بازگشت
-            </Link>
           </Box>
         </form>
       </Box>
