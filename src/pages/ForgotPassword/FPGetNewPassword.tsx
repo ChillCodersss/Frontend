@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
@@ -7,18 +7,21 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import InputBox from "@/components/common/inputbox";
 import ConfirmButton from "@/components/common/ConfirmButton";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./BackgroundStyle.css";
 
 const FPGetNewPassword = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const sentEmail = location.state?.email || ""; // Retrieve email from state
+
   const [formData, setFormData] = useState({
     newPassword: "",
     confirmedNewPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const location = useLocation();
-  const email = location.state?.email || ""; // Retrieve email from state
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -28,13 +31,91 @@ const FPGetNewPassword = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("New password set for:", email);
+    if (!formData.newPassword || !formData.confirmedNewPassword) {
+      toast.error("لطفا رمز عبور را وارد کنید");
+      return;
+    }
+    if (formData.newPassword !== formData.confirmedNewPassword) {
+      toast.error("رمز عبورهای وارد شده مطابقت ندارند");
+      return;
+    }
+    if (formData.newPassword.length < 8) {
+      toast.error("رمز عبور باید حداقل 8 کاراکتر باشد");
+      return;
+    }
+    if (!/[A-Z]/.test(formData.newPassword)) {
+      toast.error("رمز عبور باید حداقل یک حرف بزرگ داشته باشد");
+      return;
+    }
+    if (!/[a-z]/.test(formData.newPassword)) {
+      toast.error("رمز عبور باید حداقل یک حرف کوچک داشته باشد");
+      return;
+    }
+    if (!/[0-9]/.test(formData.newPassword)) {
+      toast.error("رمز عبور باید حداقل یک عدد داشته باشد");
+      return;
+    }
+    if (!/[!@#$%^&*]/.test(formData.newPassword)) {
+      toast.error("رمز عبور باید حداقل یک کاراکتر خاص داشته باشد");
+      return;
+    }
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/Auth/ResetPassword",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: sentEmail,
+            newPassword: formData.newPassword,
+            confirmedNewPassword: formData.confirmedNewPassword,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (!response.ok || data.IsFailure) {
+        toast.error(data.error.message || "خطا در ارتباط با سرور");
+        return;
+      }
+      if (data.IsSuccess) {
+        toast.success("رمز عبور با موفقیت تغییر کرد");
+      }
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } catch (error) {
+      console.error("Server error:", error);
+      toast.error("خطا در ارتباط با سرور");
+    }
   };
 
   return (
     <>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastStyle={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "right",
+          width: "220px",
+          padding: "5px 10px",
+          gap: "2px",
+          fontSize: "0.9rem",
+          textAlign: "right",
+        }}
+      />
       <Box
         display="flex"
         justifyContent="center"
