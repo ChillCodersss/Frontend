@@ -1,13 +1,14 @@
 // import InputBox from "@/components/common/inputbox";
 import ConfirmButton from "@/components/common/ConfirmButton";
 import FormItem from "@/components/Recruitment/FormItem";
-import React, { useState } from "react";
+import DropDown from "@/components/Recruitment/DropDown";
+import React, { useEffect, useState } from "react";
 import './Recruitment.css';
 import "react-toastify/dist/ReactToastify.css";
 import background from '../assets/recruitment_background_desktop.jpg';
 import mobile_background from '../assets/recruitment_background_mobile.jpg';
 import background_logo from '../assets/background_logo.jpg';
-import { Box, useMediaQuery, Zoom } from "@mui/material";
+import { Box, useMediaQuery, Zoom, Input } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router";
 
@@ -29,6 +30,9 @@ const Recruitment: React.FC = () => {
         EntranceExamYear: ""
     });
     //const [isSubmitting, setIsSubmitting] = useState(false);
+    const [provinceOptions, setProvinceOptions] = useState<string[]>([]);
+    const [provinceLoading, setProvinceLoading] = useState(false);
+    const [provinceInputValue, setProvinceInputValue] = useState("");
     const navigate = useNavigate();
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,20 +44,54 @@ const Recruitment: React.FC = () => {
         }));
     };
 
-    // const fetchProvinces = async () => {
-    //     try {
-    //         const response = await fetch(
-    //             `http://localhost:8080/api/Provinces/Dropdown?Text=${encodeURIComponent(formData.Province)}`
-    //         );
-    //         const data = await response.json();
-    //         if (data.isSuccess) {
-    //             console.log(data.value)
-    //         }
-    //     } catch (error) {
-    //         console.error("Error fetching provinces:", error);
+    const handleProvinceChange = (province_value: string | null) => {
+        console.log("Province", province_value);
+        setFormData((prevData) => ({
+            ...prevData,
+            Province: province_value || "",
+        }));
+    };
+
+    // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (e.target.files && e.target.files[0]) {
+    //         const reader = new FileReader();
+    //         console.log(reader);
+    //         reader.onload = (event) => {
+    //             if (event.target?.result) {
+    //                 setFormData((prev) => ({
+    //                     ...prev,
+    //                     StudentCardPic: event.target?.result as string,
+    //                 }));
+    //             }
+    //         };
+    //         reader.readAsDataURL(e.target.files[0]);
     //     }
     // };
-    // fetchProvinces();
+
+    useEffect(() => {
+        const fetchProvinces = async () => {
+            setProvinceLoading(true);
+            try {
+                const response = await fetch(
+                    `http://localhost:8080/api/Provinces/Dropdown?Text=${encodeURIComponent(provinceInputValue)}`
+                );
+                const data = await response.json();
+                if (data.isSuccess) {
+                    setProvinceOptions(data.value);
+                }
+            } catch (error) {
+                console.error("Error fetching provinces:", error);
+            } finally {
+                setProvinceLoading(false);
+            }
+        };
+
+        const debounceTimer = setTimeout(() => {
+            fetchProvinces();
+        }, 300);
+
+        return () => clearTimeout(debounceTimer);
+    }, [provinceInputValue]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -179,23 +217,12 @@ const Recruitment: React.FC = () => {
         overflowX: "hidden"
     };
 
-    // const description_label_sx = {
-    //     display: "block",
-    //     fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
-    //     fontWeight: "500",
-    //     marginBottom: "7px",
-    //     marginRight: "5px",
-    //     color: "black",
-    //     textAlign: "right",
-    //     direction: "rtl",
-    // };
-
     const submit_button_box_sx = {
-        gridRow: '8', gridColumn: '2 / 4', padding: '35px 0px',
+        gridRow: '9', gridColumn: '2 / 4', padding: '35px 0px',
         display: "flex", justifyContent: "center", alignItems: "center"
     };
     const submit_button_box_sx_mobile = {
-        gridRow: '12', display: "flex",
+        gridRow: '14', display: "flex",
         width: '100%', justifySelf: 'center',
         padding: '0px 30px',
         justifyContent: "center", alignItems: "center"
@@ -226,12 +253,12 @@ const Recruitment: React.FC = () => {
             label: "ایمیل", value: formData.Email, name: "Email",
             type: "email", placeholder: "example@mail.com", direction: "ltr", height: "10px",
         },
-        {
-            item_type: "i",
-            row: { m: '5', d: '3' }, column: { m: '1', d: '3 / 5' },
-            label: "استان", value: formData.Province, name: "Province",
-            type: "text", placeholder: "استان", direction: "rtl", height: "10px",
-        },
+        // {
+        //     item_type: "i",
+        //     row: { m: '5', d: '3' }, column: { m: '1', d: '3 / 5' },
+        //     label: "استان", value: formData.Province, name: "Province",
+        //     type: "text", placeholder: "استان", direction: "rtl", height: "10px",
+        // },
         {
             item_type: "i",
             row: { m: '6', d: '3' }, column: { m: '1', d: '1 / 3' },
@@ -253,7 +280,7 @@ const Recruitment: React.FC = () => {
         {
             item_type: "i",
             row: { m: '9', d: '5' }, column: { m: '1', d: '3 / 5' },
-            label: "سال ورود به دانشگاه", value: formData.EntranceYear, name: "EntranceYear",
+            label: "سال کنکور", value: formData.EntranceExamYear, name: "EntranceExamYear",
             type: "number", placeholder: "1404", direction: "ltr", height: "10px",
         },
         {
@@ -321,62 +348,47 @@ const Recruitment: React.FC = () => {
                             </FormItem>
                         )}
 
+                        {/* Province DropDown */}
+                        <Box
+                            sx={{
+                                gridRow: mobile ? "5" : "3", gridColumn: mobile ? "1" : "3 / 5"
+                            }}
+                        >
+                            <DropDown
+                                label={"استان"}
+                                palceholder={"جستجوی استان..."}
+                                value={formData.Province}
+                                inputValue={provinceInputValue}
+                                options={provinceOptions}
+                                optionsLoading={provinceLoading}
+                                changeHandler={handleProvinceChange}
+                                inputHandler={setProvinceInputValue}
+                            />
+                        </Box>
+
+                        {/* Image Input */}
+                        <Box
+                            sx={{
+                                gridRow: mobile ? "13" : "8", gridColumn: mobile ? "1" : "1 / 5",
+                                justifyContent: "center", alignItems: "center", display: "flex"
+                            }}
+                        >
+                            <Input
+                                type="file"
+                                fullWidth
+                                name="StudentCardPic"
+                                value={formData.StudentCardPic}
+                                onChange={handleInputChange}
+                            >
+                            </Input>
+                        </Box>
+
                         {/* Submit Button */}
                         <Box
                             sx={mobile ? submit_button_box_sx_mobile : submit_button_box_sx}
                         >
                             <ConfirmButton name="ارسال فرم" type="submit"/>
                         </Box>
-
-                        {/* First Name Field */}
-                        {/* <Box sx={mobile ? { gridRow: '1' } : { gridRow: '1', gridColumn: '3 / 5' }}>
-                            <InputBox
-                                label="نام"
-                                name="first_name"
-                                value={formData.first_name}
-                                onChange={handleInputChange}
-                                type="text"
-                                placeholder="نام"
-                                direction="rtl"
-                                height={"10px"}
-                            />
-                        </Box> */}
-
-                        {/* Description Field */}
-                        {/* <Box sx={mobile ? { gridRow: '10 / 12' } : { gridRow: '6 / 8', gridColumn: '1 / 5' } }>
-                            <Box component="label" sx={ description_label_sx }>
-                                سابقه کار
-                            </Box>
-                            <TextField
-                                name="description"
-                                value={formData.description}
-                                onChange={handleInputChange}
-                                multiline
-                                rows={mobile ? 4 : 6}
-                                fullWidth
-                                variant="outlined"
-                                margin="none"
-                                sx={{
-                                "& .MuiOutlinedInput-root": {
-                                    backgroundColor: "white",
-                                    borderRadius: { xs: "6px", sm: "8px", md: "8px" },
-                                    transition: "border-color 0.3s ease",
-                                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "rgb(204, 207, 209)",
-                                    borderWidth: "2px",
-                                    },
-                                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                                    borderColor: "#1976d2",
-                                    borderWidth: "2.3px",
-                                    },
-                                },
-                                "& .MuiOutlinedInput-input": {
-                                    textAlign: "right",
-                                    direction: "rtl",
-                                },
-                                }}
-                            />
-                        </Box> */}
                     </Box>
                 </Zoom>
                 </form>
