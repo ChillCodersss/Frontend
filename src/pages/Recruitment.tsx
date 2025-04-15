@@ -27,7 +27,6 @@ const Recruitment: React.FC = () => {
         EntranceExamYear: "",
         CountryRanking: "",
         Employmenthistory: "",
-        StudentCardPic: "",
     });
     //const [isSubmitting, setIsSubmitting] = useState(false);
     const [provinceOptions, setProvinceOptions] = useState<string[]>([]);
@@ -40,19 +39,19 @@ const Recruitment: React.FC = () => {
     const navigate = useNavigate();
 
     const fileUploadRef = useRef("");
-    const [uploadedFile, setUploadedFile] = useState<File>();
+    const [StudentCardPic, setStudentCardPic] = useState<File>();
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
-        console.log(name, value);
+        // console.log(name, value);
         setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
+            ...prevData,
+            [name]: value,
         }));
     };
 
     const handleProvinceChange = (province_value: string | null) => {
-        console.log("Province", province_value);
+        // console.log("Province", province_value);
         setFormData((prevData) => ({
             ...prevData,
             Province: province_value || "",
@@ -60,7 +59,7 @@ const Recruitment: React.FC = () => {
     };
 
     const handleHsMajorChange = (hsmajor_value: string | null) => {
-        console.log("HsMajor", hsmajor_value);
+        // console.log("HsMajor", hsmajor_value);
         setFormData((prevData) => ({
             ...prevData,
             HsMajor: hsmajor_value || "",
@@ -69,7 +68,7 @@ const Recruitment: React.FC = () => {
 
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const f = event.target.files?.[0];
-        setUploadedFile(f);
+        setStudentCardPic(f);
     };
 
     useEffect(() => {
@@ -121,7 +120,7 @@ const Recruitment: React.FC = () => {
         newFormData.append("CountryRanking", formData.CountryRanking);
         newFormData.append("Employmenthistory", formData.Employmenthistory);
         // newFormData.append("StudentCardPic", formData.StudentCardPic);
-        newFormData.append("StudentCardPic", uploadedFile ? uploadedFile : "");
+        newFormData.append("StudentCardPic", StudentCardPic ? StudentCardPic : "");
 
         try {
             const response = await fetch("http://localhost:8080/api/CounselorRecruitments/Create", {
@@ -155,7 +154,7 @@ const Recruitment: React.FC = () => {
 
             setTimeout(() => {
                 navigate("/Landing");
-            }, 2000);
+            }, 5000);
 
             setFormData({
                 FirstName: "",
@@ -169,7 +168,6 @@ const Recruitment: React.FC = () => {
                 EntranceExamYear: "",
                 CountryRanking: "",
                 Employmenthistory: "",
-                StudentCardPic: "",
             });
         } catch {
             toast.error("خطا در ارتباط با سرور", {
@@ -262,7 +260,7 @@ const Recruitment: React.FC = () => {
             item_type: "i",
             row: { m: '4', d: '2' }, column: { m: '1', d: '1 / 3' },
             label: "ایمیل", value: formData.Email, name: "Email",
-            type: "email", placeholder: "example@mail.com", direction: "ltr", height: "10px",
+            type: "text", placeholder: "example@mail.com", direction: "ltr", height: "10px",
         },
         // {
         //     item_type: "i",
