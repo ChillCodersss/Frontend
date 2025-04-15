@@ -2,6 +2,7 @@
 import ConfirmButton from "@/components/common/ConfirmButton";
 import FormItem from "@/components/Recruitment/FormItem";
 import DropDown from "@/components/Recruitment/DropDown";
+// import ImageInput from "@/components/Recruitment/ImageInput";
 import React, { useEffect, useState } from "react";
 import './Recruitment.css';
 import "react-toastify/dist/ReactToastify.css";
@@ -20,20 +21,22 @@ const Recruitment: React.FC = () => {
         PhoneNumber: "",
         Email: "",
         Province: "",
-        SchoolMajor: "",
+        HsMajor: "",
         UniName: "",
-        Major: "",
-        EntranceYear: "",
+        UniMajor: "",
+        EntranceExamYear: "",
         CountryRanking: "",
         Employmenthistory: "",
         StudentCardPic: "",
-        EntranceExamYear: ""
     });
     //const [isSubmitting, setIsSubmitting] = useState(false);
     const [provinceOptions, setProvinceOptions] = useState<string[]>([]);
     const [provinceLoading, setProvinceLoading] = useState(false);
     const [provinceInputValue, setProvinceInputValue] = useState("");
     const navigate = useNavigate();
+
+    const HsMajorOptions = ["ریاضی", "تجربی", "انسانی"];
+    const [hsMajorInputValue, setHsMajorInputValue] = useState("");
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -49,6 +52,14 @@ const Recruitment: React.FC = () => {
         setFormData((prevData) => ({
             ...prevData,
             Province: province_value || "",
+        }));
+    };
+
+    const handleHsMajorChange = (hsmajor_value: string | null) => {
+        console.log("HsMajor", hsmajor_value);
+        setFormData((prevData) => ({
+            ...prevData,
+            HsMajor: hsmajor_value || "",
         }));
     };
 
@@ -103,16 +114,23 @@ const Recruitment: React.FC = () => {
         newFormData.append("PhoneNumber", formData.PhoneNumber);
         newFormData.append("Email", formData.Email);
         newFormData.append("Province", formData.Province);
+        if (formData.HsMajor === "ریاضی")
+            newFormData.append("HsMajor", "1");
+        else if (formData.HsMajor === "تجربی")
+            newFormData.append("HsMajor", "2");
+        else if (formData.HsMajor === "انسانی")
+            newFormData.append("HsMajor", "3");
+        else
+            newFormData.append("HsMajor", "0");
         newFormData.append("UniName", formData.UniName);
-        newFormData.append("Major", formData.Major);
-        newFormData.append("EntranceYear", formData.EntranceYear);
+        newFormData.append("UniMajor", formData.UniMajor);
+        newFormData.append("EntranceExamYear", formData.EntranceExamYear);
         newFormData.append("CountryRanking", formData.CountryRanking);
         newFormData.append("Employmenthistory", formData.Employmenthistory);
         newFormData.append("StudentCardPic", formData.StudentCardPic);
-        newFormData.append("EntranceExamYear", formData.EntranceExamYear);
 
         try {
-            const response = await fetch("http://localhost:8080/api/CounselorRecruitments/Recruitment", {
+            const response = await fetch("http://localhost:8080/api/CounselorRecruitments/Create", {
                 method: "POST",
                 body: newFormData,
             });
@@ -135,7 +153,7 @@ const Recruitment: React.FC = () => {
             }
 
             // موفقیت
-            toast.success(data?.message || "با موفقیت وارد شدید", {
+            toast.success(data?.message || "فرم شما با موفقیت ارسال شد", {
                 position: "bottom-right",
                 autoClose: 5000,
                 rtl: true,
@@ -151,14 +169,13 @@ const Recruitment: React.FC = () => {
                 PhoneNumber: "",
                 Email: "",
                 Province: "",
-                SchoolMajor: "",
+                HsMajor: "",
                 UniName: "",
-                Major: "",
-                EntranceYear: "",
+                UniMajor: "",
+                EntranceExamYear: "",
                 CountryRanking: "",
                 Employmenthistory: "",
                 StudentCardPic: "",
-                EntranceExamYear: ""
             });
         } catch {
             toast.error("خطا در ارتباط با سرور", {
@@ -259,23 +276,23 @@ const Recruitment: React.FC = () => {
         //     label: "استان", value: formData.Province, name: "Province",
         //     type: "text", placeholder: "استان", direction: "rtl", height: "10px",
         // },
-        {
-            item_type: "i",
-            row: { m: '6', d: '3' }, column: { m: '1', d: '1 / 3' },
-            label: "رشته تحصیلی", value: formData.SchoolMajor, name: "SchoolMajor",
-            type: "text", placeholder: "رشته", direction: "rtl", height: "10px",
-        },
+        // {
+        //     item_type: "i",
+        //     row: { m: '6', d: '3' }, column: { m: '1', d: '1 / 3' },
+        //     label: "رشته تحصیلی", value: formData.HsMajor, name: "HsMajor",
+        //     type: "text", placeholder: "ریاضی", direction: "rtl", height: "10px",
+        // },
         {
             item_type: "i",
             row: { m: '7', d: '4' }, column: { m: '1', d: '3 / 5' },
             label: "دانشگاه", value: formData.UniName, name: "UniName",
-            type: "text", placeholder: "دانشگاه", direction: "rtl", height: "10px",
+            type: "text", placeholder: "علم و صنعت", direction: "rtl", height: "10px",
         },
         {
             item_type: "i",
             row: { m: '8', d: '4' }, column: { m: '1', d: '1 / 3' },
-            label: "رشته دانشگاهی", value: formData.Major, name: "Major",
-            type: "text", placeholder: "رشته", direction: "rtl", height: "10px",
+            label: "رشته دانشگاهی", value: formData.UniMajor, name: "UniMajor",
+            type: "text", placeholder: "مهندسی کامپیوتر", direction: "rtl", height: "10px",
         },
         {
             item_type: "i",
@@ -363,6 +380,24 @@ const Recruitment: React.FC = () => {
                                 optionsLoading={provinceLoading}
                                 changeHandler={handleProvinceChange}
                                 inputHandler={setProvinceInputValue}
+                            />
+                        </Box>
+
+                        {/* HsMajor DropDown */}
+                        <Box
+                            sx={{
+                                gridRow: mobile ? "6" : "3", gridColumn: mobile ? "1" : "1 / 3"
+                            }}
+                        >
+                            <DropDown
+                                label={"رشته تحصیلی"}
+                                palceholder={"جستجوی رشته..."}
+                                value={formData.HsMajor}
+                                inputValue={hsMajorInputValue}
+                                options={HsMajorOptions}
+                                optionsLoading={false}
+                                changeHandler={handleHsMajorChange}
+                                inputHandler={setHsMajorInputValue}
                             />
                         </Box>
 
