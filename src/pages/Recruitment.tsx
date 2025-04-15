@@ -3,7 +3,7 @@ import ConfirmButton from "@/components/common/ConfirmButton";
 import FormItem from "@/components/Recruitment/FormItem";
 import DropDown from "@/components/Recruitment/DropDown";
 // import ImageInput from "@/components/Recruitment/ImageInput";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import './Recruitment.css';
 import "react-toastify/dist/ReactToastify.css";
 import background from '../assets/recruitment_background_desktop.jpg';
@@ -33,10 +33,14 @@ const Recruitment: React.FC = () => {
     const [provinceOptions, setProvinceOptions] = useState<string[]>([]);
     const [provinceLoading, setProvinceLoading] = useState(false);
     const [provinceInputValue, setProvinceInputValue] = useState("");
-    const navigate = useNavigate();
 
     const HsMajorOptions = ["ریاضی", "تجربی", "انسانی"];
     const [hsMajorInputValue, setHsMajorInputValue] = useState("");
+
+    const navigate = useNavigate();
+
+    const fileUploadRef = useRef("");
+    const [uploadedFile, setUploadedFile] = useState<File>();
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -63,21 +67,10 @@ const Recruitment: React.FC = () => {
         }));
     };
 
-    // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     if (e.target.files && e.target.files[0]) {
-    //         const reader = new FileReader();
-    //         console.log(reader);
-    //         reader.onload = (event) => {
-    //             if (event.target?.result) {
-    //                 setFormData((prev) => ({
-    //                     ...prev,
-    //                     StudentCardPic: event.target?.result as string,
-    //                 }));
-    //             }
-    //         };
-    //         reader.readAsDataURL(e.target.files[0]);
-    //     }
-    // };
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const f = event.target.files?.[0];
+        setUploadedFile(f);
+    };
 
     useEffect(() => {
         const fetchProvinces = async () => {
@@ -127,7 +120,8 @@ const Recruitment: React.FC = () => {
         newFormData.append("EntranceExamYear", formData.EntranceExamYear);
         newFormData.append("CountryRanking", formData.CountryRanking);
         newFormData.append("Employmenthistory", formData.Employmenthistory);
-        newFormData.append("StudentCardPic", formData.StudentCardPic);
+        // newFormData.append("StudentCardPic", formData.StudentCardPic);
+        newFormData.append("StudentCardPic", uploadedFile ? uploadedFile : "");
 
         try {
             const response = await fetch("http://localhost:8080/api/CounselorRecruitments/Create", {
@@ -409,11 +403,12 @@ const Recruitment: React.FC = () => {
                             }}
                         >
                             <Input
+                                ref={fileUploadRef}
                                 type="file"
                                 fullWidth
                                 name="StudentCardPic"
-                                value={formData.StudentCardPic}
-                                onChange={handleInputChange}
+                                // value={formData.StudentCardPic}
+                                onChange={handleImageChange}
                             >
                             </Input>
                         </Box>
