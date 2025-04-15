@@ -178,7 +178,7 @@ const Login: React.FC = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                type="email"
+                type="text"
                 placeholder="example@gmail.com"
                 startAdornment={
                   <InputAdornment position="start">
