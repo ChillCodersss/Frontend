@@ -59,13 +59,13 @@ function DropDown({ label, palceholder, value, inputValue, options, optionsLoadi
                             direction: "rtl",
                             height: "19px",
                             "&::placeholder": {
-                                opacity: 0,
-                                transition: "opacity 0.2s ease-in-out",
+                                opacity: 0.5,
+                                // transition: "opacity 0.2s ease-in-out",
                             },
                             },
-                            "&:hover .MuiOutlinedInput-input::placeholder": {
-                            opacity: 0.5,
-                            },
+                            // "&:hover .MuiOutlinedInput-input::placeholder": {
+                            // opacity: 0.5,
+                            // },
                             "&:hover .MuiOutlinedInput-notchedOutline": {
                             borderColor: "rgb(204, 207, 209)",
                             borderWidth: "2px",
