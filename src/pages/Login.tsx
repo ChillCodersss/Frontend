@@ -57,7 +57,7 @@ const Login: React.FC = () => {
       const data = await response.json();
   
       if (!response.ok || data.IsFailure) {
-        // نمایش ارورهای ولیدیشن (اگر وجود داشته باشن)
+
         if (Array.isArray(data.errors)) {
           data.errors.forEach((err: { message: string }) => {
             toast.error(err.message, {
@@ -68,9 +68,9 @@ const Login: React.FC = () => {
           });
         }
   
-        // اگر errors نبود، ولی فیلد Error وجود داشت
+
         else if (data.message) {
-          const messageFromServer = data.message.split("|")[0]; // فقط پیام اول
+          const messageFromServer = data.message.split("|")[0]; 
           toast.error(messageFromServer, {
             position: "bottom-right",
             autoClose: 5000,
@@ -82,7 +82,7 @@ const Login: React.FC = () => {
         return;
       }
   
-      // موفقیت
+
       toast.success(data?.message || "با موفقیت وارد شدید", {
         position: "bottom-right",
         autoClose: 5000,

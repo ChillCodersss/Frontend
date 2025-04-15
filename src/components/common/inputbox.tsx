@@ -27,7 +27,7 @@ const InputBox: React.FC<InputBoxProps> = ({
   startAdornment,
   direction = "ltr",
   readOnly = false,
-  height = "2px",
+  height = "35px",
   borderRadius = { xs: "6px", sm: "6px", md: "8px" },
   ...props
 }) => {
@@ -78,7 +78,7 @@ const InputBox: React.FC<InputBoxProps> = ({
           },
           "& .MuiOutlinedInput-input": {
             height: height,
-            px: { xs: 1, sm: 1.5, md: 2 },
+            padding :"0px !important",
             textAlign: "right",
             direction,
           },
