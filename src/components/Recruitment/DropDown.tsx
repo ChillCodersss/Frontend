@@ -51,24 +51,28 @@ function DropDown({ label, palceholder, value, inputValue, options, optionsLoadi
                         sx={{
                         "& .MuiOutlinedInput-root": {
                             backgroundColor: "white",
-                            borderRadius: "8px",
+                            borderRadius: { xs: "6px", sm: "8px", md: "8px" },
                             height: "43px",
                             padding: "8px 40px 8px 14px !important",
                             "& .MuiOutlinedInput-input": {
                             textAlign: "right",
                             direction: "rtl",
-                            height: "19px",
                             "&::placeholder": {
                                 opacity: 0.5,
                                 // transition: "opacity 0.2s ease-in-out",
                             },
                             },
+                            "& .MuiInputBase-input::placeholder": {
+                                fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+                                textAlign: "right",
+                                direction: "rtl",
+                            },
                             // "&:hover .MuiOutlinedInput-input::placeholder": {
                             // opacity: 0.5,
                             // },
                             "&:hover .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "rgb(204, 207, 209)",
-                            borderWidth: "2px",
+                                borderColor: "rgb(204, 207, 209)",
+                                borderWidth: "2px",
                             },
                             "&.Mui-focused .MuiOutlinedInput-notchedOutline":
                             {
