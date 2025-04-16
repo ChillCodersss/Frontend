@@ -33,10 +33,10 @@ const Login: React.FC = () => {
     };
     window.addEventListener("resize", handleResize);
     
-    // Redirect if already logged in
-    if (localStorage.getItem("jwtToken")) {
-      navigate("/CounselorProfile");
-    }
+    // // Redirect if already logged in
+    // if (localStorage.getItem("jwtToken")) {
+    //   navigate("");
+    // }
     
     return () => window.removeEventListener("resize", handleResize);
   }, [navigate]);
@@ -191,7 +191,7 @@ const Login: React.FC = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                type="email"
+                type="text"
                 placeholder="example@gmail.com"
                 startAdornment={
                   <InputAdornment position="start">
