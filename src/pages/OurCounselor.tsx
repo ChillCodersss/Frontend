@@ -7,8 +7,17 @@ import {
   Button,
   ToggleButtonGroup,
   ToggleButton,
+  Avatar,
+  Rating,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import StarIcon from "@mui/icons-material/Star";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import SchoolIcon from "@mui/icons-material/School";
+import CircleIcon from "@mui/icons-material/Circle";
+import SecondaryButton from "../components/common/SecondaryButton";
+import { CgArrowBottomLeft } from "react-icons/cg";
+import Footer from "@/components/Footer/Footer";
 
 const OurCounselor = () => {
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -33,19 +42,13 @@ const OurCounselor = () => {
           backgroundImage: "url(/images/top-poster.jpg)",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          marginBottom: "100px",
+          marginBottom: "20px",
           background: "linear-gradient(to right,rgb(51, 13, 87), #9400D3)", // Fallback color if image is not found
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{ color: "white", textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
-        >
-          مشاوران ما
-        </Typography>
       </Box>
 
       {/* Search and Filter Container */}
@@ -150,7 +153,6 @@ const OurCounselor = () => {
             maxWidth: "1600px",
           }}
         >
-          {/* Test counselor boxes */}
           {[1, 2, 3, 4, 5, 6].map((item) => (
             <Box
               key={item}
@@ -162,15 +164,117 @@ const OurCounselor = () => {
                 borderRadius: "8px",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                flexDirection: "column",
                 border: "1px solid rgb(183, 183, 183)",
+                position: "relative",
                 "&:hover": {
                   boxShadow: "0 4px 4px rgba(0,0,0,0.2)",
                 },
               }}
             >
-              <Typography variant="h6">مشاور {item}</Typography>
+              {/* Top Section */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "12px",
+                }}
+              >
+                <Typography variant="body2" sx={{ color: "#666" }}>
+                  تجربه کار: ۳ سال
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                  <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
+                  <Typography variant="body2" sx={{ color: "#666" }}>
+                    ۴.۸
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Profile Section */}
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: "16px",
+                  padding: "0 16px",
+                  marginTop: "10px",
+                }}
+              >
+                <Avatar
+                  sx={{
+                    width: isMobile ? 100 : 120,
+                    height: isMobile ? 100 : 120,
+                    border: "2px solid #9400D3",
+                  }}
+                  src="src\assets\photo_2024-03-29_17-27-37.jpg"
+                />
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "8px",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    امیرمحمد عزیزی
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "#666" }}>
+                    <CircleIcon
+                      sx={{
+                        fontSize: "16px",
+                        verticalAlign: "middle",
+                        marginLeft: "4px",
+                      }}
+                    />
+                    رشته تحصیلی: ریاضی
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "#666" }}>
+                    <SchoolIcon
+                      sx={{
+                        fontSize: "16px",
+                        verticalAlign: "middle",
+                        marginLeft: "4px",
+                      }}
+                    />
+                    رشته دانشگاهی: مهندسی کامپیوتر
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "#666" }}>
+                    <CalendarMonthIcon
+                      sx={{
+                        fontSize: "16px",
+                        verticalAlign: "middle",
+                        marginLeft: "4px",
+                      }}
+                    />
+                    سال کنکور : ۱۴۰۱
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Navigation Button */}
+              <SecondaryButton
+                name="مشاهده"
+                backgroundColor="transparent"
+                width="auto"
+                height="50px"
+                fontSize="16px"
+                borderRadius="8px"
+                sx={{
+                  position: "absolute",
+                  bottom: "16px",
+                  left: "16px",
+                  padding: "0 20px",
+                  minHeight: "35px",
+                  lineHeight: "35px",
+                  background:
+                    "linear-gradient(45deg, #9400D3 0%, #7B00B8 100%)",
+                  "&:hover": {
+                    background:
+                      "linear-gradient(45deg, #7B00B8 0%, #9400D3 100%)",
+                  },
+                }}
+              />
             </Box>
           ))}
         </Box>
