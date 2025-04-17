@@ -3,21 +3,12 @@ import {
   Box,
   AppBar,
   Toolbar,
-  IconButton,
   Avatar,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
   TextField,
-  Typography,
   Autocomplete,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseIcon from "@mui/icons-material/Close";
@@ -101,7 +92,6 @@ const CounselorProfile = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // Fetch provinces when input changes
   useEffect(() => {
     const fetchProvinces = async () => {
       setLoadingProvinces(true);
@@ -124,7 +114,7 @@ const CounselorProfile = () => {
 
     const debounceTimer = setTimeout(() => {
       fetchProvinces();
-    }, 300); // Debounce to avoid too many API calls
+    }, 300); 
 
     return () => clearTimeout(debounceTimer);
   }, [provinceInputValue]);
@@ -148,80 +138,8 @@ const CounselorProfile = () => {
         }}
       >
         <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={toggleSidebar}
-            sx={{ marginRight: "16px" }}
-          >
-            <MenuIcon />
-          </IconButton>
         </Toolbar>
       </AppBar>
-
-      {/* Sidebar */}
-      <Drawer
-        anchor="right"
-        open={sidebarOpen}
-        onClose={toggleSidebar}
-        sx={{
-          width: isMobile ? "80vw" : "240px",
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: isMobile ? "80vw" : "240px",
-            boxSizing: "border-box",
-            backgroundColor: "rgba(255, 255, 255, 0.9)",
-            backdropFilter: "blur(10px)",
-            borderLeft: "1px solid rgba(255, 255, 255, 0.3)",
-          },
-        }}
-      >
-        <Toolbar />
-        <Box sx={{ overflow: "auto" }}>
-          <List>
-            {["Dashboard", "Appointments", "Clients", "Messages"].map(
-              (text) => (
-                <ListItem
-                  key={text}
-                  component="div"
-                  sx={{
-                    cursor: "pointer",
-                    "&:hover": {
-                      backgroundColor: "rgba(0, 0, 0, 0.04)",
-                    },
-                  }}
-                >
-                  <ListItemIcon>
-                    <AccountCircleIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItem>
-              )
-            )}
-          </List>
-          <Divider />
-          <List>
-            {["Settings", "Logout"].map((text) => (
-              <ListItem
-                key={text}
-                component="div"
-                sx={{
-                  cursor: "pointer",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.04)",
-                  },
-                }}
-              >
-                <ListItemIcon>
-                  <AccountCircleIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
 
       {/* Main Content */}
       <Box

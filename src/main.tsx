@@ -6,6 +6,7 @@ import Recruitment from "./pages/Recruitment";
 import Signup from "./pages/SignUp";
 import Login from "./pages/Login";
 import CounselorProfile from "./pages/CounselorProfile";
+import Sidebar from "./components/Sidebar/Sidebar";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -15,6 +16,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/Signup" element={<Signup></Signup>} />
         <Route path="/login" element={<Login></Login>} />
         <Route path="/CounselorProfile" element={<CounselorProfile></CounselorProfile>} />
+        <Route path="/sidebar" element={<Sidebar/>} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
