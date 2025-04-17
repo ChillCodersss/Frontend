@@ -2,14 +2,16 @@
 import ConfirmButton from "@/components/common/ConfirmButton";
 import FormItem from "@/components/Recruitment/FormItem";
 import DropDown from "@/components/Recruitment/DropDown";
-// import ImageInput from "@/components/Recruitment/ImageInput";
-import React, { useEffect, useState, useRef } from "react";
+import ImageInput from "@/components/Recruitment/ImageInput";
+// import ImageInputButton from "@/components/Recruitment/ImageInputButton";
+// import ImageDisplay from "@/components/Recruitment/ImageDisplay";
+import React, { useEffect, useState } from "react";
 import './Recruitment.css';
 import "react-toastify/dist/ReactToastify.css";
 import background from '../assets/recruitment_background_desktop.jpg';
 import mobile_background from '../assets/recruitment_background_mobile.jpg';
 import background_logo from '../assets/background_logo.jpg';
-import { Box, useMediaQuery, Zoom, Input } from "@mui/material";
+import { Box, useMediaQuery, Zoom } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router";
 
@@ -38,8 +40,25 @@ const Recruitment: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const fileUploadRef = useRef("");
     const [StudentCardPic, setStudentCardPic] = useState<File>();
+    const [picInfo, setPicInfo] = useState({
+        URL: "",
+        Name: "",
+        Size: "",
+    });
+
+    const [uploaded, setUplaoded] = useState(false);
+    const handleImageDelete = (event: React.MouseEvent<SVGSVGElement>) => {
+        event.stopPropagation();
+        setStudentCardPic(undefined);
+
+        setUplaoded(false);
+        setPicInfo({
+            URL: "",
+            Name: "",
+            Size: "",
+        })
+    }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -69,6 +88,28 @@ const Recruitment: React.FC = () => {
     const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const f = event.target.files?.[0];
         setStudentCardPic(f);
+
+        if (f) {
+            // calculating file size
+            let file_size = f?.size;
+            let size_unit = "KB";
+            if (file_size >= 1000000) {
+                size_unit = "MB";
+                file_size /= 1000000;
+            } else {
+                file_size /= 1000;
+            }
+
+            setUplaoded(true);
+            setPicInfo((prev) => ({
+                ...prev,
+                Name: f?.name ? f.name : "",
+                Size: `${file_size.toFixed(2)} ${size_unit}`,
+                URL: URL.createObjectURL(f),
+            }));
+        }
+
+        event.target.value = "";     // allowing user to choose same file
     };
 
     useEffect(() => {
@@ -227,11 +268,11 @@ const Recruitment: React.FC = () => {
     };
 
     const submit_button_box_sx = {
-        gridRow: '9', gridColumn: '2 / 4', padding: '35px 0px',
+        gridRow: '10', gridColumn: '2 / 4', padding: '35px 0px',
         display: "flex", justifyContent: "center", alignItems: "center"
     };
     const submit_button_box_sx_mobile = {
-        gridRow: '14', display: "flex",
+        gridRow: '15', display: "flex",
         width: '100%', justifySelf: 'center',
         padding: '0px 30px',
         justifyContent: "center", alignItems: "center"
@@ -300,7 +341,7 @@ const Recruitment: React.FC = () => {
         },
         {
             item_type: "t",
-            row: { m: '11 / 13', d: '6 / 8' }, column: { m: '1', d: '1 / 5' },
+            row: { m: '13 / 15', d: '8 / 10' }, column: { m: '1', d: '1 / 5' },
             label: "سابقه کار", value: formData.Employmenthistory, name: "Employmenthistory",
             type: "text", placeholder: "", direction: "rtl", height: "",
         },
@@ -360,7 +401,7 @@ const Recruitment: React.FC = () => {
                         {/* Province DropDown */}
                         <Box
                             sx={{
-                                gridRow: mobile ? "5" : "3", gridColumn: mobile ? "1" : "3 / 5"
+                                gridRow: mobile ? "5" : "3", gridColumn: mobile ? "1" : "3 / 5",
                             }}
                         >
                             <DropDown
@@ -378,7 +419,7 @@ const Recruitment: React.FC = () => {
                         {/* HsMajor DropDown */}
                         <Box
                             sx={{
-                                gridRow: mobile ? "6" : "3", gridColumn: mobile ? "1" : "1 / 3"
+                                gridRow: mobile ? "6" : "3", gridColumn: mobile ? "1" : "1 / 3",
                             }}
                         >
                             <DropDown
@@ -396,19 +437,22 @@ const Recruitment: React.FC = () => {
                         {/* Image Input */}
                         <Box
                             sx={{
-                                gridRow: mobile ? "13" : "8", gridColumn: mobile ? "1" : "1 / 5",
-                                justifyContent: "center", alignItems: "center", display: "flex"
+                                gridRow: mobile ? "11 / 13" : "6 / 8", gridColumn: mobile ? "1" : "1 / 5",
+                                justifyContent: "center", alignItems: "center",
                             }}
                         >
-                            <Input
-                                ref={fileUploadRef}
-                                type="file"
-                                fullWidth
-                                name="StudentCardPic"
-                                // value={formData.StudentCardPic}
+                            <ImageInput
+                                label={"تصویر کارت دانشجویی یا مدرک دانشگاهی"}
+                                isMobile={mobile}
+                                uploaded={uploaded}
+                                imageName={picInfo.Name}
+                                imageSize={picInfo.Size}
+                                imageURL={picInfo.URL}
+                                inputName={"StudentCardPic"}
+                                inputID={"image-input"}
+                                handleImageDelete={handleImageDelete}
                                 onChange={handleImageChange}
-                            >
-                            </Input>
+                            />
                         </Box>
 
                         {/* Submit Button */}
