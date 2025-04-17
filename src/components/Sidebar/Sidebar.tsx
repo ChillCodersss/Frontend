@@ -50,6 +50,8 @@ const Sidebar: React.FC = () => {
     setActiveItem(label);
   };
 
+  const headerHeight = isMobile ? "56px" : "68.5px";
+
   return (
     <>
       {/* Global Wrapper to Control Scroll */}
@@ -68,7 +70,7 @@ const Sidebar: React.FC = () => {
             alignItems: "center",
             justifyContent: "flex-end",
             padding: "0 1rem",
-            height: "4rem",
+            height: headerHeight, 
             position: "fixed",
             top: 0,
             left: 0,
@@ -96,8 +98,8 @@ const Sidebar: React.FC = () => {
               boxSizing: "border-box",
               transition: "width 0.3s ease-in-out",
               overflow: "hidden",
-              top: "4rem",
-              height: "calc(100vh - 4rem)",
+              top: headerHeight,
+              height: `calc(100vh - ${headerHeight})`, 
               zIndex: 1100,
             },
           }}
@@ -264,10 +266,10 @@ const Sidebar: React.FC = () => {
           sx={{
             marginRight: isMobile ? 0 : open ? "224px" : "68px",
             marginLeft: 0,
-            marginTop: "4rem",
+            marginTop: headerHeight, 
             padding: "1rem",
             backgroundColor: "#F7F6FB",
-            height: "calc(100vh - 4rem)", 
+            height: `calc(100vh - ${headerHeight})`, 
             overflow: "hidden", 
             transition: isMobile ? "none" : "margin-right 0.3s ease-in-out",
             position: "relative",
