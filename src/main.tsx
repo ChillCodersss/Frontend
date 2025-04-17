@@ -5,15 +5,18 @@ import "./index.css";
 import Signup from "./pages/SignUp";
 import Login from "./pages/Login";
 import CounselorProfile from "./pages/CounselorProfile";
+import CounselorDisplay from "./pages/CounselorDisplay";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  //<StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/Signup" element={<Signup></Signup>} />
         <Route path="/login" element={<Login></Login>} />
         <Route path="/CounselorProfile" element={<CounselorProfile></CounselorProfile>} />
+        <Route path="/CounselorDisplay" element={<CounselorDisplay></CounselorDisplay>} />
+
       </Routes>
     </BrowserRouter>
-  </StrictMode>
+  //</StrictMode>
 );
