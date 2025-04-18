@@ -28,6 +28,7 @@ const FPGetVerificationCode = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log({ pin });
     if (!pin || pin.length !== 6) {
       toast.error("لطفا کد تایید را وارد کنید");
       return;
@@ -40,7 +41,7 @@ const FPGetVerificationCode = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email: sentEmail, code: pin }),
+          body: JSON.stringify({ email: sentEmail, code: Number(pin) }),
         }
       );
       const data = await response.json();
