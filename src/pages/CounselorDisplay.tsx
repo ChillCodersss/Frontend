@@ -60,7 +60,7 @@ const CounselorDisplay: React.FC = () => {
           uniMajor: userData.uniMajor || "نامشخص",
           uniName: userData.uniName,
           hsMajorTitle: userData.hsMajorTitle || "نامشخص",
-          content: userData.aboutMe ||"مشاور کنکور بودن کار دلیه. من تو تک تک ثانیه های سال کنکور در کنارتونم و به عنوان کسی که اختلاف سنی زیادی باهاتون نداره کاملا دغدغه هاتون رو درک میکنم. با اینکه تجربه خیلی زیادی ندارم به علت علاقه ای که از اول به این حوزه داشتم تک تک نکاتی که از مشاور های خودم و اساتیدم یاد گرفتم رو تو ذهنم دارم و علاوه بر اون از فضای کنکور بعد از آزمون خودم دور نشدم و کاملا آشنا به کنکور نظام جدیدم. برنامه ای که بهتون میدم منظم تر از هر برنامه ای هستش که میتونید تصور کنید و کاملا فکر پشتش هستش و به هیچ وجه خط فکری نامنظم و شلوغ پلوغ تو سال کنکورتون در کنار من ندارید و تکلیف خودتون رو میدونید. از اونجایی که برنامتون با نظمه پس باید سعی کنید اجرا با نظم هم داشته باشید و تک تک روز های اجراتون بررسی میشه. علاوه به کنکور حتما حواسم به امتحان های نهایتتون هم هست و اصلا برای این مسئله احساس نگرانی قرار نیست بکنید. در نهایت هم سعی میکنم تو تماس ها و ارتباط های مستمرمون همه تجربیات خودم و کنکوری ها خفنی که تو محیط های دیگه باهاشون ارتباط داشتم رو در اختیارتون بذارم تا با خیال راحت به هدفی که دلتون میخواد برسید.",
+          content: userData.aboutMe || "مشاور کنکور بودن کار دلیه. من تو تک تک ثانیه های سال کنکور در کنارتونم و به عنوان کسی که اختلاف سنی زیادی باهاتون نداره کاملا دغدغه هاتون رو درک میکنم. با اینکه تجربه خیلی زیادی ندارم به علت علاقه ای که از اول به این حوزه داشتم تک تک نکاتی که از مشاور های خودم و اساتیدم یاد گرفتم رو تو ذهنم دارم و علاوه بر اون از فضای کنکور بعد از آزمون خودم دور نشدم و کاملا آشنا به کنکور نظام جدیدم. برنامه ای که بهتون میدم منظم تر از هر برنامه ای هستش که میتونید تصور کنید و کاملا فکر پشتش هستش و به هیچ وجه خط فکری نامنظم و شلوغ پلوغ تو سال کنکورتون در کنار من ندارید و تکلیف خودتون رو میدونید. از اونجایی که برنامتون با نظمه پس باید سعی کنید اجرا با نظم هم داشته باشید و تک تک روز های اجراتون بررسی میشه. علاوه به کنکور حتما حواسم به امتحان های نهایتتون هم هست و اصلا برای این مسئله احساس نگرانی قرار نیست بکنید. در نهایت هم سعی میکنم تو تماس ها و ارتباط های مستمرمون همه تجربیات خودم و کنکوری ها خفنی که تو محیط های دیگه باهاشون ارتباط داشتم رو در اختیارتون بذارم تا با خیال راحت به هدفی که دلتون میخواد برسید.",
           profilePic: "https://via.placeholder.com/200x250",
         });
       } catch (error) {
@@ -203,11 +203,10 @@ const CounselorDisplay: React.FC = () => {
               borderRadius: isMobile ? "12px 12px 0 0" : "0 12px 12px 0",
               display: "flex",
               flexDirection: isMobile ? "row" : "column",
-              flexWrap: isMobile ? "wrap" : "nowrap",
-              justifyContent: isMobile ? "space-around" : "flex-start",
-              alignItems: isMobile ? "center" : "flex-start",
+              justifyContent: isMobile ? "space-between" : "flex-start",
+              alignItems: isMobile ? "flex-start" : "flex-start",
               padding: isMobile ? "15px" : "20px",
-              gap: "15px",
+              gap: isMobile ? "10px" : "15px",
             }}
           >
             <img
@@ -218,57 +217,64 @@ const CounselorDisplay: React.FC = () => {
                 height: isMobile ? "120px" : "220px",
                 borderRadius: "10px",
                 objectFit: "cover",
+                marginLeft: isMobile ? "auto" : "0",
                 alignSelf: "center",
                 marginBottom: isMobile ? "0" : "16px",
               }}
             />
-
             <Box sx={{ 
               display: "flex", 
-              alignItems: "center", 
-              gap: "8px",
-              minWidth: isMobile ? "140px" : "auto",
+              flexDirection: "column", 
+              gap: "10px",
+              flex: isMobile ? 1 : "unset",
             }}>
-              <LocationOnIcon sx={{ color: "#555" }} />
-              <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
-                {postData.province}
-              </Typography>
-            </Box>
+              <Box sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "8px",
+                minWidth: isMobile ? "140px" : "auto",
+              }}>
+                <LocationOnIcon sx={{ color: "#555" }} />
+                <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
+                  {postData.province}
+                </Typography>
+              </Box>
 
-            <Box sx={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "8px",
-              minWidth: isMobile ? "140px" : "auto",
-            }}>
-              <EventIcon sx={{ color: "#555" }} />
-              <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
-                کنکور {postData.entranceExamYear}
-              </Typography>
-            </Box>
+              <Box sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "8px",
+                minWidth: isMobile ? "140px" : "auto",
+              }}>
+                <EventIcon sx={{ color: "#555" }} />
+                <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
+                  کنکور {postData.entranceExamYear}
+                </Typography>
+              </Box>
 
-            <Box sx={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "8px",
-              minWidth: isMobile ? "140px" : "auto",
-            }}>
-              <DomainIcon sx={{ color: "#555" }} />
-              <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
-                {postData.uniName}
-              </Typography>
-            </Box>
+              <Box sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "8px",
+                minWidth: isMobile ? "140px" : "auto",
+              }}>
+                <DomainIcon sx={{ color: "#555" }} />
+                <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
+                  {postData.uniName}
+                </Typography>
+              </Box>
 
-            <Box sx={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "8px",
-              minWidth: isMobile ? "140px" : "auto",
-            }}>
-              <SchoolIcon sx={{ color: "#555" }} />
-              <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
-                {postData.uniMajor}
-              </Typography>
+              <Box sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: "8px",
+                minWidth: isMobile ? "140px" : "auto",
+              }}>
+                <SchoolIcon sx={{ color: "#555" }} />
+                <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
+                  {postData.uniMajor}
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Box>
