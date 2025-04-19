@@ -13,7 +13,7 @@ const FPGetVerificationCode = () => {
   const navigate = useNavigate();
   const sentEmail = location.state?.email || "";
 
-  const [timer, setTimer] = useState(10);
+  const [timer, setTimer] = useState(60);
   const [pin, setPin] = useState("");
   // timer
   useEffect(() => {
@@ -59,7 +59,7 @@ const FPGetVerificationCode = () => {
       }
       setTimeout(() => {
         navigate("/set-new-password", { state: { sentEmail } });
-      }, 2000);
+      }, 500);
     } catch (error) {
       console.error("Server error:", error);
       toast.error("خطا در ارتباط با سرور");
@@ -188,7 +188,7 @@ const FPGetVerificationCode = () => {
                     href="/verification-code"
                     onClick={(event) => {
                       event.preventDefault();
-                      setTimer(10);
+                      setTimer(60);
                     }}
                     color="#000000"
                     sx={{

@@ -50,7 +50,7 @@ const FPGetEmail = () => {
       }
       setTimeout(() => {
         navigate("/verification-code", { state: { email } });
-      }, 2000);
+      }, 500);
     } catch (error) {
       console.error("Server error:", error);
       toast.error("خطا در ارتباط با سرور");
