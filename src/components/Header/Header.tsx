@@ -20,7 +20,12 @@ import LockIcon from "@mui/icons-material/Lock";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-const pages = ["مشاوران ما", "خدمات", "درباره ما"];
+const pages = [
+  { label: "مشاوران ما", path: "/#" },
+  { label: "خدمات", path: "/#" },
+  { label: "استخدام", path: "/#" },
+  { label: "درباره ما", path: "/#" },
+];
 const settings = [
   { label: "پروفایل", icon: <AccountCircleIcon /> },
   { label: "تغییر رمز عبور", icon: <LockIcon /> },
@@ -118,11 +123,14 @@ const Header = () => {
           >
             {pages.map((page) => (
               <Button
-                key={page}
-                onClick={handleCloseNavMenu}
+                key={page.label}
+                onClick={() => {
+                  handleCloseNavMenu();
+                  navigate(page.path);
+                }}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page}
+                {page.label}
               </Button>
             ))}
           </Box>
@@ -207,11 +215,16 @@ const Header = () => {
             >
               {pages.map((page) => (
                 <MenuItem
-                  key={page}
-                  onClick={handleCloseNavMenu}
+                  key={page.label}
+                  onClick={() => {
+                    handleCloseNavMenu();
+                    navigate(page.path);
+                  }}
                   sx={{ justifyContent: "center" }}
                 >
-                  <Typography sx={{ textAlign: "center" }}>{page}</Typography>
+                  <Typography sx={{ textAlign: "center" }}>
+                    {page.label}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
