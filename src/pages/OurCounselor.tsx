@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   useMediaQuery,
@@ -9,18 +9,113 @@ import {
   ToggleButton,
   Avatar,
   Rating,
+  Pagination,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import EventIcon from "@mui/icons-material/Event";
 import SchoolIcon from "@mui/icons-material/School";
 import CircleIcon from "@mui/icons-material/Circle";
 import SecondaryButton from "../components/common/SecondaryButton";
 import { CgArrowBottomLeft } from "react-icons/cg";
+import axios from "axios";
+
+interface Counselor {
+  id: number;
+  fullName: string;
+  uniMajor: string;
+  hsMajor: string;
+  uniName: string;
+  entranceExamYear: string;
+  employmentDuration: number;
+  picName: string | null;
+  picUrl: string;
+}
+
+interface ApiResponse {
+  value: {
+    items: Counselor[];
+    pageIndex: number;
+    pageSize: number;
+    totalPages: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+    totalCount: number;
+    filteredCount: number;
+  };
+  isSuccess: boolean;
+  isFailure: boolean;
+  message: string | null;
+  error: {
+    code: string;
+    message: string;
+  };
+}
 
 const OurCounselor = () => {
   const isMobile = useMediaQuery("(max-width:600px)");
+  const isTablet = useMediaQuery("(min-width:601px) and (max-width:960px)");
+  const isDesktop = useMediaQuery("(min-width:961px)");
   const [filter, setFilter] = React.useState("همه");
+  const [searchText, setSearchText] = useState("");
+  const [counselors, setCounselors] = useState<Counselor[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const pageSize = 4;
+
+  const getMajorCode = (major: string) => {
+    switch (major) {
+      case "ریاضی":
+        return 1;
+      case "تجربی":
+        return 2;
+      case "انسانی":
+        return 3;
+      default:
+        return null;
+    }
+  };
+
+  const fetchCounselors = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const majorCode = filter === "همه" ? null : getMajorCode(filter);
+      const response = await axios.get<ApiResponse>(
+        "http://localhost:8080/api/Counselor/GetList",
+        {
+          params: {
+            PageSize: pageSize,
+            PageIndex: currentPage,
+            FullName: searchText,
+            HsMajor: majorCode,
+          },
+        }
+      );
+
+      if (response.data.isSuccess) {
+        setCounselors(response.data.value.items || []);
+        setTotalPages(response.data.value.totalPages);
+      } else {
+        setError(
+          response.data.error.message || "خطا در دریافت اطلاعات مشاوران"
+        );
+        setCounselors([]);
+      }
+    } catch (error) {
+      console.error("Error fetching counselors:", error);
+      setError("خطا در دریافت اطلاعات مشاوران");
+      setCounselors([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCounselors();
+  }, [currentPage, filter, searchText]);
 
   const handleFilterChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -28,7 +123,20 @@ const OurCounselor = () => {
   ) => {
     if (newFilter !== null) {
       setFilter(newFilter);
+      setCurrentPage(1);
     }
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchCounselors();
+  };
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setCurrentPage(value);
   };
 
   return (
@@ -42,37 +150,54 @@ const OurCounselor = () => {
           backgroundSize: "cover",
           backgroundPosition: "center",
           marginBottom: "20px",
-          background: "linear-gradient(to right,rgb(249, 234, 23),rgb(255, 222, 60))", // Fallback color if image is not found
+          background:
+            "linear-gradient(to right,rgb(249, 234, 23),rgb(255, 222, 60))", // Fallback color if image is not found
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}
-      >
-      </Box>
+      ></Box>
 
       {/* Search and Filter Container */}
       <Box
         sx={{
-          maxWidth: "800px",
+          maxWidth: "1200px",
           margin: "0 auto 60px",
           padding: "20px",
           backgroundColor: "white",
           borderRadius: "12px",
           boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           display: "flex",
-          flexDirection: "row",
+          flexDirection: isMobile ? "column" : "row",
           alignItems: "center",
-          gap: "20px",
-          flexWrap: "wrap",
+          justifyContent: "space-between",
+          gap: isMobile ? "20px" : "0px",
+          flexWrap: "nowrap",
         }}
       >
         <Box
-          sx={{ display: "flex", gap: "10px", alignItems: "center", flex: 1 }}
+          sx={{
+            display: "flex",
+            gap: "10px",
+            alignItems: "center",
+            flex: isMobile ? "1 1 100%" : "1 1 auto",
+            minWidth: isMobile ? "100%" : isTablet ? "350px" : "300px",
+            maxWidth: isMobile ? "100%" : isTablet ? "600px" : "500px",
+            width: isMobile ? "100%" : "auto",
+          }}
         >
           <TextField
             fullWidth
             placeholder="جستجو..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
             sx={{
+              width: "100%",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "8px",
                 backgroundColor: "#f5f5f5",
@@ -81,13 +206,14 @@ const OurCounselor = () => {
           />
           <Button
             variant="contained"
+            onClick={handleSearch}
             sx={{
               minWidth: "48px",
               height: "48px",
               borderRadius: "8px",
               backgroundColor: "rgb(8, 57, 136)",
               "&:hover": {
-                backgroundColor: "#rgb(8, 57, 136)",
+                backgroundColor: "rgb(8, 57, 136)",
               },
             }}
           >
@@ -95,7 +221,14 @@ const OurCounselor = () => {
           </Button>
         </Box>
 
-        <Box sx={{ marginRight: "60px" }}>
+        <Box
+          sx={{
+            flex: isMobile ? "1 1 100%" : "0 0 auto",
+            width: isMobile ? "100%" : "auto",
+            display: "flex",
+            justifyContent: isMobile ? "center" : "flex-start",
+          }}
+        >
           <ToggleButtonGroup
             value={filter}
             exclusive
@@ -135,145 +268,222 @@ const OurCounselor = () => {
           padding: isMobile ? "0 16px" : "0 40px",
           display: "flex",
           justifyContent: "center",
-          paddingBottom: "100px",
+          paddingBottom: "50px",
           boxSizing: "border-box",
         }}
       >
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: isMobile
-              ? "1fr"
-              : "repeat(auto-fit, minmax(400px, 1fr))",
-            rowGap: "30px",
-            columnGap: "40px",
-            justifyContent: "center",
-            width: "100%",
-            maxWidth: "1600px",
-          }}
-        >
-          {[1, 2, 3, 4, 5, 6].map((item) => (
-            <Box
-              key={item}
-              sx={{
-                height: "250px",
-                width: "100%",
-                maxWidth: "500px",
-                backgroundColor: "#fff",
-                borderRadius: "8px",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                display: "flex",
-                flexDirection: "column",
-                border: "1px solid rgb(183, 183, 183)",
-                position: "relative",
-                "&:hover": {
-                  boxShadow: "0 4px 4px rgba(0,0,0,0.2)",
-                },
-              }}
-            >
-              {/* Top Section */}
+        {loading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px",
+            }}
+          >
+            <Typography>در حال بارگذاری...</Typography>
+          </Box>
+        ) : error ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px",
+            }}
+          >
+            <Typography color="error">{error}</Typography>
+          </Box>
+        ) : counselors.length === 0 ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px",
+            }}
+          >
+            <Typography>مشاوری یافت نشد</Typography>
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+              rowGap: "30px",
+              columnGap: "40px",
+              justifyContent: "center",
+              width: "100%",
+              maxWidth: "1600px",
+            }}
+          >
+            {counselors.map((counselor) => (
               <Box
+                key={counselor.id}
                 sx={{
+                  height: "250px",
+                  width: "100%",
+                  maxWidth: "500px",
+                  backgroundColor: "#fff",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                   display: "flex",
-                  justifyContent: "space-between",
-                  padding: "12px",
+                  flexDirection: "column",
+                  border: "1px solid rgb(183, 183, 183)",
+                  position: "relative",
+                  "&:hover": {
+                    boxShadow: "0 4px 4px rgba(0,0,0,0.2)",
+                  },
                 }}
               >
-                <Typography variant="body2" sx={{ color: "#666" }}>
-                  تجربه کار: ۳ سال
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                  <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
-                  <Typography variant="body2" sx={{ color: "#666" }}>
-                    ۴.۸
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* Profile Section */}
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: "16px",
-                  padding: "0 16px",
-                  marginTop: "10px",
-                }}
-              >
-                <Avatar
-                  sx={{
-                    width: isMobile ? 100 : 120,
-                    height: isMobile ? 100 : 120,
-                    border: "2px solid rgb(8, 57, 136)",
-                  }}
-                  src="src\assets\photo_2024-03-29_17-27-37.jpg"
-                />
+                {/* Top Section */}
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                    justifyContent: "center",
+                    justifyContent: "space-between",
+                    padding: "12px",
                   }}
                 >
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    امیرمحمد عزیزی
-                  </Typography>
                   <Typography variant="body2" sx={{ color: "#666" }}>
-                    <CircleIcon
-                      sx={{
-                        fontSize: "16px",
-                        verticalAlign: "middle",
-                        marginLeft: "4px",
-                      }}
-                    />
-                   ریاضی
+                    تجربه کار: {counselor.employmentDuration} سال
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "#666" }}>
-                    <SchoolIcon
-                      sx={{
-                        fontSize: "16px",
-                        verticalAlign: "middle",
-                        marginLeft: "4px",
-                      }}
-                    />
-                      مهندسی کامپیوتر
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "#666" }}>
-                    <CalendarMonthIcon
-                      sx={{
-                        fontSize: "16px",
-                        verticalAlign: "middle",
-                        marginLeft: "4px",
-                      }}
-                    />
-                    کنکور سال ۱۴۰۱
-                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      paddingLeft: "2px",
+                    }}
+                  >
+                    <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      ۴.۸
+                    </Typography>
+                  </Box>
                 </Box>
-              </Box>
 
-              {/* Navigation Button */}
-              <SecondaryButton
-                name="مشاهده"
-                backgroundColor="transparent"
-                width="auto"
-                height="50px"
-                fontSize="16px"
-                borderRadius="8px"
-                sx={{
-                  position: "absolute",
-                  bottom: "16px",
-                  left: "16px",
-                  padding: "0 20px",
-                  minHeight: "35px",
-                  lineHeight: "35px",
-                  background:
-                    "linear-gradient(45deg, rgb(8, 57, 136) 0%,rgb(8, 57, 136) 100%)",
-                }}
-              />
-            </Box>
-          ))}
-        </Box>
+                {/* Profile Section */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: "16px",
+                    padding: "0 16px",
+                    marginTop: "10px",
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      width: isMobile ? 100 : 120,
+                      height: isMobile ? 100 : 120,
+                      border: "2px solid rgb(8, 57, 136)",
+                    }}
+                    src={counselor.picUrl}
+                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {counselor.fullName}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      <CircleIcon
+                        sx={{
+                          fontSize: "16px",
+                          verticalAlign: "middle",
+                          marginLeft: "4px",
+                        }}
+                      />
+                      {counselor.hsMajor}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      <SchoolIcon
+                        sx={{
+                          fontSize: "16px",
+                          verticalAlign: "middle",
+                          marginLeft: "4px",
+                        }}
+                      />
+                      {counselor.uniMajor}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      <EventIcon
+                        sx={{
+                          fontSize: "16px",
+                          verticalAlign: "middle",
+                          marginLeft: "4px",
+                        }}
+                      />
+                      کنکور {counselor.entranceExamYear}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Navigation Button */}
+                <SecondaryButton
+                  name="مشاهده"
+                  backgroundColor="transparent"
+                  width="auto"
+                  height="35px"
+                  fontSize="16px"
+                  borderRadius="8px"
+                  sx={{
+                    position: "absolute",
+                    bottom: "16px",
+                    left: "16px",
+                    padding: "0 20px",
+                    minHeight: "35px",
+                    lineHeight: "35px",
+                    background:
+                      "linear-gradient(45deg, rgb(8, 57, 136) 0%,rgb(8, 57, 136) 100%)",
+                  }}
+                >
+                  <CgArrowBottomLeft
+                    style={{ fontSize: "24px", color: "white" }}
+                  />
+                </SecondaryButton>
+              </Box>
+            ))}
+          </Box>
+        )}
       </Box>
+
+      {/* Pagination - Only show if there are items */}
+      {!loading && !error && counselors.length > 0 && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "40px",
+          }}
+        >
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            dir="rtl"
+            showFirstButton={false}
+            showLastButton={false}
+            sx={{
+              "& .MuiPaginationItem-root": {
+                color: "rgb(8, 57, 136)",
+                "&.Mui-selected": {
+                  backgroundColor: "rgb(8, 57, 136)",
+                  color: "white",
+                },
+                "&.MuiPaginationItem-previousNext": {
+                  transform: "rotate(180deg)",
+                },
+              },
+            }}
+          />
+        </Box>
+      )}
     </Box>
   );
 };
