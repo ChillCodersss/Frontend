@@ -51,6 +51,7 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     
     // Client-side validation
     if (!formData.email || !formData.password) {
