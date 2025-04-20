@@ -9,7 +9,7 @@ export const storeToken = (token: string): void => {
   
   export const removeToken = (): void => {
     localStorage.removeItem("jwtToken");
-    // localStorage.removeItem("userInfo"); // Clear user info too if stored
+    localStorage.removeItem("userInfo"); // Clear user info too if stored
   };
   
   export const isAuthenticated = (): boolean => {
