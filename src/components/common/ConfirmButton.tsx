@@ -72,4 +72,3 @@ function ConfirmButton({ name, width = "240px", height = "40px", ...props }: Con
 }
 
 export default ConfirmButton;
-

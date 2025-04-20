@@ -9,8 +9,8 @@ body, html {
 
   @font-face {
     font-family: 'vazir';
-    src: url('../public/Fonts/Vazir.woff2') format('woff2'),
-         url('../public/Fonts/Vazir.woff') format('woff');
+    src: url('../Fonts/Vazir.woff2') format('woff2'),
+         url('../Fonts/Vazir.woff') format('woff');
     font-weight:normal;
     font-style: normal;
   }
