@@ -36,21 +36,21 @@ const FPGetEmail = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ email: email }),
         }
       );
       const data = await response.json();
-
-      if (!response.ok || data.IsFailure) {
+      if (!response.ok || data.isFailure) {
         toast.error(data.error.message || "خطا در ارتباط با سرور");
         return;
       }
-      if (data.IsSuccess) {
+      console.log(data);
+      if (data.isSuccess) {
         toast.success("کد تایید ارسال شد");
       }
       setTimeout(() => {
         navigate("/verification-code", { state: { email } });
-      }, 500);
+      }, 1000);
     } catch (error) {
       console.error("Server error:", error);
       toast.error("خطا در ارتباط با سرور");

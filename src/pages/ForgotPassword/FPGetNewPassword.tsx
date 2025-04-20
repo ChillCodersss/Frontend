@@ -14,7 +14,7 @@ import "./BackgroundStyle.css";
 const FPGetNewPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const sentEmail = location.state?.email || ""; // Retrieve email from state
+  const sentEmail = location.state?.sentEmail || "";
 
   const [formData, setFormData] = useState({
     newPassword: "",
@@ -63,7 +63,7 @@ const FPGetNewPassword = () => {
     }
     try {
       const response = await fetch(
-        "http://localhost:8080/api/Auth/ResetPassword",
+        "http://localhost:8080/api/Auth/ChangeForgotPassword",
         {
           method: "POST",
           headers: {
@@ -77,16 +77,16 @@ const FPGetNewPassword = () => {
         }
       );
       const data = await response.json();
-      if (!response.ok || data.IsFailure) {
+      if (!response.ok || data.isFailure) {
         toast.error(data.error.message || "خطا در ارتباط با سرور");
         return;
       }
-      if (data.IsSuccess) {
+      if (data.isSuccess) {
         toast.success("رمز عبور با موفقیت تغییر کرد");
       }
       setTimeout(() => {
         navigate("/login");
-      }, 500);
+      }, 1000);
     } catch (error) {
       console.error("Server error:", error);
       toast.error("خطا در ارتباط با سرور");

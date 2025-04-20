@@ -41,7 +41,10 @@ const FPGetVerificationCode = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email: sentEmail, code: Number(pin) }),
+          body: JSON.stringify({
+            email: sentEmail,
+            verificationCode: Number(pin),
+          }),
         }
       );
       const data = await response.json();
@@ -50,16 +53,16 @@ const FPGetVerificationCode = () => {
         toast.error(data.error.message || "خطا در ارتباط با سرور");
         return;
       }
-      if (data.IsFailure) {
+      if (data.isFailure) {
         toast.error("کد تایید وارد شده اشتباه است");
         return;
       }
-      if (data.IsSuccess) {
+      if (data.isSuccess) {
         toast.success("کد تایید صحیح است");
       }
       setTimeout(() => {
         navigate("/set-new-password", { state: { sentEmail } });
-      }, 500);
+      }, 1000);
     } catch (error) {
       console.error("Server error:", error);
       toast.error("خطا در ارتباط با سرور");
@@ -186,8 +189,28 @@ const FPGetVerificationCode = () => {
                 ) : (
                   <Link
                     href="/verification-code"
-                    onClick={(event) => {
+                    onClick={async (event) => {
                       event.preventDefault();
+                      const response = await fetch(
+                        "http://localhost:8080/api/Auth/ForgotPassword",
+                        {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({ email: sentEmail }),
+                        }
+                      );
+                      const data = await response.json();
+                      if (!response.ok || data.isFailure) {
+                        toast.error(
+                          data.error.message || "خطا در ارتباط با سرور"
+                        );
+                        return;
+                      }
+                      if (data.isSuccess) {
+                        toast.success("کد تایید ارسال شد");
+                      }
                       setTimer(60);
                     }}
                     color="#000000"
