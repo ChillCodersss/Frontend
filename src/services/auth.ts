@@ -1,4 +1,3 @@
-// src/services/auth.ts
 export const storeToken = (token: string): void => {
     localStorage.setItem("jwtToken", token);
   };
@@ -9,7 +8,7 @@ export const storeToken = (token: string): void => {
   
   export const removeToken = (): void => {
     localStorage.removeItem("jwtToken");
-    localStorage.removeItem("userInfo"); // Clear user info too if stored
+    localStorage.removeItem("userInfo"); 
   };
   
   export const isAuthenticated = (): boolean => {
