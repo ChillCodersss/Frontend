@@ -17,7 +17,6 @@ import SchoolIcon from "@mui/icons-material/School";
 import CircleIcon from "@mui/icons-material/Circle";
 import SecondaryButton from "../components/common/SecondaryButton";
 import { CgArrowBottomLeft } from "react-icons/cg";
-import Footer from "@/components/Footer/Footer";
 
 const OurCounselor = () => {
   const isMobile = useMediaQuery("(max-width:600px)");
@@ -43,7 +42,7 @@ const OurCounselor = () => {
           backgroundSize: "cover",
           backgroundPosition: "center",
           marginBottom: "20px",
-          background: "linear-gradient(to right,rgb(51, 13, 87), #9400D3)", // Fallback color if image is not found
+          background: "linear-gradient(to right,rgb(249, 234, 23),rgb(255, 222, 60))", // Fallback color if image is not found
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -86,9 +85,9 @@ const OurCounselor = () => {
               minWidth: "48px",
               height: "48px",
               borderRadius: "8px",
-              backgroundColor: "#9400D3",
+              backgroundColor: "rgb(8, 57, 136)",
               "&:hover": {
-                backgroundColor: "#7B00B8",
+                backgroundColor: "#rgb(8, 57, 136)",
               },
             }}
           >
@@ -105,16 +104,16 @@ const OurCounselor = () => {
               display: "flex",
               gap: "15px",
               "& .MuiToggleButton-root": {
-                border: "1px solid #9400D3",
-                color: "#9400D3",
+                border: "1px solid rgb(8, 57, 136)",
+                color: "#rgb(8, 57, 136)",
                 borderRadius: "8px",
                 padding: "8px 16px",
                 "&.Mui-selected": {
-                  backgroundColor: "#9400D3",
+                  backgroundColor: "rgb(8, 57, 136)",
                   color: "white",
                 },
                 "&:hover": {
-                  backgroundColor: "rgba(148, 0, 211, 0.1)",
+                  backgroundColor: "rgb(177, 188, 205)",
                 },
               },
             }}
@@ -204,7 +203,7 @@ const OurCounselor = () => {
                   sx={{
                     width: isMobile ? 100 : 120,
                     height: isMobile ? 100 : 120,
-                    border: "2px solid #9400D3",
+                    border: "2px solid rgb(8, 57, 136)",
                   }}
                   src="src\assets\photo_2024-03-29_17-27-37.jpg"
                 />
@@ -227,7 +226,7 @@ const OurCounselor = () => {
                         marginLeft: "4px",
                       }}
                     />
-                    رشته تحصیلی: ریاضی
+                   ریاضی
                   </Typography>
                   <Typography variant="body2" sx={{ color: "#666" }}>
                     <SchoolIcon
@@ -237,7 +236,7 @@ const OurCounselor = () => {
                         marginLeft: "4px",
                       }}
                     />
-                    رشته دانشگاهی: مهندسی کامپیوتر
+                      مهندسی کامپیوتر
                   </Typography>
                   <Typography variant="body2" sx={{ color: "#666" }}>
                     <CalendarMonthIcon
@@ -247,7 +246,7 @@ const OurCounselor = () => {
                         marginLeft: "4px",
                       }}
                     />
-                    سال کنکور : ۱۴۰۱
+                    کنکور سال ۱۴۰۱
                   </Typography>
                 </Box>
               </Box>
@@ -268,11 +267,7 @@ const OurCounselor = () => {
                   minHeight: "35px",
                   lineHeight: "35px",
                   background:
-                    "linear-gradient(45deg, #9400D3 0%, #7B00B8 100%)",
-                  "&:hover": {
-                    background:
-                      "linear-gradient(45deg, #7B00B8 0%, #9400D3 100%)",
-                  },
+                    "linear-gradient(45deg, rgb(8, 57, 136) 0%,rgb(8, 57, 136) 100%)",
                 }}
               />
             </Box>
