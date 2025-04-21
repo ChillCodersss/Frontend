@@ -157,7 +157,7 @@ const OurCounselor = () => {
           backgroundPosition: "center",
           marginBottom: "20px",
           background:
-            "linear-gradient(to right,rgb(249, 234, 23),rgb(255, 222, 60))", // Fallback color if image is not found
+            "linear-gradient(to right, rgb(8, 57, 136), rgb(0, 119, 182))", // Fallback color if image is not found
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -197,34 +197,20 @@ const OurCounselor = () => {
             placeholder="جستجو..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                handleSearch();
-              }
+            InputProps={{
+              startAdornment: (
+                <SearchIcon sx={{ color: "rgb(8, 57, 136)", mr: 1 }} />
+              ),
             }}
             sx={{
               width: "100%",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "8px",
                 backgroundColor: "#f5f5f5",
+                marginRight: isMobile ? "0px" : "40px",
               },
             }}
           />
-          <Button
-            variant="contained"
-            onClick={handleSearch}
-            sx={{
-              minWidth: "48px",
-              height: "48px",
-              borderRadius: "8px",
-              backgroundColor: "rgb(8, 57, 136)",
-              "&:hover": {
-                backgroundColor: "rgb(8, 57, 136)",
-              },
-            }}
-          >
-            <SearchIcon />
-          </Button>
         </Box>
 
         <Box
@@ -233,6 +219,7 @@ const OurCounselor = () => {
             width: isMobile ? "100%" : "auto",
             display: "flex",
             justifyContent: isMobile ? "center" : "flex-start",
+            marginLeft: isMobile ? "0px" : "40px",
           }}
         >
           <ToggleButtonGroup
@@ -271,10 +258,10 @@ const OurCounselor = () => {
           width: "100%",
           maxWidth: "100%",
           margin: "0 auto",
-          padding: isMobile ? "0 16px" : "0 40px",
+          padding: isMobile ? "0px 16px" : "0 40px",
           display: "flex",
           justifyContent: "center",
-          paddingBottom: "50px",
+          paddingBottom: isMobile ? "10px" : "50px",
           boxSizing: "border-box",
         }}
       >
