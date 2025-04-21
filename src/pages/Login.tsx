@@ -45,7 +45,6 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
       const response = await fetch("http://localhost:8080/api/Auth/Login", {
         method: "POST",
@@ -230,6 +229,7 @@ const Login: React.FC = () => {
                     <Email sx={{ marginLeft: "-2px", marginTop: "2px" }} />
                   </InputAdornment>
                 }
+
               />
 
               <InputBox

@@ -8,6 +8,9 @@ import {
   Autocomplete,
   useMediaQuery,
   useTheme,
+  Button,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -15,25 +18,31 @@ import CloseIcon from "@mui/icons-material/Close";
 import InputBox from "@/components/common/inputbox";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import EditIcon from "@mui/icons-material/Edit";
+import { getToken } from "@/services/auth"; 
 
 const CounselorProfile = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const [isEditMode, setIsEditMode] = React.useState(false);
-  const [provinceOptions, setProvinceOptions] = React.useState<string[]>([]);
-  const [provinceInputValue, setProvinceInputValue] = React.useState("");
-  const [loadingProvinces, setLoadingProvinces] = React.useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [provinceOptions, setProvinceOptions] = useState<string[]>([]);
+  const [provinceInputValue, setProvinceInputValue] = useState("");
+  const [loadingProvinces, setLoadingProvinces] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
+  const [counselorId, setCounselorId] = useState<number | null>(null); 
+  const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
 
-  const [initialFormData, setInitialFormData] = React.useState({
+
+  const [initialFormData, setInitialFormData] = useState({
     Name: "",
     phone: "",
     email: "",
     university: "",
     major: "",
-    universityYear: "",
+    entranceExamYear: "",
     countryRank: "",
     province: "",
     workExperience: "",
@@ -41,13 +50,93 @@ const CounselorProfile = () => {
     profileImage: "",
   });
 
-  const [formData, setFormData] = React.useState(initialFormData);
+  const [formData, setFormData] = useState(initialFormData);
 
-  // Save initial form data when component mounts
+"http://localhost:8080";
+
+
   useEffect(() => {
-    // Here you would typically fetch the initial data from your API
-    // For now, we'll just set it to the current formData
-    setInitialFormData(formData);
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
+
+      const token = getToken();
+      if (!token) {
+        setError("No authentication token found. Please log in.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:8080/api/Counselor/Profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.isSuccess && data.value) {
+          const mappedData = {
+            Name: `${data.value.firstName || ""} ${data.value.lastName || ""}`.trim(),
+            phone: data.value.phoneNumber || "",
+            email: data.value.email || "",
+            university: data.value.uniName || "",
+            major: data.value.uniMajor || "",
+            entranceExamYear: data.value.entranceExamYear || "",
+            countryRank: data.value.countryRanking || "",
+            province: data.value.province || "",
+            workExperience: data.value.employmenthistory || "",
+            description_text: data.value.aboutMe || "",
+            profileImage: "", 
+          };
+
+          let profilePicUrl = "";
+          if (data.value.profilePicUrl) {
+            try {
+              const imageResponse = await fetch(
+                `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+                  data.value.profilePicUrl
+                )}`,
+                {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                    // Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+
+              if (imageResponse.ok) {
+                const blob = await imageResponse.blob();
+                profilePicUrl = URL.createObjectURL(blob);
+              } else {
+                console.error("Failed to fetch image:", imageResponse.statusText);
+              }
+            } catch (imageError) {
+              console.error("Error fetching profile picture:", imageError);
+            }
+          } else {
+            console.warn("No profilePicUrl provided.");
+          }
+
+          setFormData({ ...mappedData, profileImage: profilePicUrl });
+          setInitialFormData({ ...mappedData, profileImage: profilePicUrl });
+          setCounselorId(data.value.id || null); // Store Id
+        } else {
+          setError(data.message || "Failed to load profile data.");
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        setError("Error fetching profile data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,8 +147,11 @@ const CounselorProfile = () => {
     }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setProfilePicFile(file);
+
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
@@ -69,7 +161,7 @@ const CounselorProfile = () => {
           }));
         }
       };
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(file);
     }
   };
 
@@ -77,33 +169,131 @@ const CounselorProfile = () => {
     setIsEditMode(true);
   };
 
-  const handleSave = () => {
-    setIsEditMode(false);
+  const handleSave = async () => {
+    const token = getToken();
+    if (!token) {
+      setSnackbar({ open: true, message: "No authentication token found. Please log in." });
+      return;
+    }
+
+    if (!counselorId) {
+      setSnackbar({ open: true, message: "Counselor ID is missing. Cannot update profile." });
+      return;
+    }
+
+    try {
+      const formDataPayload = new FormData();
+      formDataPayload.append("Id", counselorId.toString());
+      formDataPayload.append("AboutMe", formData.description_text || "");
+      formDataPayload.append("Email", formData.email || "");
+      formDataPayload.append("PhoneNumber", formData.phone || "");
+      formDataPayload.append("Employmenthistory", formData.workExperience || "");
+      if (profilePicFile) {
+        formDataPayload.append("ProfilePic", profilePicFile);
+      }
+
+      const response = await fetch("http://localhost:8080/api/Counselor/Update", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formDataPayload,
+      });
+
+      const data = await response.json();
+
+      if (data.isSuccess) {
+        let profilePicUrl = formData.profileImage;
+        if (data.value?.profilePicUrl) {
+          try {
+            const imageResponse = await fetch(
+              `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+                data.value.profilePicUrl
+              )}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  // Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            if (imageResponse.ok) {
+              const blob = await imageResponse.blob();
+              profilePicUrl = URL.createObjectURL(blob);
+            } else {
+              console.error("Failed to fetch updated image:", imageResponse.statusText);
+            }
+          } catch (imageError) {
+            console.error("Error fetching updated profile picture:", imageError);
+          }
+        }
+
+        const mappedData = {
+          Name: formData.Name,
+          // data.value
+          //   ? `${data.value.firstName || ""} ${data.value.lastName || ""}`.trim()
+          //   : 
+          phone: data.value?.phoneNumber || formData.phone,
+          email: data.value?.email || formData.email,
+          university: data.value?.uniName || formData.university,
+          major: data.value?.uniMajor || formData.major,
+          entranceExamYear: data.value?.entranceExamYear || formData.entranceExamYear,
+          countryRank: data.value?.countryRanking || formData.countryRank,
+          province: data.value?.province || formData.province,
+          workExperience: data.value?.employmenthistory || formData.workExperience,
+          description_text: data.value?.aboutMe || formData.description_text,
+          profileImage: profilePicUrl,
+        };
+
+        setFormData(mappedData);
+        setInitialFormData(mappedData);
+        setProfilePicFile(null); // Clear file inputs
+        setIsEditMode(false); // Exit edit mode
+      } else {
+        setSnackbar({
+          open: true,
+          message: data.message || "Failed to save profile.",
+        });
+      }
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      setSnackbar({ open: true, message: "Failed to save profile. Please try again." });
+    }
   };
 
   const handleCancel = () => {
     setIsEditMode(false);
     setFormData(initialFormData);
+    setProfilePicFile(null);
     setProvinceInputValue("");
     setProvinceOptions([]);
-  };
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
   };
 
   useEffect(() => {
     const fetchProvinces = async () => {
       setLoadingProvinces(true);
       try {
+        const token = getToken();
+        if (!token) {
+          console.error("No token for province fetch");
+          return;
+        }
+
         const response = await fetch(
           `http://localhost:8080/api/Provinces/Dropdown?input=${encodeURIComponent(
             provinceInputValue || ""
-          )}`
+          )}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         const data = await response.json();
         if (data.isSuccess) {
-          setProvinceOptions(data.value);
+          setProvinceOptions(data.value || []);
         }
       } catch (error) {
         console.error("Error fetching provinces:", error);
@@ -114,10 +304,19 @@ const CounselorProfile = () => {
 
     const debounceTimer = setTimeout(() => {
       fetchProvinces();
-    }, 300); 
+    }, 300);
 
     return () => clearTimeout(debounceTimer);
   }, [provinceInputValue]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <Box sx={{ textAlign: "center", padding: "40px" }}>
+        Loading profile...
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -137,8 +336,7 @@ const CounselorProfile = () => {
           color: "black",
         }}
       >
-        <Toolbar>
-        </Toolbar>
+        <Toolbar></Toolbar>
       </AppBar>
 
       {/* Main Content */}
@@ -195,13 +393,13 @@ const CounselorProfile = () => {
                 sx={{
                   width: isMobile ? "150px" : "150px",
                   height: isMobile ? "150px" : "150px",
-                  cursor: isEditMode ? "poiner" : "default",
+                  cursor: isEditMode ? "pointer" : "default",
                   transition: "filter 0.3s ease",
                 }}
                 src={formData.profileImage}
                 onClick={() =>
                   isEditMode &&
-                  document.getElementById("profile-image-input")?.click()
+                  document.getElementById("profile-pic-input")?.click()
                 }
               >
                 {!formData.profileImage && (
@@ -224,21 +422,21 @@ const CounselorProfile = () => {
                     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                   }}
                   onClick={() =>
-                    document.getElementById("profile-image-input")?.click()
+                    document.getElementById("profile-pic-input")?.click()
                   }
                 />
               )}
             </Box>
             <input
               type="file"
-              id="profile-image-input"
+              id="profile-pic-input"
               accept="image/*"
               style={{ display: "none" }}
-              onChange={handleImageChange}
+              onChange={handleProfilePicChange}
             />
           </Box>
 
-          {/* Fields Container - Tighter spacing */}
+          {/* Fields Container */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <Box
               sx={{
@@ -295,7 +493,7 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.university}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  readOnly={true}
                 />
               </Box>
             </Box>
@@ -315,17 +513,17 @@ const CounselorProfile = () => {
                   direction="rtl"
                   value={formData.major}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  readOnly={true}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
                 <InputBox
-                  label="سال ورود به دانشگاه"
-                  name="universityYear"
+                  label="سال کنکور"
+                  name="entranceExamYear"
                   direction="ltr"
-                  value={formData.universityYear}
+                  value={formData.entranceExamYear}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  readOnly={true}
                 />
               </Box>
             </Box>
@@ -344,7 +542,7 @@ const CounselorProfile = () => {
                   direction="ltr"
                   value={formData.countryRank}
                   onChange={handleChange}
-                  readOnly={!isEditMode}
+                  readOnly={true}
                 />
               </Box>
               <Box sx={{ flex: 1 }}>
@@ -408,11 +606,10 @@ const CounselorProfile = () => {
                                 borderColor: "rgb(204, 207, 209)",
                                 borderWidth: "2px",
                               },
-                              "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                {
-                                  borderColor: "#1976d2",
-                                  borderWidth: "2.3px",
-                                },
+                              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#1976d2",
+                                borderWidth: "2.3px",
+                              },
                             },
                           }}
                         />
@@ -510,7 +707,6 @@ const CounselorProfile = () => {
                   color: "black",
                   textAlign: "right",
                   direction: "rtl",
-                  
                 }}
               >
                 متن معرفی
@@ -596,6 +792,21 @@ const CounselorProfile = () => {
           </Box>
         </Box>
       </Box>
+
+      {/* Snackbar for errors */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
