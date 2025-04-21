@@ -3,11 +3,17 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import DomainIcon from '@mui/icons-material/Domain';
+import DomainIcon from "@mui/icons-material/Domain";
 import EventIcon from "@mui/icons-material/Event";
 import SchoolIcon from "@mui/icons-material/School";
+import StarIcon from "@mui/icons-material/Star";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import ConfirmButton from "@/components/common/ConfirmButton";
 import SecondaryButton from "@/components/common/SecondaryButton";
-import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 interface PostData {
@@ -19,6 +25,8 @@ interface PostData {
   hsMajorTitle: string;
   content: string;
   profilePic: string;
+  workExperience: string;
+  rating: string;
 }
 
 const CounselorDisplay: React.FC = () => {
@@ -30,12 +38,15 @@ const CounselorDisplay: React.FC = () => {
     uniName: "",
     hsMajorTitle: "",
     content: "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
-    profilePic: "https://via.placeholder.com/200x250",
+    profilePic: "/src/assets/DefaultPerson.png",
+    workExperience: "نامشخص",
+    rating: "0",
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const hasFetched = useRef(false);
-  const isMobile = useMediaQuery('(max-width:600px)');
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     const fetchPostData = async () => {
@@ -53,6 +64,33 @@ const CounselorDisplay: React.FC = () => {
 
         const data = await response.json();
         const userData = data.value;
+
+        let profilePicUrl = "/src/assets/DefaultPerson.png";
+        if (userData?.picUrl) {
+          try {
+            const imageResponse = await fetch(
+              `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(userData.picUrl)}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            if (imageResponse.ok) {
+              const blob = await imageResponse.blob();
+              profilePicUrl = URL.createObjectURL(blob);
+            } else {
+              console.error("Failed to fetch image, using default:", imageResponse.statusText);
+            }
+          } catch (imageError) {
+            console.error("Error fetching profile picture, using default:", imageError);
+          }
+        } else {
+          console.warn("No picUrl provided, using default image.");
+        }
+
         setPostData({
           username: `${userData.firstName} ${userData.lastName}`,
           province: userData.province,
@@ -60,8 +98,12 @@ const CounselorDisplay: React.FC = () => {
           uniMajor: userData.uniMajor || "نامشخص",
           uniName: userData.uniName,
           hsMajorTitle: userData.hsMajorTitle || "نامشخص",
-          content: userData.aboutMe || "مشاور کنکور بودن کار دلیه. من تو تک تک ثانیه های سال کنکور در کنارتونم و به عنوان کسی که اختلاف سنی زیادی باهاتون نداره کاملا دغدغه هاتون رو درک میکنم. با اینکه تجربه خیلی زیادی ندارم به علت علاقه ای که از اول به این حوزه داشتم تک تک نکاتی که از مشاور های خودم و اساتیدم یاد گرفتم رو تو ذهنم دارم و علاوه بر اون از فضای کنکور بعد از آزمون خودم دور نشدم و کاملا آشنا به کنکور نظام جدیدم. برنامه ای که بهتون میدم منظم تر از هر برنامه ای هستش که میتونید تصور کنید و کاملا فکر پشتش هستش و به هیچ وجه خط فکری نامنظم و شلوغ پلوغ تو سال کنکورتون در کنار من ندارید و تکلیف خودتون رو میدونید. از اونجایی که برنامتون با نظمه پس باید سعی کنید اجرا با نظم هم داشته باشید و تک تک روز های اجراتون بررسی میشه. علاوه به کنکور حتما حواسم به امتحان های نهایتتون هم هست و اصلا برای این مسئله احساس نگرانی قرار نیست بکنید. در نهایت هم سعی میکنم تو تماس ها و ارتباط های مستمرمون همه تجربیات خودم و کنکوری ها خفنی که تو محیط های دیگه باهاشون ارتباط داشتم رو در اختیارتون بذارم تا با خیال راحت به هدفی که دلتون میخواد برسید.",
-          profilePic: "https://via.placeholder.com/200x250",
+          content:
+            userData.aboutMe ||
+            ".مشاور کنکور بودن کار دلیه. من تو تک تک ثانیه های سال کنکور در کنارتونم و به عنوان کسی که اختلاف سنی زیادی باهاتون نداره کاملا دغدغه هاتون رو درک میکنم. ...",
+          profilePic: profilePicUrl,
+          workExperience: userData.workExperience || "3 سال",
+          rating: userData.rating || "4.8",
         });
       } catch (error) {
         console.error("خطا در ارتباط با سرور", error);
@@ -73,16 +115,37 @@ const CounselorDisplay: React.FC = () => {
     fetchPostData();
   }, []);
 
+  const handleOpenDialog = () => {
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleConfirm = () => {
+    // Add your submission logic here (e.g., API call)
+    console.log("Request submitted for counselor:", postData.username);
+    setOpenDialog(false);
+  };
+
+  const typographyStyles = {
+    color: "black",
+    fontWeight: "bold",
+  };
+
   return (
-    <Box sx={{ 
-      position: "relative", 
-      minHeight: "100vh", 
-      width: "100%",
-      padding: isMobile ? "10px" : "20px",
-      boxSizing: "border-box",
-      backgroundColor: "#f5f5f5",
-      direction: "rtl",
-    }}>
+    <Box
+      sx={{
+        position: "relative",
+        minHeight: "100vh",
+        width: "100%",
+        padding: isMobile ? "10px" : "20px",
+        boxSizing: "border-box",
+        backgroundColor: "#f5f5f5",
+        direction: "rtl",
+      }}
+    >
       {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
           <CircularProgress />
@@ -113,29 +176,38 @@ const CounselorDisplay: React.FC = () => {
             }}
           >
             <Box>
-              <Typography
-                variant={isMobile ? "h5" : "h4"}
-                sx={{
-                  fontWeight: "1000",
-                  color: "black",
-                  marginBottom: "10px",
-                  textAlign: "right",
-                }}
-              >
-                {postData.username}
-              </Typography>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                <Typography
+                  variant={isMobile ? "h5" : "h4"}
+                  sx={{ ...typographyStyles, textAlign: "right" }}
+                >
+                  {postData.username}
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <StarIcon sx={{ color: "#f4c417" }} />
+                  <Typography
+                    variant={isMobile ? "subtitle1" : "h6"}
+                    sx={{ ...typographyStyles, textAlign: "left" }}
+                  >
+                    {postData.rating}
+                  </Typography>
+                </Box>
+              </Box>
 
-              <Typography
-                variant={isMobile ? "subtitle1" : "h6"}
-                sx={{
-                  color: "black",
-                  fontWeight: "1100",
-                  textAlign: "right",
-                  marginBottom: "20px",
-                }}
-              >
-                رشته {postData.hsMajorTitle}
-              </Typography>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                <Typography
+                  variant={isMobile ? "subtitle1" : "h6"}
+                  sx={{ ...typographyStyles, textAlign: "right" }}
+                >
+                  رشته {postData.hsMajorTitle}
+                </Typography>
+                <Typography
+                  variant={isMobile ? "subtitle1" : "h6"}
+                  sx={{ ...typographyStyles, textAlign: "left" }}
+                >
+                  تجربه کار: {postData.workExperience}
+                </Typography>
+              </Box>
 
               <Box>
                 <Typography
@@ -180,18 +252,7 @@ const CounselorDisplay: React.FC = () => {
                 اگر علاقه‌مند هستی با این مشاور کار کنی، درخواستت رو ثبت کن تا هماهنگی‌های لازم انجام بشه.
               </Typography>
 
-              <SecondaryButton
-                name="درخواست مشاوره"
-                variant="contained"
-                backgroundColor="#F4C417"
-                height="40px"
-                borderRadius="10px"
-                sx={{ 
-                  color: "black",
-                  width: isMobile ? "100%" : "auto",
-                  minWidth: "160px",
-                }}
-              />
+              <ConfirmButton name="ارسال درخواست" type="button" onClick={handleOpenDialog} />
             </Box>
           </Box>
 
@@ -200,7 +261,7 @@ const CounselorDisplay: React.FC = () => {
             sx={{
               width: isMobile ? "100%" : "230px",
               backgroundColor: "#f4c417",
-              borderRadius: isMobile ? "12px 12px 0 0" : "0 12px 12px 0",
+              borderRadius: isMobile ? "12px 12px 0 0" : "0 0 px 0px 0",
               display: "flex",
               flexDirection: isMobile ? "row" : "column",
               justifyContent: isMobile ? "space-between" : "flex-start",
@@ -210,8 +271,11 @@ const CounselorDisplay: React.FC = () => {
             }}
           >
             <img
-              src="src/assets/logo.jpg"
+              src={postData.profilePic}
               alt="Profile"
+              onError={(e) => {
+                e.currentTarget.src = "/src/assets/DefaultPerson.png";
+              }}
               style={{
                 width: isMobile ? "120px" : "220px",
                 height: isMobile ? "120px" : "220px",
@@ -222,56 +286,78 @@ const CounselorDisplay: React.FC = () => {
                 marginBottom: isMobile ? "0" : "16px",
               }}
             />
-            <Box sx={{ 
-              display: "flex", 
-              flexDirection: "column", 
-              gap: "10px",
-              flex: isMobile ? 1 : "unset",
-            }}>
-              <Box sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px",
-                minWidth: isMobile ? "140px" : "auto",
-              }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                flex: isMobile ? 1 : "unset",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  minWidth: isMobile ? "140px" : "auto",
+                }}
+              >
                 <LocationOnIcon sx={{ color: "#555" }} />
-                <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
+                <Typography
+                  variant="body1"
+                  sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                >
                   {postData.province}
                 </Typography>
               </Box>
 
-              <Box sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px",
-                minWidth: isMobile ? "140px" : "auto",
-              }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  minWidth: isMobile ? "140px" : "auto",
+                }}
+              >
                 <EventIcon sx={{ color: "#555" }} />
-                <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
+                <Typography
+                  variant="body1"
+                  sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                >
                   کنکور {postData.entranceExamYear}
                 </Typography>
               </Box>
 
-              <Box sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px",
-                minWidth: isMobile ? "140px" : "auto",
-              }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  minWidth: isMobile ? "140px" : "auto",
+                }}
+              >
                 <DomainIcon sx={{ color: "#555" }} />
-                <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
+                <Typography
+                  variant="body1"
+                  sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                >
                   {postData.uniName}
                 </Typography>
               </Box>
 
-              <Box sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: "8px",
-                minWidth: isMobile ? "140px" : "auto",
-              }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  minWidth: isMobile ? "140px" : "auto",
+                }}
+              >
                 <SchoolIcon sx={{ color: "#555" }} />
-                <Typography variant="body1" sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}>
+                <Typography
+                  variant="body1"
+                  sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                >
                   {postData.uniMajor}
                 </Typography>
               </Box>
@@ -279,6 +365,80 @@ const CounselorDisplay: React.FC = () => {
           </Box>
         </Box>
       )}
+
+      {/* Confirmation Dialog */}
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        sx={{
+          "& .MuiDialog-paper": {
+            backgroundColor: "#fff", // Clean white background
+            borderRadius: "16px", // Rounded corners
+            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)", // Subtle shadow
+            padding: "16px", // Inner padding
+            maxWidth: isMobile ? "90%" : "400px", // Responsive width
+            width: "100%",
+          },
+          direction: "rtl", // Maintain RTL for Persian text
+        }}
+      >
+        <DialogTitle
+          sx={{
+            fontSize: isMobile ? "1.2rem" : "1.5rem", // Responsive font size
+            fontWeight: "bold",
+            textAlign: "center", // Centered title
+            color: "#333", // Darker text for contrast
+            pb: 1, // Bottom padding
+          }}
+        >
+          تأیید درخواست
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            px: isMobile ? 2 : 4, // Responsive horizontal padding
+            py: 2, // Vertical padding
+          }}
+        >
+          <DialogContentText
+            sx={{
+              color: "#555", // Softer text color
+              fontSize: isMobile ? "0.9rem" : "1rem", // Responsive font size
+              lineHeight: 1.6, // Improved readability
+              textAlign: "center", // Centered text
+            }}
+          >
+            آیا مطمئن هستید که می‌خواهید درخواست مشاوره با {postData.username} را ثبت کنید؟
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            display: "flex",
+            justifyContent: "space-between", // Evenly space buttons
+            px: isMobile ? 2 : 4, // Responsive padding
+            pb: 2, // Bottom padding
+            gap: 2, // Space between buttons
+          }}
+        >
+          <SecondaryButton
+            name="انصراف"
+            backgroundColor="#d32f2f" // Red for cancel
+            onClick={handleCloseDialog}
+            width={isMobile ? "100px" : "120px"} // Responsive width
+            height="40px"
+            fontSize={isMobile ? "14px" : "16px"} // Responsive font size
+            borderRadius="8px"
+          />
+          <SecondaryButton
+            name="تأیید"
+            backgroundColor="#1976d2" // Blue for confirm
+            onClick={handleConfirm}
+            width={isMobile ? "100px" : "120px"} // Responsive width
+            height="40px"
+            fontSize={isMobile ? "14px" : "16px"} // Responsive font size
+            borderRadius="8px"
+          />
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
