@@ -10,11 +10,12 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Email from "@mui/icons-material/Email";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import './Login.css';
+import "./Login.css";
 import "@/index.css";
 import { useNavigate } from "react-router-dom";
 import { storeToken, storeUserInfo } from "@/services/auth";
 import apiClient from "@/services/client";
+
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -71,45 +72,63 @@ const Login: React.FC = () => {
         password: formData.password
       });
 
-      const { data } = response;
+      const data = await response.json();
 
-      if (data.isFailure) {
-        throw new Error(data.error?.message || data.message || "خطا در ورود");
+      if (!response.ok || data.IsFailure) {
+        // نمایش ارورهای ولیدیشن (اگر وجود داشته باشن)
+        if (Array.isArray(data.errors)) {
+          data.errors.forEach((err: { message: string }) => {
+            toast.error(err.message, {
+              position: "bottom-right",
+              autoClose: 5000,
+              rtl: true,
+            });
+          });
+        }
+
+        // اگر errors نبود، ولی فیلد Error وجود داشت
+        else if (data.message) {
+          const messageFromServer = data.message.split("|")[0]; // فقط پیام اول
+          toast.error(messageFromServer, {
+            position: "bottom-right",
+            autoClose: 5000,
+            rtl: true,
+          });
+        }
+
+        setIsSubmitting(false);
+        return;
       }
 
       if (data.value?.accessToken) {
         // Store tokens and user data using your auth service
+
+
         storeToken(data.value.accessToken);
+
         storeUserInfo({
           id: data.value.id,
+
           userName: data.value.userName,
-          role: data.value.role
+
+          role: data.value.role,
         });
-
-        toast.success(data.message || "ورود موفقیت‌آمیز بود", {
-          position: "bottom-right",
-          autoClose: 2000,
-          rtl: true,
-        });
-
-        setTimeout(() => navigate("/dashboard"), 2000);
-      } else {
-        throw new Error("توکن دسترسی دریافت نشد");
       }
-    } catch (error: any) {
-      let errorMessage = "خطا در ارتباط با سرور";
-      
-      if (error.response) {
-        errorMessage = error.response.data?.message || 
-                     error.response.data?.error?.message || 
-                     "خطا در درخواست ورود";
-      } else if (error.request) {
-        errorMessage = "پاسخی از سرور دریافت نشد";
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
+      // موفقیت
+      toast.success(data?.message || "با موفقیت وارد شدید", {
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
+      });
 
-      toast.error(errorMessage, {
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000);
+
+      setFormData({ email: "", password: "" });
+    } catch (error) {
+      toast.error("خطا در ارتباط با سرور", {
+
         position: "bottom-right",
         autoClose: 5000,
         rtl: true,
@@ -132,10 +151,17 @@ const Login: React.FC = () => {
         draggable
         pauseOnHover
       />
-      
+
       <div
         className="area"
-        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", zIndex: -1 }}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: -1,
+        }}
       >
         <ul className="circles">
           {[...Array(10)].map((_, i) => (
@@ -156,13 +182,18 @@ const Login: React.FC = () => {
           position: "relative",
         }}
       >
-        <div style={{ 
-          display: "flex",
-          boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
-          width:"900px",
-          borderRadius: "12px"
-        }}>
-          <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: "450px" }}>
+        <div
+          style={{
+            display: "flex",
+            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
+            width: "900px",
+            borderRadius: "12px",
+          }}
+        >
+          <form
+            onSubmit={handleSubmit}
+            style={{ width: "100%", maxWidth: "450px" }}
+          >
             <Box
               sx={{
                 display: "flex",
@@ -171,23 +202,42 @@ const Login: React.FC = () => {
                 width: "100%",
                 backgroundColor: "rgb(255, 255, 255)",
                 borderRadius: showImage ? "12px 0 0 12px" : "12px",
-                padding: {xs: "30px" , sm:"30px 60px"},
+                padding: { xs: "30px", sm: "30px 60px" },
                 boxSizing: "border-box",
                 height: "500px",
               }}
             >
-              <Box sx={{ display: "flex", justifyContent: "center", marginBottom: "10px" , marginTop: "-10px" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginBottom: "10px",
+                  marginTop: "-10px",
+                }}
+              >
                 <img
                   src="./src/assets/logo.jpg"
                   alt="Logo"
-                  style={{ width: "120px", height: "120px", borderRadius: "50%" , marginRight: "-7px"}}
+                  style={{
+                    width: "120px",
+                    height: "120px",
+                    borderRadius: "50%",
+                    marginRight: "-7px",
+                  }}
                 />
               </Box>
 
-              <h1 style={{ textAlign: "center", color: "black" , marginTop: "-35px" }}>ورود</h1>
+              <h1
+                style={{
+                  textAlign: "center",
+                  color: "black",
+                  marginTop: "-35px",
+                }}
+              >
+                ورود
+              </h1>
 
               <InputBox
-                borderRadius={{ xs: "6px", sm: "6px", md: "8px"}}
                 label="ایمیل"
                 name="email"
                 value={formData.email}
@@ -202,7 +252,6 @@ const Login: React.FC = () => {
               />
 
               <InputBox
-                borderRadius={{ xs: "6px", sm: "6px", md: "8px"}}
                 label="رمز عبور"
                 name="password"
                 value={formData.password}
@@ -211,18 +260,24 @@ const Login: React.FC = () => {
                 placeholder="••••••••"
                 startAdornment={
                   <InputAdornment position="start">
-                    <IconButton sx={{ marginLeft: "-10px" }} onClick={() => setShowPassword((prev) => !prev)} edge="end">
+                    <IconButton
+                      sx={{ marginLeft: "-10px" }}
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      edge="end"
+                    >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 }
               />
 
-              <Box sx={{ 
-                display: "flex", 
-                justifyContent: "flex-end",
-                marginBottom: "10px"
-              }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginBottom: "10px",
+                }}
+              >
                 <Link
                   href="/forgot-password"
                   sx={{
@@ -238,15 +293,21 @@ const Login: React.FC = () => {
               </Box>
 
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <ConfirmButton name="ورود" type="submit" disabled={isSubmitting} />
+                <ConfirmButton
+                  name={isSubmitting ? "...در حال ورود" : "ورود"}
+                  type="submit"
+                  disabled={isSubmitting}
+                />
               </Box>
 
-              <Box sx={{ 
-                display: "flex", 
-                justifyContent: "center", 
-                marginTop: "1px",
-                alignItems: "center"
-              }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "1px",
+                  alignItems: "center",
+                }}
+              >
                 <Link
                   href="/signup"
                   sx={{
@@ -258,7 +319,13 @@ const Login: React.FC = () => {
                 >
                   ثبت نام
                 </Link>
-                <span style={{ fontSize: "0.9rem", marginLeft: "4px", color: "black" }}>
+                <span
+                  style={{
+                    fontSize: "0.9rem",
+                    marginLeft: "4px",
+                    color: "black",
+                  }}
+                >
                   اکانت نداری؟
                 </span>
               </Box>
