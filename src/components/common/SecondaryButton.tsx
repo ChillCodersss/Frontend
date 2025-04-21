@@ -18,6 +18,7 @@ function SecondaryButton({
   width = "240px",
   height = "40px",
   borderRadius = 0, 
+  sx,
   ...props
 }: SecondaryButtonProps) {
   return (
@@ -29,7 +30,7 @@ function SecondaryButton({
           height,
           backgroundColor,
           fontSize,
-          borderRadius, // Apply the borderRadius prop
+          borderRadius, 
           appearance: "none",
           backfaceVisibility: "hidden",
           borderStyle: "none",
@@ -63,6 +64,7 @@ function SecondaryButton({
           "&:active": {
             transform: "translateY(0)",
           },
+          ...sx,
         }}
         {...props}
       >
