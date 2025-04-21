@@ -12,7 +12,9 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import './Login.css';
 import "@/index.css";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { storeToken, storeUserInfo } from "@/services/auth";
+import apiClient from "@/services/client";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -30,8 +32,14 @@ const Login: React.FC = () => {
       setShowImage(window.innerWidth >= 600);
     };
     window.addEventListener("resize", handleResize);
+    
+    // // Redirect if already logged in
+    // if (localStorage.getItem("jwtToken")) {
+    //   navigate("");
+    // }
+    
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [navigate]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -43,59 +51,64 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-  
-    try {
-      const response = await fetch("http://localhost:8080/api/Auth/Login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-  
-      const data = await response.json();
-  
-      if (!response.ok || data.IsFailure) {
-        // نمایش ارورهای ولیدیشن (اگر وجود داشته باشن)
-        if (Array.isArray(data.errors)) {
-          data.errors.forEach((err: { message: string }) => {
-            toast.error(err.message, {
-              position: "bottom-right",
-              autoClose: 5000,
-              rtl: true,
-            });
-          });
-        }
-  
-        // اگر errors نبود، ولی فیلد Error وجود داشت
-        else if (data.message) {
-          const messageFromServer = data.message.split("|")[0]; // فقط پیام اول
-          toast.error(messageFromServer, {
-            position: "bottom-right",
-            autoClose: 5000,
-            rtl: true,
-          });
-        }
-  
-        setIsSubmitting(false);
-        return;
-      }
-  
-      // موفقیت
-      toast.success(data?.message || "با موفقیت وارد شدید", {
+
+    
+    // Client-side validation
+    if (!formData.email || !formData.password) {
+      toast.error("لطفاً ایمیل و رمز عبور را وارد کنید", {
         position: "bottom-right",
         autoClose: 5000,
         rtl: true,
       });
-  
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 2000);
-  
-      setFormData({ email: "", password: "" });
-    } catch (error) {
-      toast.error("خطا در ارتباط با سرور", {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await apiClient.post("/Auth/Login", {
+        email: formData.email,
+        password: formData.password
+      });
+
+      const { data } = response;
+
+      if (data.isFailure) {
+        throw new Error(data.error?.message || data.message || "خطا در ورود");
+      }
+
+      if (data.value?.accessToken) {
+        // Store tokens and user data using your auth service
+        storeToken(data.value.accessToken);
+        storeUserInfo({
+          id: data.value.id,
+          userName: data.value.userName,
+          role: data.value.role
+        });
+
+        toast.success(data.message || "ورود موفقیت‌آمیز بود", {
+          position: "bottom-right",
+          autoClose: 2000,
+          rtl: true,
+        });
+
+        setTimeout(() => navigate("/dashboard"), 2000);
+      } else {
+        throw new Error("توکن دسترسی دریافت نشد");
+      }
+    } catch (error: any) {
+      let errorMessage = "خطا در ارتباط با سرور";
+      
+      if (error.response) {
+        errorMessage = error.response.data?.message || 
+                     error.response.data?.error?.message || 
+                     "خطا در درخواست ورود";
+      } else if (error.request) {
+        errorMessage = "پاسخی از سرور دریافت نشد";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      toast.error(errorMessage, {
         position: "bottom-right",
         autoClose: 5000,
         rtl: true,
@@ -178,7 +191,7 @@ const Login: React.FC = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                type="email"
+                type="text"
                 placeholder="example@gmail.com"
                 startAdornment={
                   <InputAdornment position="start">
@@ -225,7 +238,7 @@ const Login: React.FC = () => {
               </Box>
 
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <ConfirmButton name="ورود" type="submit" />
+                <ConfirmButton name="ورود" type="submit" disabled={isSubmitting} />
               </Box>
 
               <Box sx={{ 
