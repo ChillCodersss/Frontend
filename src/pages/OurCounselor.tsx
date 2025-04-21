@@ -19,6 +19,7 @@ import CircleIcon from "@mui/icons-material/Circle";
 import SecondaryButton from "../components/common/SecondaryButton";
 import { CgArrowBottomLeft } from "react-icons/cg";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface Counselor {
   id: number;
@@ -64,6 +65,7 @@ const OurCounselor = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const pageSize = 4;
+  const navigate = useNavigate();
 
   const getMajorCode = (major: string) => {
     switch (major) {
@@ -137,6 +139,10 @@ const OurCounselor = () => {
     value: number
   ) => {
     setCurrentPage(value);
+  };
+
+  const handleViewProfile = (counselorId: number) => {
+    navigate(`/OurCounselor/CounselorPage/${counselorId}`);
   };
 
   return (
@@ -431,6 +437,7 @@ const OurCounselor = () => {
                   height="35px"
                   fontSize="16px"
                   borderRadius="8px"
+                  onClick={() => handleViewProfile(counselor.id)}
                   sx={{
                     position: "absolute",
                     bottom: "16px",
