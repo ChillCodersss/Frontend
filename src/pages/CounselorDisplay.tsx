@@ -92,7 +92,7 @@ const CounselorDisplay: React.FC = () => {
         }
 
         setPostData({
-          username: `${userData.firstName} ${userData.lastName}`,
+          username: userData.fullName,
           province: userData.province,
           entranceExamYear: userData.entranceExamYear,
           uniMajor: userData.uniMajor || "نامشخص",
@@ -184,9 +184,9 @@ const CounselorDisplay: React.FC = () => {
                   {postData.username}
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                  <StarIcon sx={{ color: "#f4c417" }} />
+                  <StarIcon sx={{ color: "#f4c417" , paddingBottom: "5px" }} />
                   <Typography
-                    variant={isMobile ? "subtitle1" : "h6"}
+                    variant={isMobile ? "subtitle1" : "body1"}
                     sx={{ ...typographyStyles, textAlign: "left" }}
                   >
                     {postData.rating}
@@ -202,7 +202,7 @@ const CounselorDisplay: React.FC = () => {
                   رشته {postData.hsMajorTitle}
                 </Typography>
                 <Typography
-                  variant={isMobile ? "subtitle1" : "h6"}
+                  variant={isMobile ? "subtitle1" : "body1"}
                   sx={{ ...typographyStyles, textAlign: "left" }}
                 >
                   تجربه کار: {postData.workExperience}
@@ -279,7 +279,7 @@ const CounselorDisplay: React.FC = () => {
               style={{
                 width: isMobile ? "120px" : "220px",
                 height: isMobile ? "120px" : "220px",
-                borderRadius: "10px",
+                borderRadius: "50%",
                 objectFit: "cover",
                 marginLeft: isMobile ? "auto" : "0",
                 alignSelf: "center",
@@ -372,39 +372,39 @@ const CounselorDisplay: React.FC = () => {
         onClose={handleCloseDialog}
         sx={{
           "& .MuiDialog-paper": {
-            backgroundColor: "#fff", // Clean white background
-            borderRadius: "16px", // Rounded corners
-            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)", // Subtle shadow
-            padding: "16px", // Inner padding
-            maxWidth: isMobile ? "90%" : "400px", // Responsive width
+            backgroundColor: "#fff", 
+            borderRadius: "16px", 
+            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)", 
+            padding: "16px", 
+            maxWidth: isMobile ? "90%" : "400px", 
             width: "100%",
           },
-          direction: "rtl", // Maintain RTL for Persian text
+          direction: "rtl", 
         }}
       >
         <DialogTitle
           sx={{
-            fontSize: isMobile ? "1.2rem" : "1.5rem", // Responsive font size
+            fontSize: isMobile ? "1.2rem" : "1.5rem", 
             fontWeight: "bold",
-            textAlign: "center", // Centered title
-            color: "#333", // Darker text for contrast
-            pb: 1, // Bottom padding
+            textAlign: "center", 
+            color: "#333", 
+            pb: 1, 
           }}
         >
           تأیید درخواست
         </DialogTitle>
         <DialogContent
           sx={{
-            px: isMobile ? 2 : 4, // Responsive horizontal padding
-            py: 2, // Vertical padding
+            px: isMobile ? 2 : 4, 
+            py: 2, 
           }}
         >
           <DialogContentText
             sx={{
-              color: "#555", // Softer text color
-              fontSize: isMobile ? "0.9rem" : "1rem", // Responsive font size
-              lineHeight: 1.6, // Improved readability
-              textAlign: "center", // Centered text
+              color: "#555", 
+              fontSize: isMobile ? "0.9rem" : "1rem", 
+              lineHeight: 1.6, 
+              textAlign: "center", 
             }}
           >
             آیا مطمئن هستید که می‌خواهید درخواست مشاوره با {postData.username} را ثبت کنید؟
@@ -413,28 +413,28 @@ const CounselorDisplay: React.FC = () => {
         <DialogActions
           sx={{
             display: "flex",
-            justifyContent: "space-between", // Evenly space buttons
-            px: isMobile ? 2 : 4, // Responsive padding
-            pb: 2, // Bottom padding
-            gap: 2, // Space between buttons
+            justifyContent: "space-between", 
+            px: isMobile ? 2 : 4, 
+            pb: 2,
+            gap: 2, 
           }}
         >
           <SecondaryButton
             name="انصراف"
-            backgroundColor="#d32f2f" // Red for cancel
+            backgroundColor="#d32f2f" 
             onClick={handleCloseDialog}
-            width={isMobile ? "100px" : "120px"} // Responsive width
+            width={isMobile ? "100px" : "120px"} 
             height="40px"
-            fontSize={isMobile ? "14px" : "16px"} // Responsive font size
+            fontSize={isMobile ? "14px" : "16px"} 
             borderRadius="8px"
           />
           <SecondaryButton
             name="تأیید"
-            backgroundColor="#1976d2" // Blue for confirm
+            backgroundColor="#1976d2" 
             onClick={handleConfirm}
-            width={isMobile ? "100px" : "120px"} // Responsive width
+            width={isMobile ? "100px" : "120px"} 
             height="40px"
-            fontSize={isMobile ? "14px" : "16px"} // Responsive font size
+            fontSize={isMobile ? "14px" : "16px"}
             borderRadius="8px"
           />
         </DialogActions>
