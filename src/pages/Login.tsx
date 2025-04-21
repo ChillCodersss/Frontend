@@ -14,6 +14,8 @@ import "./Login.css";
 import "@/index.css";
 import { useNavigate } from "react-router-dom";
 import { storeToken, storeUserInfo } from "@/services/auth";
+import apiClient from "@/services/client";
+
 
 // changed code
 const Login: React.FC = () => {
@@ -32,8 +34,14 @@ const Login: React.FC = () => {
       setShowImage(window.innerWidth >= 600);
     };
     window.addEventListener("resize", handleResize);
+    
+    // // Redirect if already logged in
+    // if (localStorage.getItem("jwtToken")) {
+    //   navigate("");
+    // }
+    
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [navigate]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -45,15 +53,24 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    
+    // Client-side validation
+    if (!formData.email || !formData.password) {
+      toast.error("لطفاً ایمیل و رمز عبور را وارد کنید", {
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:8080/api/Auth/Login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      const response = await apiClient.post("/Auth/Login", {
+        email: formData.email,
+        password: formData.password
       });
 
       const data = await response.json();
@@ -87,6 +104,7 @@ const Login: React.FC = () => {
       if (data.value?.accessToken) {
         // Store tokens and user data using your auth service
 
+
         storeToken(data.value.accessToken);
 
         storeUserInfo({
@@ -111,6 +129,7 @@ const Login: React.FC = () => {
       setFormData({ email: "", password: "" });
     } catch (error) {
       toast.error("خطا در ارتباط با سرور", {
+
         position: "bottom-right",
         autoClose: 5000,
         rtl: true,
