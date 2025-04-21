@@ -73,4 +73,3 @@ function ConfirmButton({ name, width = "240px", height = "40px", sx , ...props }
 }
 
 export default ConfirmButton;
-
