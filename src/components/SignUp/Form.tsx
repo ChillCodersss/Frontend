@@ -241,7 +241,7 @@ const SignUpForm: React.FC = () => {
         >
           <Box
             component="a"
-            href="/go-to-x"
+            href="/recruitment"
             sx={{
               color: "black",
               textDecoration: "none",

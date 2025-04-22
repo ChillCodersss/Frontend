@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -30,6 +31,7 @@ interface PostData {
 }
 
 const CounselorDisplay: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const [postData, setPostData] = useState<PostData>({
     username: "",
     province: "",
@@ -50,17 +52,21 @@ const CounselorDisplay: React.FC = () => {
 
   useEffect(() => {
     const fetchPostData = async () => {
-      if (hasFetched.current) return;
+      if (hasFetched.current || !id) return;
       hasFetched.current = true;
 
       setIsLoading(true);
       try {
-        const response = await fetch("http://localhost:8080/api/Counselor/GetById?Id=2", {
+        const response = await fetch(`http://localhost:8080/api/Counselor/GetById?Id=${id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
         });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch counselor data");
+        }
 
         const data = await response.json();
         const userData = data.value;
@@ -92,11 +98,11 @@ const CounselorDisplay: React.FC = () => {
         }
 
         setPostData({
-          username: userData.fullName,
-          province: userData.province,
-          entranceExamYear: userData.entranceExamYear,
+          username: userData.fullName || "",
+          province: userData.province || "",
+          entranceExamYear: userData.entranceExamYear || "",
           uniMajor: userData.uniMajor || "نامشخص",
-          uniName: userData.uniName,
+          uniName: userData.uniName || "",
           hsMajorTitle: userData.hsMajorTitle || "نامشخص",
           content:
             userData.aboutMe ||
@@ -107,13 +113,17 @@ const CounselorDisplay: React.FC = () => {
         });
       } catch (error) {
         console.error("خطا در ارتباط با سرور", error);
+        setPostData(prev => ({
+          ...prev,
+          content: "خطا در بارگذاری اطلاعات مشاور",
+        }));
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchPostData();
-  }, []);
+  }, [id]);
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -124,7 +134,6 @@ const CounselorDisplay: React.FC = () => {
   };
 
   const handleConfirm = () => {
-    // Add your submission logic here (e.g., API call)
     console.log("Request submitted for counselor:", postData.username);
     setOpenDialog(false);
   };
@@ -164,7 +173,6 @@ const CounselorDisplay: React.FC = () => {
             overflow: "hidden",
           }}
         >
-          {/* Main Content */}
           <Box
             sx={{
               flex: 1,
@@ -184,7 +192,7 @@ const CounselorDisplay: React.FC = () => {
                   {postData.username}
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                  <StarIcon sx={{ color: "#f4c417" , paddingBottom: "5px" }} />
+                  <StarIcon sx={{ color: "#FFD700", paddingBottom: "5px" }} />
                   <Typography
                     variant={isMobile ? "subtitle1" : "body1"}
                     sx={{ ...typographyStyles, textAlign: "left" }}
@@ -223,7 +231,6 @@ const CounselorDisplay: React.FC = () => {
               </Box>
             </Box>
 
-            {/* Consultation Request */}
             <Box
               sx={{
                 border: "1px solid #ddd",
@@ -256,7 +263,6 @@ const CounselorDisplay: React.FC = () => {
             </Box>
           </Box>
 
-          {/* Sidebar */}
           <Box
             sx={{
               width: isMobile ? "100%" : "230px",
@@ -366,45 +372,44 @@ const CounselorDisplay: React.FC = () => {
         </Box>
       )}
 
-      {/* Confirmation Dialog */}
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
         sx={{
           "& .MuiDialog-paper": {
-            backgroundColor: "#fff", 
-            borderRadius: "16px", 
-            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)", 
-            padding: "16px", 
-            maxWidth: isMobile ? "90%" : "400px", 
+            backgroundColor: "#fff",
+            borderRadius: "16px",
+            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)",
+            padding: "16px",
+            maxWidth: isMobile ? "90%" : "400px",
             width: "100%",
           },
-          direction: "rtl", 
+          direction: "rtl",
         }}
       >
         <DialogTitle
           sx={{
-            fontSize: isMobile ? "1.2rem" : "1.5rem", 
+            fontSize: isMobile ? "1.2rem" : "1.5rem",
             fontWeight: "bold",
-            textAlign: "center", 
-            color: "#333", 
-            pb: 1, 
+            textAlign: "center",
+            color: "#333",
+            pb: 1,
           }}
         >
           تأیید درخواست
         </DialogTitle>
         <DialogContent
           sx={{
-            px: isMobile ? 2 : 4, 
-            py: 2, 
+            px: isMobile ? 2 : 4,
+            py: 2,
           }}
         >
           <DialogContentText
             sx={{
-              color: "#555", 
-              fontSize: isMobile ? "0.9rem" : "1rem", 
-              lineHeight: 1.6, 
-              textAlign: "center", 
+              color: "#555",
+              fontSize: isMobile ? "0.9rem" : "1rem",
+              lineHeight: 1.6,
+              textAlign: "center",
             }}
           >
             آیا مطمئن هستید که می‌خواهید درخواست مشاوره با {postData.username} را ثبت کنید؟
@@ -413,26 +418,26 @@ const CounselorDisplay: React.FC = () => {
         <DialogActions
           sx={{
             display: "flex",
-            justifyContent: "space-between", 
-            px: isMobile ? 2 : 4, 
+            justifyContent: "space-between",
+            px: isMobile ? 2 : 4,
             pb: 2,
-            gap: 2, 
+            gap: 2,
           }}
         >
           <SecondaryButton
             name="انصراف"
-            backgroundColor="#d32f2f" 
+            backgroundColor="#d32f2f"
             onClick={handleCloseDialog}
-            width={isMobile ? "100px" : "120px"} 
+            width={isMobile ? "100px" : "120px"}
             height="40px"
-            fontSize={isMobile ? "14px" : "16px"} 
+            fontSize={isMobile ? "14px" : "16px"}
             borderRadius="8px"
           />
           <SecondaryButton
             name="تأیید"
-            backgroundColor="#1976d2" 
+            backgroundColor="#1976d2"
             onClick={handleConfirm}
-            width={isMobile ? "100px" : "120px"} 
+            width={isMobile ? "100px" : "120px"}
             height="40px"
             fontSize={isMobile ? "14px" : "16px"}
             borderRadius="8px"

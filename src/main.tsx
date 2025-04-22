@@ -17,16 +17,17 @@ createRoot(document.getElementById("root")!).render(
   //<StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/recruitment" element={<Recruitment></Recruitment>}/>
-        <Route path="/Signup" element={<Signup></Signup>} />
-        <Route path="/login" element={<Login></Login>} />
+        <Route path="/recruitment" element={<Recruitment />} />
+        <Route path="/Signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<FPGetEmail />} />
         <Route path="/verification-code" element={<FPGetVerificationCode />} />
         <Route path="/set-new-password" element={<FPGetNewPassword />} />
-        <Route path="/CounselorProfile" element={<CounselorProfile></CounselorProfile>} />
-        <Route path="/OurCounselor" element={<OurCounselor></OurCounselor>} />
-        <Route path="/CounselorDisplay" element={<CounselorDisplay></CounselorDisplay>} />
-        <Route path="/sidebar" element={<Sidebar/>} />
+        <Route path="/CounselorProfile" element={<CounselorProfile />} />
+        <Route path="/OurCounselor" element={<OurCounselor />} />
+        <Route path="/CounselorDisplay" element={<CounselorDisplay />} />
+        <Route path="/OurCounselor/CounselorPage/:id" element={<CounselorDisplay />} />
+        <Route path="/sidebar" element={<Sidebar />} />
       </Routes>
     </BrowserRouter>
   //</StrictMode>

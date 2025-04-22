@@ -52,8 +52,6 @@ const CounselorProfile = () => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-"http://localhost:8080";
-
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -184,6 +182,7 @@ const CounselorProfile = () => {
     try {
       const formDataPayload = new FormData();
       formDataPayload.append("Id", counselorId.toString());
+      formDataPayload.append("Province", formData.province || "");
       formDataPayload.append("AboutMe", formData.description_text || "");
       formDataPayload.append("Email", formData.email || "");
       formDataPayload.append("PhoneNumber", formData.phone || "");
