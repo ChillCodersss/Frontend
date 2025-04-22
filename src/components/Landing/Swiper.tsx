@@ -17,6 +17,7 @@ import "../../../node_modules/swiper/modules/pagination.css";
 import "../../../node_modules/swiper/modules/navigation.css";
 import "swiper/swiper-bundle.css";
 // import "swiper/swiper-bundle.min.css";
+import { useNavigate } from "react-router";
 
 // there is a bug in the swiiper that enables the scroll part of the browser
 
@@ -57,6 +58,7 @@ const CounselorSwiper = () => {
   const isTablet = useMediaQuery("(min-width:601px) and (max-width:960px)");
   const isDesktop = useMediaQuery("(min-width:961px)");
   const [counselors, setCounselors] = useState<Counselor[]>([]);
+  const navigate = useNavigate();
 
   const fetchCounselors = async () => {
     try {
@@ -92,6 +94,9 @@ const CounselorSwiper = () => {
         height: "100vh",
         width: "100%",
         boxSizing: "border-box",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center"
       }}
     >
       <Box
@@ -119,24 +124,132 @@ const CounselorSwiper = () => {
           <ArrowForwardIosRoundedIcon />
         </Fab>
       </Box>
-      <Swiper
-        dir="rtl"
-        slidesPerView={SPV}
-        grabCursor={true}
-        spaceBetween={30}
-        centeredSlides={centered}
-        navigation={{
-          prevEl: "#custom-prev",
-          nextEl: "#custom-next",
-        }}
-        modules={[Navigation]}
-        className="mySwiper"
-        style={{ padding: "0 20px" }}
-      >
-        {counselors.map((counselor) => (
-          <SwiperSlide key={counselor.id}>
+      <Box>
+        <Swiper
+          dir="rtl"
+          slidesPerView={SPV}
+          grabCursor={true}
+          spaceBetween={30}
+          centeredSlides={centered}
+          navigation={{
+            prevEl: "#custom-prev",
+            nextEl: "#custom-next",
+          }}
+          modules={[Navigation]}
+          className="mySwiper"
+          style={{ padding: "0 20px" }}
+        >
+          {counselors.map((counselor) => (
+            <SwiperSlide key={counselor.id}>
+              <Box
+                key={counselor.id}
+                sx={{
+                  height: "250px",
+                  width: "100%",
+                  maxWidth: isMobile ? "300px" : "500px",
+                  backgroundColor: "#fff",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  display: "flex",
+                  flexDirection: "column",
+                  border: "1px solid rgb(183, 183, 183)",
+                  position: "relative",
+                  "&:hover": {
+                    boxShadow: "0 4px 4px rgba(0,0,0,0.2)",
+                  },
+                }}
+              >
+                {/* Top Section */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    padding: "12px",
+                  }}
+                >
+                  <Typography variant="body2" sx={{ color: "#666" }}>
+                    تجربه کار: {counselor.employmentDuration} سال
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      paddingLeft: "2px",
+                    }}
+                  >
+                    <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      ۴.۸
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Profile Section */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: "16px",
+                    padding: "0 16px",
+                    marginTop: "10px",
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      width: isMobile ? 100 : 120,
+                      height: isMobile ? 100 : 120,
+                      border: "2px solid rgb(8, 57, 136)",
+                    }}
+                    src={counselor.picUrl}
+                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {counselor.fullName}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      <CircleIcon
+                        sx={{
+                          fontSize: "16px",
+                          verticalAlign: "middle",
+                          marginLeft: "4px",
+                        }}
+                      />
+                      {counselor.hsMajor}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      <SchoolIcon
+                        sx={{
+                          fontSize: "16px",
+                          verticalAlign: "middle",
+                          marginLeft: "4px",
+                        }}
+                      />
+                      {counselor.uniMajor}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      <EventIcon
+                        sx={{
+                          fontSize: "16px",
+                          verticalAlign: "middle",
+                          marginLeft: "4px",
+                        }}
+                      />
+                      کنکور {counselor.entranceExamYear}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </SwiperSlide>
+          ))}
+          <SwiperSlide>
             <Box
-              key={counselor.id}
               sx={{
                 height: "250px",
                 width: "100%",
@@ -146,6 +259,7 @@ const CounselorSwiper = () => {
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 display: "flex",
                 flexDirection: "column",
+                justifyContent: "center",
                 border: "1px solid rgb(183, 183, 183)",
                 position: "relative",
                 "&:hover": {
@@ -153,125 +267,21 @@ const CounselorSwiper = () => {
                 },
               }}
             >
-              {/* Top Section */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  padding: "12px",
+              <SecondaryButton
+                name="مشاهده بیشتر"
+                width={"50%"}
+                height={"60px"}
+                backgroundColor={"#f4c417"}
+                fontSize={"20px"}
+                borderRadius={"9px"}
+                onClick={() => {
+                  navigate("./ourcounselor");
                 }}
-              >
-                <Typography variant="body2" sx={{ color: "#666" }}>
-                  تجربه کار: {counselor.employmentDuration} سال
-                </Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                    paddingLeft: "2px",
-                  }}
-                >
-                  <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
-                  <Typography variant="body2" sx={{ color: "#666" }}>
-                    ۴.۸
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* Profile Section */}
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: "16px",
-                  padding: "0 16px",
-                  marginTop: "10px",
-                }}
-              >
-                <Avatar
-                  sx={{
-                    width: isMobile ? 100 : 120,
-                    height: isMobile ? 100 : 120,
-                    border: "2px solid rgb(8, 57, 136)",
-                  }}
-                  src={counselor.picUrl}
-                />
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "8px",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    {counselor.fullName}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "#666" }}>
-                    <CircleIcon
-                      sx={{
-                        fontSize: "16px",
-                        verticalAlign: "middle",
-                        marginLeft: "4px",
-                      }}
-                    />
-                    {counselor.hsMajor}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "#666" }}>
-                    <SchoolIcon
-                      sx={{
-                        fontSize: "16px",
-                        verticalAlign: "middle",
-                        marginLeft: "4px",
-                      }}
-                    />
-                    {counselor.uniMajor}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: "#666" }}>
-                    <EventIcon
-                      sx={{
-                        fontSize: "16px",
-                        verticalAlign: "middle",
-                        marginLeft: "4px",
-                      }}
-                    />
-                    کنکور {counselor.entranceExamYear}
-                  </Typography>
-                </Box>
-              </Box>
+              />
             </Box>
           </SwiperSlide>
-        ))}
-        <SwiperSlide>
-          <Box
-            sx={{
-              height: "250px",
-              width: "100%",
-              maxWidth: isMobile ? "300px" : "500px",
-              backgroundColor: "#fff",
-              borderRadius: "8px",
-              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              border: "1px solid rgb(183, 183, 183)",
-              position: "relative",
-              "&:hover": {
-                boxShadow: "0 4px 4px rgba(0,0,0,0.2)",
-              },
-            }}
-          >
-            <SecondaryButton
-              name="مشاوران بیشتر"
-              width={"50%"}
-              height={"60px"}
-              backgroundColor={"#f4c417"}
-              fontSize={"20px"}
-              borderRadius={"9px"}
-            />
-          </Box>
-        </SwiperSlide>
-      </Swiper>
+        </Swiper>
+      </Box>
     </Box>
   );
 };
