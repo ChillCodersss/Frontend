@@ -37,7 +37,6 @@ const SignUpForm: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
-
     try {
       const response = await fetch("http://localhost:8080/api/Auth/Register", {
         method: "POST",
@@ -46,66 +45,55 @@ const SignUpForm: React.FC = () => {
         },
         body: JSON.stringify(formData),
       });
-
+  
       const data = await response.json();
-
-      if (data.isFailure) {
-        // Handle validation errors from backend
-        if (data.errors && Array.isArray(data.errors)) {
-          data.errors.forEach((error: { code: string; message: string }) => {
-            toast.error(error.message, {
+  
+      if (!response.ok || data.IsFailure) {
+        // نمایش ارورهای ولیدیشن (اگر وجود داشته باشن)
+        if (Array.isArray(data.errors)) {
+          data.errors.forEach((err: { message: string }) => {
+            toast.error(err.message, {
               position: "bottom-right",
               autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
               rtl: true,
             });
           });
-        } else {
-          toast.error(data.error?.message || "خطایی در ثبت نام رخ داد", {
+        }
+  
+        // اگر errors نبود، ولی فیلد Error وجود داشت
+        else if (data.message) {
+          const messageFromServer = data.message.split("|")[0]; // فقط پیام اول
+          toast.error(messageFromServer, {
             position: "bottom-right",
             autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
             rtl: true,
           });
         }
+  
+        setIsSubmitting(false);
         return;
       }
-
-      toast.success(".ثبت نام با موفقیت انجام شد", {
+  
+      // موفقیت
+      toast.success(data?.message || "با موفقیت وارد شدید", {
         position: "bottom-right",
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+        autoClose: 5000,
         rtl: true,
       });
-
+  
       setTimeout(() => {
-        navigate("/login"); // This will now work properly
+        navigate("/login");
       }, 2000);
-
-      setFormData({
-        email: "",
+  
+      setFormData({         email: "",
         firstName: "",
         lastName: "",
         password: "",
-        confirmedPassword: "",
-      });
+        confirmedPassword: "", });
     } catch (error) {
-      console.error("Error during registration:", error);
-      toast.error("خطایی در ارتباط با سرور رخ داد", {
+      toast.error("خطا در ارتباط با سرور", {
         position: "bottom-right",
         autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
         rtl: true,
       });
     } finally {

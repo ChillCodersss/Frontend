@@ -26,7 +26,7 @@ const theme = createTheme({
   },
 });
 
-function ConfirmButton({ name, width = "240px", height = "40px", ...props }: ConfirmButtonProps) {
+function ConfirmButton({ name, width = "240px", height = "40px", sx , ...props }: ConfirmButtonProps) {
   return (
     <>
     <ThemeProvider theme={theme}>
@@ -60,6 +60,7 @@ function ConfirmButton({ name, width = "240px", height = "40px", ...props }: Con
           "&:active": {
             transform: "scale(0.95)",
           },
+          ...sx,
         }}
         {...props}
       >
@@ -72,4 +73,3 @@ function ConfirmButton({ name, width = "240px", height = "40px", ...props }: Con
 }
 
 export default ConfirmButton;
-
