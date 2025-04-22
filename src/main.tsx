@@ -5,6 +5,7 @@ import "./index.css";
 import Signup from "./pages/SignUp";
 import Login from "./pages/Login";
 import CounselorProfile from "./pages/CounselorProfile";
+import OurCounselor from "./pages/OurCounselor";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -13,6 +14,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/Signup" element={<Signup></Signup>} />
         <Route path="/login" element={<Login></Login>} />
         <Route path="/CounselorProfile" element={<CounselorProfile></CounselorProfile>} />
+        <Route path="/OurCounselor" element={<OurCounselor></OurCounselor>} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

@@ -20,6 +20,7 @@ import SecondaryButton from "../components/common/SecondaryButton";
 import { CgArrowBottomLeft } from "react-icons/cg";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import sampp from "../assets/login.png";
 
 interface Counselor {
   id: number;
@@ -30,7 +31,7 @@ interface Counselor {
   entranceExamYear: string;
   employmentDuration: number;
   picName: string | null;
-  picUrl: string;
+  picUrl: string | null; // This is the MinIO file path
 }
 
 interface ApiResponse {
@@ -160,9 +161,42 @@ const OurCounselor = () => {
             "linear-gradient(to right, rgb(8, 57, 136), rgb(0, 119, 182))", // Fallback color if image is not found
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
+          justifyContent: isMobile ? "center" : "flex-start",
+          position: "relative",
+          padding: isMobile ? "0" : "0 40px",
         }}
-      ></Box>
+      >
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          <Typography
+            variant={isMobile ? "h5" : "h2"}
+            sx={{
+              color: "white",
+              textAlign: isMobile ? "center" : "right",
+              padding: "0 20px",
+              maxWidth: "800px",
+              fontWeight: "bold",
+              textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+              fontSize: isMobile ? "1.5rem" : undefined,
+            }}
+          >
+            مشاوران ما
+          </Typography>
+          <Typography
+            variant={isMobile ? "body2" : "h6"}
+            sx={{
+              color: "white",
+              textAlign: isMobile ? "center" : "right",
+              padding: "0 20px",
+              maxWidth: isMobile ? "300px" : "800px",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+              fontSize: isMobile ? "0.75rem" : undefined,
+              whiteSpace: "nowrap",
+            }}
+          >
+            با مشاوران متخصص و با تجربه ما، مسیر موفقیت را هموار کنید
+          </Typography>
+        </Box>
+      </Box>
 
       {/* Search and Filter Container */}
       <Box
@@ -364,13 +398,27 @@ const OurCounselor = () => {
                     marginTop: "10px",
                   }}
                 >
-                  <Avatar
+                  {/* <Avatar
                     sx={{
                       width: isMobile ? 100 : 120,
                       height: isMobile ? 100 : 120,
                       border: "2px solid rgb(8, 57, 136)",
                     }}
                     src={counselor.picUrl}
+                  /> */}
+                  <Avatar
+                    sx={{
+                      width: isMobile ? 100 : 120,
+                      height: isMobile ? 100 : 120,
+                      border: "2px solid rgb(8, 57, 136)",
+                    }}
+                    src={
+                      counselor.picUrl
+                        ? `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+                            counselor.picUrl
+                          )}`
+                        : sampp
+                    }
                   />
                   <Box
                     sx={{
