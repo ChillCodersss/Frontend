@@ -65,6 +65,7 @@ const OurCounselor = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const pageSize = 4;
   const navigate = useNavigate();
 
@@ -115,6 +116,54 @@ const OurCounselor = () => {
       setLoading(false);
     }
   };
+
+  const fetchImage = async (picUrl: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+          picUrl
+        )}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+      }
+      return undefined;
+    } catch (error) {
+      console.error("Error fetching image:", error);
+      return undefined;
+    }
+  };
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const newImageUrls: Record<string, string> = {};
+      for (const counselor of counselors) {
+        if (counselor.picUrl) {
+          const imageUrl = await fetchImage(counselor.picUrl);
+          if (imageUrl) {
+            newImageUrls[counselor.picUrl] = imageUrl;
+          }
+        }
+      }
+      setImageUrls(newImageUrls);
+    };
+
+    if (counselors.length > 0) {
+      fetchImages();
+    }
+
+    return () => {
+      Object.values(imageUrls).forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [counselors]);
 
   useEffect(() => {
     fetchCounselors();
@@ -398,27 +447,13 @@ const OurCounselor = () => {
                     marginTop: "10px",
                   }}
                 >
-                  {/* <Avatar
-                    sx={{
-                      width: isMobile ? 100 : 120,
-                      height: isMobile ? 100 : 120,
-                      border: "2px solid rgb(8, 57, 136)",
-                    }}
-                    src={counselor.picUrl}
-                  /> */}
                   <Avatar
                     sx={{
                       width: isMobile ? 100 : 120,
                       height: isMobile ? 100 : 120,
                       border: "2px solid rgb(8, 57, 136)",
                     }}
-                    src={
-                      counselor.picUrl
-                        ? `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
-                            counselor.picUrl
-                          )}`
-                        : sampp
-                    }
+                    src={counselor.picUrl ? imageUrls[counselor.picUrl] : sampp}
                   />
                   <Box
                     sx={{
