@@ -12,6 +12,7 @@ import CounselorProfile from "./pages/CounselorProfile";
 import OurCounselor from "./pages/OurCounselor";
 import CounselorDisplay from "./pages/CounselorDisplay";
 import Sidebar from "./components/Sidebar/Sidebar";
+import Landing from "./pages/Landing";
 
 createRoot(document.getElementById("root")!).render(
   //<StrictMode>
@@ -28,6 +29,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/CounselorDisplay" element={<CounselorDisplay />} />
         <Route path="/OurCounselor/CounselorPage/:id" element={<CounselorDisplay />} />
         <Route path="/sidebar" element={<Sidebar />} />
+        <Route path="/Landing" element={<Landing></Landing>} />
       </Routes>
     </BrowserRouter>
   //</StrictMode>
