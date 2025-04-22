@@ -78,7 +78,7 @@ const FPGetNewPassword = () => {
       );
       const data = await response.json();
       if (!response.ok || data.isFailure) {
-        toast.error(data.error.message || "خطا در ارتباط با سرور");
+        toast.error(data.message || "خطا در ارتباط با سرور");
         return;
       }
       if (data.isSuccess) {
