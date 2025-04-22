@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Avatar, useMediaQuery } from "@mui/material";
+import { Box, Typography, Avatar, useMediaQuery, Fab } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import EventIcon from "@mui/icons-material/Event";
 import SchoolIcon from "@mui/icons-material/School";
 import CircleIcon from "@mui/icons-material/Circle";
+import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
+import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SecondaryButton from "../common/SecondaryButton";
 import { Navigation } from "swiper/modules";
@@ -15,6 +17,8 @@ import "../../../node_modules/swiper/modules/pagination.css";
 import "../../../node_modules/swiper/modules/navigation.css";
 import "swiper/swiper-bundle.css";
 // import "swiper/swiper-bundle.min.css";
+
+// there is a bug in the swiiper that enables the scroll part of the browser
 
 interface Counselor {
   id: number;
@@ -83,16 +87,49 @@ const CounselorSwiper = () => {
 
   return (
     <Box
-      sx={{ padding: "20px 0px", display: "flex", justifyContent: "center" }}
+      sx={{
+        padding: "20px 0px",
+        height: "100vh",
+        width: "100%",
+        boxSizing: "border-box",
+      }}
     >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          padding: "8px",
+          gap: "5px",
+          marginRight: "20px",
+          marginBottom: "20px",
+          // position: "absolute",
+          // top: "10px",
+          // right: "10px",
+          zIndex: 10,
+          // backgroundColor: "#f4c417",
+          borderRadius: "50%",
+          // cursor: "pointer",
+        }}
+      >
+        <Fab sx={{ boxShadow: "none" }} aria-label="next" id="custom-next">
+          <ArrowBackIosRoundedIcon />
+        </Fab>
+        <Fab sx={{ boxShadow: "none" }} aria-label="prev" id="custom-prev">
+          <ArrowForwardIosRoundedIcon />
+        </Fab>
+      </Box>
       <Swiper
         dir="rtl"
         slidesPerView={SPV}
         grabCursor={true}
         spaceBetween={30}
         centeredSlides={centered}
-        // navigation={true}
-        // modules={[Navigation]}
+        navigation={{
+          prevEl: "#custom-prev",
+          nextEl: "#custom-next",
+        }}
+        modules={[Navigation]}
         className="mySwiper"
         style={{ padding: "0 20px" }}
       >
@@ -226,7 +263,7 @@ const CounselorSwiper = () => {
           >
             <SecondaryButton
               name="مشاوران بیشتر"
-              width={"60%"}
+              width={"50%"}
               height={"60px"}
               backgroundColor={"#f4c417"}
               fontSize={"20px"}
