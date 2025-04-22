@@ -72,10 +72,10 @@
 .l-banner-bg-circle2 {
     background-color: white;
     position: absolute;
-    bottom: -60%;
-    left: -75%;
-    width: 120%;
-    height: 120%;
+    bottom: -55%;
+    left: -66%;
+    width: 110%;
+    height: 110%;
     z-index: -2;
     border-radius: 50%;
 }
