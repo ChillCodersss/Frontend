@@ -1,3 +1,6 @@
+
+import CounselorSwiper from "@/components/Landing/Swiper.tsx";
+
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Paper, Grow, useMediaQuery, Fade, Card, CardActionArea } from "@mui/material";
 import Marquee from "@/components/Landing/Marquee";
@@ -6,7 +9,10 @@ import SecondaryButton from "@/components/common/SecondaryButton";
 import './Landing.css';
 
 
+import "./Landing.css";
+
 const Landing: React.FC = () => {
+
     const [firstRowVisible, setFirstRowVisible] = useState(false);
     const [lastRowVisible, setLastRowVisible] = useState(false);
     const [firstTextVisible, setFirstTextVisible] = useState(false);
