@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Paper, Grow, useMediaQuery, Fade, Card, CardActionArea } from "@mui/material";
+import { Box, Paper, Grow, useMediaQuery, Fade } from "@mui/material";
+// import { Card, CardActionArea } from "@mui/material";
 import Marquee from "@/components/Landing/Marquee";
 import SecondaryButton from "@/components/common/SecondaryButton";
 // import Footer from "@/components/Footer/Footer";
@@ -8,12 +9,12 @@ import './Landing.css';
 
 const Landing: React.FC = () => {
     const [firstRowVisible, setFirstRowVisible] = useState(false);
-    const [lastRowVisible, setLastRowVisible] = useState(false);
+    // const [lastRowVisible, setLastRowVisible] = useState(false);
     const [firstTextVisible, setFirstTextVisible] = useState(false);
     const [secondTextVisible, setSecondTextVisible] = useState(false);
     const small_screen = useMediaQuery("(min-width: 600px) and (max-width: 749px)");
     const medium_screen = useMediaQuery("(min-width: 750px)");
-    const not_mobile = small_screen || medium_screen;
+    // const not_mobile = small_screen || medium_screen;
     // const reduced_motion = useMediaQuery("(prefers-reduced-motion)");
 
     const paper_transition_props = {
@@ -21,10 +22,10 @@ const Landing: React.FC = () => {
         in: firstRowVisible,
     };
 
-    const card_transition_props = {
-        timeout: 600,     // timeout in millisecond
-        in: lastRowVisible,
-    };
+    // const card_transition_props = {
+    //     timeout: 600,     // timeout in millisecond
+    //     in: lastRowVisible,
+    // };
 
     const fade_sx = {
         timeout: 600,     // timeout in millisecond
@@ -62,22 +63,22 @@ const Landing: React.FC = () => {
         observer.observe(firstRow[0]);
     }, []);
 
-    useEffect(() => {
-        const lastRow = document.querySelectorAll(".l-last-row");
+    // useEffect(() => {
+    //     const lastRow = document.querySelectorAll(".l-last-row");
 
-        const observer = new IntersectionObserver((entries) => {
-            const entry = entries[0];
+    //     const observer = new IntersectionObserver((entries) => {
+    //         const entry = entries[0];
 
-            if (entry.isIntersecting) {
-                setLastRowVisible(true);
-                observer.unobserve(lastRow[0]);
-            }
-        }, {
-            threshold: 0.5,
-        });
+    //         if (entry.isIntersecting) {
+    //             setLastRowVisible(true);
+    //             observer.unobserve(lastRow[0]);
+    //         }
+    //     }, {
+    //         threshold: 0.5,
+    //     });
 
-        observer.observe(lastRow[0]);
-    }, []);
+    //     observer.observe(lastRow[0]);
+    // }, []);
 
     useEffect(() => {
         const firstText = document.querySelectorAll(`[id="firstText"]`);
@@ -131,37 +132,37 @@ const Landing: React.FC = () => {
         paper_sx = {...paper_sx, ...medium_screen_paper_sx};
     }
 
-    const left_card_sx = {
-        position: "absolute",
-        left: (not_mobile) ? "15%" : "unset",
-        bottom: (not_mobile) ? "unset" : "50px",
-        height: (not_mobile) ? "30vw" : "230px",
-        width: (not_mobile) ? "30vw" : "230px",
-        boxShadow: "5",
-        fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
-        borderRadius: {xs: "6px", sm: "8px", md: "8px"},
-        "&:hover": {
-            height: (not_mobile) ? "32vw" : "240px",
-            width: (not_mobile) ? "32vw" : "240px",
-            boxShadow: "7",
-        }
-    };
+    // const left_card_sx = {
+    //     position: "absolute",
+    //     left: (not_mobile) ? "15%" : "unset",
+    //     bottom: (not_mobile) ? "unset" : "50px",
+    //     height: (not_mobile) ? "30vw" : "230px",
+    //     width: (not_mobile) ? "30vw" : "230px",
+    //     boxShadow: "5",
+    //     fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
+    //     borderRadius: {xs: "6px", sm: "8px", md: "8px"},
+    //     "&:hover": {
+    //         height: (not_mobile) ? "32vw" : "240px",
+    //         width: (not_mobile) ? "32vw" : "240px",
+    //         boxShadow: "7",
+    //     }
+    // };
 
-    const right_card_sx = {
-        position: "absolute",
-        right: (not_mobile) ? "15%" : "unset",
-        bottom: (not_mobile) ? "unset" : "50px",
-        height: (not_mobile) ? "30vw" : "230px",
-        width: (not_mobile) ? "30vw" : "230px",
-        boxShadow: "5",
-        fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
-        borderRadius: {xs: "6px", sm: "8px", md: "8px"},
-        "&:hover": {
-            height: (not_mobile) ? "32vw" : "240px",
-            width: (not_mobile) ? "32vw" : "240px",
-            boxShadow: "7",
-        }
-    };
+    // const right_card_sx = {
+    //     position: "absolute",
+    //     right: (not_mobile) ? "15%" : "unset",
+    //     bottom: (not_mobile) ? "unset" : "50px",
+    //     height: (not_mobile) ? "30vw" : "230px",
+    //     width: (not_mobile) ? "30vw" : "230px",
+    //     boxShadow: "5",
+    //     fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
+    //     borderRadius: {xs: "6px", sm: "8px", md: "8px"},
+    //     "&:hover": {
+    //         height: (not_mobile) ? "32vw" : "240px",
+    //         width: (not_mobile) ? "32vw" : "240px",
+    //         boxShadow: "7",
+    //     }
+    // };
 
     // const text_max_width = "260px";
     // const text_font_size = "1rem";
@@ -379,7 +380,7 @@ const Landing: React.FC = () => {
                         </Box>
                     </Box>
                 </section>
-                <section className="l-container l-last-row">
+                {/* <section className="l-container l-last-row">
                     <Grow {...card_transition_props} timeout={card_transition_props.timeout + 400}>
                         <Card sx={left_card_sx}>
                             <CardActionArea>
@@ -394,7 +395,7 @@ const Landing: React.FC = () => {
                             </CardActionArea>
                         </Card>
                     </Grow>
-                </section>
+                </section> */}
             </main>
             <footer style={{
                 backgroundColor: "gray", height: "70px",
