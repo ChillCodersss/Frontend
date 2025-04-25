@@ -30,6 +30,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/OurCounselor/CounselorPage/:id" element={<CounselorDisplay />} />
         <Route path="/sidebar" element={<Sidebar />} />
         <Route path="/Landing" element={<Landing></Landing>} />
+        <Route path="/" element={<Landing></Landing>} />
       </Routes>
     </BrowserRouter>
   //</StrictMode>
