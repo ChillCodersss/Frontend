@@ -65,6 +65,13 @@ const InputBox: React.FC<InputBoxProps> = ({
           startAdornment,
         }}
         sx={{
+          "& input::-webkit-outer-spin-button, input::-webkit-inner-spin-button": {
+            WebkitAppearance: "none",
+            margin: 0,
+          },
+          "& input[type=number]": {
+            MozAppearance: "textfield",
+          },
           "& .MuiOutlinedInput-root": {
             backgroundColor: "white",
             borderRadius: borderRadius,
