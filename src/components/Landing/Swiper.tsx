@@ -275,7 +275,7 @@ const CounselorSwiper = () => {
                 fontSize={"20px"}
                 borderRadius={"9px"}
                 onClick={() => {
-                  navigate("./ourcounselor");
+                  navigate("/OurCounselor");
                 }}
               />
             </Box>
