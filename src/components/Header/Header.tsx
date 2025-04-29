@@ -1,39 +1,70 @@
 import * as React from "react";
 import { useNavigate } from "react-router";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import SecondaryButton from "../common/SecondaryButton";
+import {
+  Link,
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  MenuItem,
+  Container,
+  Avatar,
+  Tooltip,
+  Button,
+} from "@mui/material";
+import { getToken, getUserInfo, removeToken } from "@/services/auth";
 //icons
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
 import LockIcon from "@mui/icons-material/Lock";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-
-const pages = [
-  { label: "مشاوران ما", path: "/#" },
-  { label: "خدمات", path: "/#" },
-  { label: "استخدام", path: "/#" },
-  { label: "درباره ما", path: "/#" },
-];
-const settings = [
-  { label: "پروفایل", icon: <AccountCircleIcon /> },
-  { label: "تغییر رمز عبور", icon: <LockIcon /> },
-  { label: "خروج", icon: <ExitToAppIcon /> },
-];
+import ListItemIcon from "@mui/material/ListItemIcon";
+///styles
+import { headerNavLink, loginButton } from "./HeaderStyles";
 
 const Header = () => {
   const navigate = useNavigate();
+  let profilePicUrl = "";
+
+  const pages = [
+    { label: "درباره ما", path: "/about-us" },
+    { label: "استخدام", path: "/Recruitment" },
+    { label: "خدمات", path: "/#" },
+    { label: "مشاوران ما", path: "/OurCounselor" },
+  ];
+  const settings = [
+    {
+      label: "پروفایل",
+      icon: <AccountCircleIcon />,
+      clickFunction: () => {
+        const info = getUserInfo();
+        if (!info) {
+          return;
+        }
+        if (info.role === "Counselor") {
+          navigate("/CounselorProfile");
+          return;
+        } // there may be a problem here
+        if (info.role === "Student") {
+          navigate("/StudentProfile");
+          return;
+        }
+      },
+    },
+    // we should fix here
+    { label: "تغییر رمز عبور", icon: <LockIcon />, clickFunction: () => {} },
+    {
+      label: "خروج",
+      icon: <ExitToAppIcon />,
+      clickFunction: () => {
+        removeToken();
+      },
+    },
+  ];
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -58,15 +89,80 @@ const Header = () => {
 
   const isMenuOpen = Boolean(anchorElNav);
 
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      const token = getToken();
+      if (!token) {
+        return;
+      }
+      const info = getUserInfo();
+      if (!info) {
+        return;
+      }
+      setIsLoggedIn(true);
+      // Fetch user profile picture
+      try {
+        const response =
+          info.role === "Counselor"
+            ? await fetch("http://localhost:8080/api/Counselor/Profile", {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+              })
+            : await fetch("http://localhost:8080/api/Student/Profile", {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+
+        const data = await response.json();
+        if (data.isSuccess && data.value.profilePicUrl) {
+          try {
+            const imageResponse = await fetch(
+              `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+                data.value.profilePicUrl
+              )}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            if (imageResponse.ok) {
+              const blob = await imageResponse.blob();
+              profilePicUrl = URL.createObjectURL(blob);
+              // need to fix here
+            } else {
+              console.error("failed to fetch image", imageResponse.statusText);
+            }
+          } catch (imageError) {
+            console.error("error in fetching profile picture", imageError);
+          }
+        }
+      } catch (error) {
+        console.error("error in fetching profile image", error);
+      }
+    };
+    fetchUser();
+  }, []);
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {isLoggedIn ? (
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+              <Tooltip title="باز کردن تنظیمات">
+                <IconButton
+                  onClick={handleOpenUserMenu}
+                  sx={{ p: 0, width: 40, height: 40 }}
+                >
+                  <Avatar alt="profile picture" src={profilePicUrl} />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -88,7 +184,10 @@ const Header = () => {
                 {settings.map((setting) => (
                   <MenuItem
                     key={setting.label}
-                    onClick={handleCloseUserMenu}
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      setting.clickFunction();
+                    }}
                     sx={{ justifyContent: "space-between" }}
                   >
                     <ListItemIcon>{setting.icon}</ListItemIcon>
@@ -100,20 +199,14 @@ const Header = () => {
               </Menu>
             </Box>
           ) : (
-            <SecondaryButton
-              name="ورود"
-              width="70px"
-              height="40px"
-              fontSize="16px"
-              borderRadius={"30px"}
-              backgroundColor="#3f51b5"
+            <Button
+              sx={loginButton}
               onClick={() => {
-                setTimeout(() => {
-                  navigate("/login");
-                }, 300);
-                // setIsLoggedIn(true);
+                navigate("/login");
               }}
-            />
+            >
+              ورود
+            </Button>
           )}
           <Box
             sx={{
@@ -122,16 +215,25 @@ const Header = () => {
             }}
           >
             {pages.map((page) => (
-              <Button
+              <Link
                 key={page.label}
+                sx={{
+                  ...headerNavLink,
+                  "&::before": {
+                    ...headerNavLink["&::before"],
+                    transform:
+                      window.location.pathname === page.path
+                        ? "scaleX(1)"
+                        : "scaleX(0)",
+                  },
+                }}
                 onClick={() => {
                   handleCloseNavMenu();
                   navigate(page.path);
                 }}
-                sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page.label}
-              </Button>
+              </Link>
             ))}
           </Box>
           <Typography
