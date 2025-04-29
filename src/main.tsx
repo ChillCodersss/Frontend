@@ -12,7 +12,7 @@ import CounselorProfile from "./pages/CounselorProfile";
 import OurCounselor from "./pages/OurCounselor";
 import CounselorDisplay from "./pages/CounselorDisplay";
 import Sidebar from "./components/Sidebar/Sidebar";
-import Landing from "./pages/Landing";
+import Landing from "./pages/Landing/Landing";
 
 createRoot(document.getElementById("root")!).render(
   //<StrictMode>

@@ -4,7 +4,6 @@ import { Box, Paper, Grow, useMediaQuery, Fade } from "@mui/material";
 import Marquee from "@/components/Landing/Marquee";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import CounselorSwiper from "@/components/Landing/Swiper.tsx";
-// import Footer from "@/components/Footer/Footer";
 import './Landing.css';
 
 
