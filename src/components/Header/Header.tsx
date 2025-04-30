@@ -25,7 +25,11 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 ///styles
 import { headerNavLink, loginButton } from "./HeaderStyles";
 
-const Header = () => {
+interface HeaderProps {
+  isWhiteMode?: boolean; // Optional prop to toggle header mode
+}
+
+const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
   const navigate = useNavigate();
   let profilePicUrl = "";
 
@@ -72,6 +76,7 @@ const Header = () => {
     null
   );
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -152,7 +157,13 @@ const Header = () => {
   }, []);
 
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: isWhiteMode ? "#ffffff" : "#057abe",
+        color: isWhiteMode ? "#057abe" : "#ffffff",
+      }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {isLoggedIn ? (
@@ -200,7 +211,15 @@ const Header = () => {
             </Box>
           ) : (
             <Button
-              sx={loginButton}
+              sx={{
+                ...loginButton,
+                color: isWhiteMode ? "#057abe" : "#ffffff",
+                borderColor: isWhiteMode ? "#057abe" : "#ffffff",
+                "&:hover": {
+                  color: isWhiteMode ? "#ffffff" : "#057abe",
+                  backgroundColor: isWhiteMode ? "#057abe" : "#ffffff",
+                },
+              }}
               onClick={() => {
                 navigate("/login");
               }}
@@ -219,8 +238,10 @@ const Header = () => {
                 key={page.label}
                 sx={{
                   ...headerNavLink,
+                  color: isWhiteMode ? "#057abe" : "#ffffff",
                   "&::before": {
                     ...headerNavLink["&::before"],
+                    backgroundColor: isWhiteMode ? "#057abe" : "#ffffff",
                     transform:
                       window.location.pathname === page.path
                         ? "scaleX(1)"
