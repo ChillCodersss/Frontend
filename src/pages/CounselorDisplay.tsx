@@ -17,6 +17,7 @@ import ConfirmButton from "@/components/common/ConfirmButton";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ToastContainer, toast } from "react-toastify";
+import { getToken } from "@/services/auth"; 
 import "react-toastify/dist/ReactToastify.css";
 import "./toast.css"; // Adjust path if different (e.g., src/styles/toast.css)
 
@@ -30,7 +31,7 @@ interface PostData {
   content: string;
   profilePic: string;
   workExperience: string;
-  rating: string;
+  rate: string;
 }
 
 interface ApiResponse {
@@ -56,7 +57,7 @@ const CounselorDisplay: React.FC = () => {
     content: "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
     profilePic: "/src/assets/DefaultPerson.png",
     workExperience: "نامشخص",
-    rating: "0",
+    rate: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -67,7 +68,7 @@ const CounselorDisplay: React.FC = () => {
     const fetchPostData = async () => {
       if (hasFetched.current || !id) return;
       hasFetched.current = true;
-
+      
       setIsLoading(true);
       try {
         const response = await fetch(`http://62.60.213.13/api/Counselor/GetById?Id=${id}`, {
@@ -120,13 +121,14 @@ const CounselorDisplay: React.FC = () => {
             "مشاور کنکور بودن کار دلیه. من تو تک تک ثانیه های سال کنکور در کنارتونم و به عنوان کسی که اختلاف سنی زیادی باهاتون نداره کاملا دغدغه هاتون رو درک میکنم. ...",
           profilePic: profilePicUrl,
           workExperience: userData.workExperience || "3 سال",
-          rating: userData.rating || "4.8",
+          rate: userData.rate,
         });
       } catch (error: any) {
         console.error("Error fetching counselor data:", error);
         toast.error("خطا در بارگذاری اطلاعات مشاور", {
-          position: "bottom-center",
-          autoClose: 3000,
+          position: "bottom-right",
+          autoClose: 5000,
+          rtl: true,
         });
         setPostData(prev => ({
           ...prev,
@@ -151,19 +153,33 @@ const CounselorDisplay: React.FC = () => {
   const handleConfirm = async () => {
     if (!id) {
       toast.error("شناسه مشاور نامعتبر است", {
-        position: "bottom-center",
-        autoClose: 3000,
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
+      });
+      return;
+    }
+
+    // Convert id from string to integer
+    const convertedId = parseInt(id, 10);
+    if (isNaN(convertedId)) {
+      toast.error("شناسه مشاور باید یک عدد معتبر باشد", {
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
       });
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append("id", id); // Use "id" as the field name per API spec
-
+      formData.append("id", convertedId.toString());
+      const token = getToken();
       const response = await fetch("http://62.60.213.13/api/RequestCounselor/Create", {
         method: "POST",
-        body: formData, // Send multipart/form-data
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },        body: formData, 
       });
 
       const data: ApiResponse = await response.json();
@@ -178,15 +194,17 @@ const CounselorDisplay: React.FC = () => {
       }
 
       toast.success(data.message || "درخواست مشاوره با موفقیت ثبت شد!", {
-        position: "bottom-center",
-        autoClose: 3000,
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
       });
       setOpenDialog(false);
     } catch (error: any) {
       console.error("Error submitting request:", error);
       toast.error(error.message || "خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.", {
-        position: "bottom-center",
-        autoClose: 3000,
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
       });
     }
   };
@@ -250,7 +268,7 @@ const CounselorDisplay: React.FC = () => {
                     variant={isMobile ? "subtitle1" : "body1"}
                     sx={{ ...typographyStyles, textAlign: "left" }}
                   >
-                    {postData.rating}
+                    {postData.rate}
                   </Typography>
                 </Box>
               </Box>
@@ -320,7 +338,7 @@ const CounselorDisplay: React.FC = () => {
             sx={{
               width: isMobile ? "100%" : "230px",
               backgroundColor: "#f4c417",
-              borderRadius: isMobile ? "12px 12px 0 0" : "0 12px 12px 0",
+              borderRadius: isMobile ? "12px 12px 0 0" : "0",
               display: "flex",
               flexDirection: isMobile ? "row" : "column",
               justifyContent: isMobile ? "space-between" : "flex-start",
@@ -499,16 +517,15 @@ const CounselorDisplay: React.FC = () => {
       </Dialog>
 
       <ToastContainer
-        position="bottom-center"
-        autoClose={3000}
+        position="bottom-right"
+        autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
-        rtl={true}
+        //rtl={true}
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
       />
     </Box>
   );

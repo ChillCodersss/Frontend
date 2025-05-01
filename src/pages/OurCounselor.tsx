@@ -88,7 +88,7 @@ const OurCounselor = () => {
       setError(null);
       const majorCode = filter === "همه" ? null : getMajorCode(filter);
       const response = await axios.get<ApiResponse>(
-        "http://localhost:8080/api/Counselor/GetList",
+        "http://62.60.213.13/api/Counselor/GetList",
         {
           params: {
             PageSize: pageSize,
@@ -120,7 +120,7 @@ const OurCounselor = () => {
   const fetchImage = async (picUrl: string) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+        `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
           picUrl
         )}`,
         {

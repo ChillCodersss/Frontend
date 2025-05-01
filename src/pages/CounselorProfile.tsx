@@ -66,7 +66,7 @@ const CounselorProfile = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:8080/api/Counselor/Profile", {
+        const response = await fetch("http://62.60.213.13/api/Counselor/Profile", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -95,7 +95,7 @@ const CounselorProfile = () => {
           if (data.value.profilePicUrl) {
             try {
               const imageResponse = await fetch(
-                `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+                `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
                   data.value.profilePicUrl
                 )}`,
                 {
@@ -191,7 +191,7 @@ const CounselorProfile = () => {
         formDataPayload.append("ProfilePic", profilePicFile);
       }
 
-      const response = await fetch("http://localhost:8080/api/Counselor/Update", {
+      const response = await fetch("http://62.60.213.13/api/Counselor/Update", {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -206,7 +206,7 @@ const CounselorProfile = () => {
         if (data.value?.profilePicUrl) {
           try {
             const imageResponse = await fetch(
-              `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+              `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
                 data.value.profilePicUrl
               )}`,
               {
@@ -281,7 +281,7 @@ const CounselorProfile = () => {
         }
 
         const response = await fetch(
-          `http://localhost:8080/api/Provinces/Dropdown?input=${encodeURIComponent(
+          `http://62.60.213.13/api/Provinces/Dropdown?input=${encodeURIComponent(
             provinceInputValue || ""
           )}`,
           {
