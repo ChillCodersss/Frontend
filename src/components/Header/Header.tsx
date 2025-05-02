@@ -59,12 +59,19 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
       },
     },
     // we should fix here
-    { label: "تغییر رمز عبور", icon: <LockIcon />, clickFunction: () => {} },
+    {
+      label: "تغییر رمز عبور",
+      icon: <LockIcon />,
+      clickFunction: () => {
+        navigate("/change-password");
+      },
+    },
     {
       label: "خروج",
       icon: <ExitToAppIcon />,
       clickFunction: () => {
         removeToken();
+        window.location.reload();
       },
     },
   ];
