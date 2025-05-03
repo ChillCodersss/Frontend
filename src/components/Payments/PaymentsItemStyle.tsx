@@ -1,7 +1,7 @@
 import { SxProps } from "@mui/material";
 
 export const paymentsItemStyles: SxProps = {
-  height: { xs: "250px", md: "180px" },
+  height: { xs: "120px", md: "100px" },
   width: "100%",
   backgroundColor: "#fff",
   borderRadius: "8px",
