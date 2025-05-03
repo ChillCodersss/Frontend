@@ -1,3 +1,5 @@
+const baseURL = "62.60.213.13";
+
 export const changePassword = async (
   token: string,
   oldPassword: string,
@@ -5,7 +7,7 @@ export const changePassword = async (
   confirmedNewPassword: string
 ) => {
   const response = await fetch(
-    "http://localhost:8080//api/Auth/ProfileChangePassword",
+    `http://${baseURL}/api/Auth/ProfileChangePassword`,
     {
       method: "POST",
       headers: {
