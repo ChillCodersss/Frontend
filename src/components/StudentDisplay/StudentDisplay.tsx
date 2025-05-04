@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -8,6 +7,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { getToken } from "@/services/auth";
+
 
 type ConfirmButtonProps = {
   name: string;
@@ -32,63 +33,83 @@ const ConfirmButton: React.FC<ConfirmButtonProps> = ({ name, onClick }) => (
 );
 
 const StudentDisplayPopup = () => {
-  const { id } = useParams();
   const [studentData, setStudentData] = useState({
-    firstName: "امیرمحمد",
-    lastName: "عزیزی",
-    email: "amirazizigh@gmail.com",
-    majorTitle: "ریاضی",
-    gradeLevel: "دهم",
-    lastGradeGPA: 19,
-    aboutMe:
-      "الان چهار ساله که مشاور کنکورم چون میخوام به دانش آموزایی که شرایط مشابه منو داشتن بگم که در آخر تلاش پیوسته حتی میتونه یه سد بزرگ کنکور رو بشکونه. حالا تو این مسیر تمام تجربیات و نتایج آزمون و خطاهامو برات میگم تا تو دیگه وقتتو براشون تلف نکنی و یه راست از نتیجشون استفاده بکنی و از رقبات که هیچ ، حتی از من هم جلو بزنی ! البته من یه فرقی با اکثر مشوارا دارم . این که فقط وضعیت درسیتو بررسی نمیکنم . لایف استایل کنکوری باید داشته باشی که کمتر در معرض مریضی و افسردگی قرار بگیری که در اکثر مواقع تو پر انرژی ترین ورژن خودت باشی ! پس در واقع مشاوره ما علاوه بر تحصیلی ، روانشناسی و رفاقتی هم هست طوری که بعد کنکورم در ارتباطیم . راستی من دارم برای کنکور ارشد میخونم و میتونیم خیلی اوقات باهم درس بخونیم … فوق العادست ! اگر آماده ای بیا تا شروع کنیم",
-    studentPhoneNumber: "09013385313",
-    parentPhoneNumber: "09013385313",
-    birthDate: "19/2/1383",
-    schoolName: "شریعتی",
-    province: "تهران",
-    profilePicName: "/src/assets/DefaultPerson.png",
+    firstName: "",
+    lastName: "",
+    email: "نامشخص",
+    majorTitle: "نامشخص",
+    gradeLevel: "نامشخص",
+    lastGradeGPA: 0,
+    aboutMe: "دانش‌آموز هنوز توضیحاتی درباره خود اضافه نکرده است.",
+    studentPhoneNumber: "نامشخص",
+    parentPhoneNumber: "نامشخص",
+    birthDate: "نامشخص",
+    schoolName: "نامشخص",
+    province: "نامشخص",
+    picUrl: "/src/assets/DefaultPerson.png",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const hasFetched = useRef(false);
   const isMobile = useMediaQuery("(max-width:600px)");
+  const studentId = "10002"; // Static ID
 
   useEffect(() => {
     const fetchStudentData = async () => {
-      if (hasFetched.current || !id) return;
+      if (hasFetched.current) return;
       hasFetched.current = true;
 
       setIsLoading(true);
       try {
+        // Retrieve the authentication token
+        const token = getToken();
+        if (!token) {
+          throw new Error("No authentication token found. Please log in.");
+        }
+
+        // Fetch student data with Authorization header
         const response = await fetch(
-          `http://localhost:8080/api/Student/GetById?Id=${id}`,
+          `http://62.60.213.13/api/Student/GetById?Id=${studentId}`,
           {
             method: "GET",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch student data");
+          throw new Error(`Failed to fetch student data: ${response.statusText}`);
         }
 
         const data = await response.json();
         const userData = data.value;
 
-        let profilePicUrl = "/src/assets/DefaultPerson.png";
-        if (userData?.profilePicName) {
+        // Split fullName into firstName and lastName
+        const [firstName, ...lastNameParts] = (userData.fullName || "").split(" ");
+        const lastName = lastNameParts.join(" ") || "";
+
+        // Fetch profile picture using StreamImg endpoint
+        let picUrl = "/src/assets/DefaultPerson.png";
+        if (userData?.picUrl) {
           try {
             const imageResponse = await fetch(
-              `http://localhost:8080/api/MediaFiles/StreamImg?FileUrl=${encodeURIComponent(
-                userData.profilePicName
+              `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+                userData.picUrl
               )}`,
-              { method: "GET", headers: { "Content-Type": "application/json" } }
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+              }
             );
 
             if (imageResponse.ok) {
               const blob = await imageResponse.blob();
-              profilePicUrl = URL.createObjectURL(blob);
+              picUrl = URL.createObjectURL(blob);
             } else {
               console.error(
                 "Failed to fetch image, using default:",
@@ -101,13 +122,15 @@ const StudentDisplayPopup = () => {
               imageError
             );
           }
+        } else {
+          console.warn("No picUrl provided, using default image.");
         }
 
         setStudentData({
-          firstName: userData.firstName || "",
-          lastName: userData.lastName || "",
-          email: userData.email || "",
-          majorTitle: userData.majorTitle || "نامشخص",
+          firstName: firstName || "",
+          lastName: lastName || "",
+          email: userData.email || "نامشخص",
+          majorTitle: userData.major || "نامشخص",
           gradeLevel: userData.gradeLevel || "نامشخص",
           lastGradeGPA: userData.lastGradeGPA || 0,
           aboutMe:
@@ -115,18 +138,15 @@ const StudentDisplayPopup = () => {
             "دانش‌آموز هنوز توضیحاتی درباره خود اضافه نکرده است.",
           studentPhoneNumber: userData.studentPhoneNumber || "نامشخص",
           parentPhoneNumber: userData.parentPhoneNumber || "نامشخص",
-          birthDate: userData.birthDate
-            ? new Date(userData.birthDate).toLocaleDateString("fa-IR")
-            : "نامشخص",
+          birthDate: userData.birthDate || "نامشخص",
           schoolName: userData.schoolName || "نامشخص",
           province: userData.province || "نامشخص",
-          profilePicName: profilePicUrl,
+          picUrl: picUrl,
         });
       } catch (error) {
         console.error("خطا در ارتباط با سرور", error);
         setStudentData((prev) => ({
           ...prev,
-          aboutMe: "خطا در بارگذاری اطلاعات دانش‌آموز",
         }));
       } finally {
         setIsLoading(false);
@@ -136,7 +156,7 @@ const StudentDisplayPopup = () => {
     if (openPopup) {
       fetchStudentData();
     }
-  }, [id, openPopup]);
+  }, [openPopup]);
 
   const handleOpenPopup = () => {
     setOpenPopup(true);
@@ -162,10 +182,10 @@ const StudentDisplayPopup = () => {
             backgroundColor: "white",
             borderRadius: "12px",
             boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-            maxWidth: isMobile ? "95vw" : "800px", // Changed from 90% to 95vw
+            maxWidth: isMobile ? "95vw" : "800px",
             width: "100%",
-            overflowX: "hidden", // Prevent horizontal scrolling
-            margin: 0, // Remove default margin
+            overflowX: "hidden",
+            margin: 0,
           },
           direction: "rtl",
         }}
@@ -174,7 +194,7 @@ const StudentDisplayPopup = () => {
         <DialogContent
           sx={{
             padding: 0,
-            overflowX: "hidden", // Prevent horizontal scrolling
+            overflowX: "hidden",
           }}
         >
           {isLoading ? (
@@ -196,7 +216,7 @@ const StudentDisplayPopup = () => {
                 backgroundColor: "white",
                 width: "100%",
                 height: isMobile ? "auto" : "500px",
-                overflowX: "hidden", // Prevent horizontal scrolling
+                overflowX: "hidden",
               }}
             >
               {/* Profile Section (Fixed) */}
@@ -208,14 +228,14 @@ const StudentDisplayPopup = () => {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  padding: isMobile ? "15px 20px" : "20px", // Added equal horizontal padding in mobile
+                  padding: isMobile ? "15px 20px" : "20px",
                   gap: "10px",
                   flexShrink: 0,
-                  boxSizing: "border-box", // Ensure padding is included in width
+                  boxSizing: "border-box",
                 }}
               >
                 <img
-                  src={studentData.profilePicName}
+                  src={studentData.picUrl}
                   alt="Profile"
                   onError={(e) => {
                     e.currentTarget.src = "/src/assets/DefaultPerson.png";
@@ -229,9 +249,9 @@ const StudentDisplayPopup = () => {
                 />
                 <Box
                   sx={{
-                    width: "100%", // Ensure text container takes full width
+                    width: "100%",
                     textAlign: "center",
-                    px: 1, // Add horizontal padding to text
+                    px: 1,
                   }}
                 >
                   <Typography
@@ -239,7 +259,7 @@ const StudentDisplayPopup = () => {
                     sx={{
                       ...typographyStyles,
                       wordBreak: "break-word",
-                      fontSize :  "25px"
+                      fontSize: "25px",
                     }}
                   >
                     {studentData.firstName} {studentData.lastName}
@@ -250,7 +270,6 @@ const StudentDisplayPopup = () => {
                       ...typographyStyles,
                       wordBreak: "break-word",
                       marginTop: "10px",
-                      
                     }}
                   >
                     رشته: {studentData.majorTitle}
@@ -263,11 +282,11 @@ const StudentDisplayPopup = () => {
                 sx={{
                   flex: 1,
                   padding: isMobile ? "15px" : "30px",
-                  minWidth: 0, // Important for text overflow prevention
+                  minWidth: 0,
                   display: "flex",
                   flexDirection: "column",
                   overflowY: "auto",
-                  overflowX: "hidden", // Prevent horizontal scrolling
+                  overflowX: "hidden",
                 }}
               >
                 <Typography
@@ -277,7 +296,7 @@ const StudentDisplayPopup = () => {
                     textAlign: "right",
                     mb: 3,
                     color: "#1976d2",
-                    wordBreak: "break-word", // Prevent text overflow
+                    wordBreak: "break-word",
                   }}
                 >
                   مشخصات بیشتر
@@ -350,7 +369,7 @@ const StudentDisplayPopup = () => {
                     lineHeight: 1.7,
                     marginBottom: "20px",
                     fontSize: isMobile ? "0.9rem" : "1rem",
-                    wordBreak: "break-word", // Prevent text overflow
+                    wordBreak: "break-word",
                   }}
                 >
                   {studentData.aboutMe}
