@@ -1,11 +1,16 @@
+:root {
+    --l-marquee-height: 200px;
+    --l-header-height-s: 58px;
+    --l-header-height-m: 64px;
+}
+
 .l-container {
-    /* border: 2px solid red; */
     width: 100%;
+    box-sizing: border-box;
     /* margin-left: auto;
     margin-right: auto;
     padding-left: 0.5rem;
     padding-right: 0.5rem; */
-    box-sizing: border-box;
 }
 
 .l-first-row {
@@ -30,7 +35,7 @@
 
 .l-banner {
     width: 100%;
-    height: calc(100vh - 58px);
+    height: calc(100vh - var(--l-header-height-s));
     padding: 10% 10%;
     display: flex;
     flex-direction: column;
@@ -118,41 +123,17 @@
     color: #8a8a8a;
 }
 
-.l-marquee-wrapper {
-    width: 100%;
-    height: 200px;
-    padding: 50px 0px;
-    display: flex;
-    position: relative;
-    overflow: hidden;
-    /* mask-image: linear-gradient(
-        to right,
-        rgba(0,0,0,0),
-        rgba(0,0,0,1) 20%,
-        rgba(0,0,0,1) 80%,
-        rgba(0,0,0,0)
-    ); */
-}
-
-.l-marquee-item {
-    width: 400px;
-    height: 200px;
-    border-radius: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-    font-size: 4rem;
-    font-weight: 900;
-}
-
 .l-swiper-bg-wrapper {
     position: relative;
+    /* height: calc(100vh - var(--l-marquee-height)); */
     height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #f9fafb;
+    /* background-color: #f9fafb; */
+    background-image: linear-gradient(to left, #ffe78f, #fff3ca);
+    /* background-image: linear-gradient(to left, #ffad42, #ffda54); */
 }
 
 .l-swiper-bg {
@@ -200,33 +181,12 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-    @keyframes scrollLeft {
-        to {
-            left: -400px;
-        }
-    }
 
-    .l-marquee-item {
-        width: 400px;
-        height: 200px;
-        border-radius: 6px;
-        position: absolute;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        left: max(100%, calc(400px * 4));
-        animation-name: scrollLeft;
-        animation-duration: 30s;
-        animation-timing-function: linear;
-        animation-iteration-count: infinite;
-        font-size: 4rem;
-        font-weight: 900;
-    }
 }
 
 @media (min-width: 600px) {     /* sm */
     .l-banner {
-        height: calc(100vh - 64px);
+        height: calc(100vh - var(--l-header-height-m));
         padding: 10% 10%;
         row-gap: 0.5rem;
         align-items: end;
@@ -279,7 +239,7 @@
 
 @media (min-width: 750px) {     /* md 960px */
     .l-banner {
-        height: calc(100vh - 64px);
+        height: calc(100vh - var(--l-header-height-m));
         padding: 10% 10%;
         row-gap: 0.5rem;
         align-items: end;

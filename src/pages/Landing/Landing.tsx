@@ -4,6 +4,7 @@ import { Box, Paper, Grow, useMediaQuery, Fade } from "@mui/material";
 import Marquee from "@/components/Landing/Marquee";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import CounselorSwiper from "@/components/Landing/Swiper.tsx";
+import Footer from "@/components/Landing/Footer";
 import './Landing.css';
 
 
@@ -184,7 +185,7 @@ const Landing: React.FC = () => {
     };
 
     return (
-        <div style={{width: "100%",}}> {/*overflowX: "hidden"*/}
+        <div style={{width: "100%",}}>
             <header style={{
                 backgroundColor: "gray", height: "70px", 
                 // position: "sticky", top: "0px",
@@ -196,8 +197,8 @@ const Landing: React.FC = () => {
             <main>
                 <section className="l-banner">
                     <div className="l-banner-bg"/>
-                    <div className="l-banner-bg-circle"/>
-                    <div className="l-banner-bg-circle2"/>
+                    {/* <div className="l-banner-bg-circle"/>
+                    <div className="l-banner-bg-circle2"/> */}
                     <h1 className="l-banner-h">{banner_h}</h1>
                     <p className="l-banner-p">{banner_p}</p>
                 </section>
@@ -218,37 +219,17 @@ const Landing: React.FC = () => {
                         </Paper>
                     </Grow>
                 </section>
-                <section id="l-marquee1">
-                    <Marquee count={4} text={our_counselor_marquee_text}/>
-                    {/* <div className="l-marquee-wrapper">
-                        <Marquee count={4} text={our_counselor_marquee_text}/>
-                        { reduced_motion ? 
-                        <div className="l-marquee-item">
-                            <p>{our_counselor_marquee_text}</p>
-                        </div>
-                        :
-                        <>
-                        <div className="l-marquee-item" style={{animationDelay: "calc(30s / 4 * (4 - 1) * -1)"}}>
-                            <p>{our_counselor_marquee_text}</p>
-                        </div>
-                        <div className="l-marquee-item" style={{animationDelay: "calc(30s / 4 * (4 - 2) * -1)"}}>
-                            <p>{our_counselor_marquee_text}</p>
-                        </div>
-                        <div className="l-marquee-item" style={{animationDelay: "calc(30s / 4 * (4 - 3) * -1)"}}>
-                            <p>{our_counselor_marquee_text}</p>
-                        </div>
-                        <div className="l-marquee-item" style={{animationDelay: "calc(30s / 4 * (4 - 4) * -1)"}}>
-                            <p>{our_counselor_marquee_text}</p>
-                        </div>
-                        </>
-                        }
-                    </div> */}
+                <section id={"RoadMap"} className="l-container">
+
                 </section>
+                {/* <section id="l-marquee1">
+                    <Marquee count={4} text={our_counselor_marquee_text}/>
+                </section> */}
                 <section className="l-container">
                     <div
                         className="l-swiper-bg-wrapper"
                     >
-                        <div
+                        {/* <div
                             className="l-swiper-bg"
                         />
                         <div
@@ -257,9 +238,9 @@ const Landing: React.FC = () => {
                             <div
                                 className="l-swiper-bg-circle-wrapper"
                             >
-                                {/* <div className="l-swiper-bg-circle"/> */}
                             </div>
-                        </div>
+                        </div> */}
+                        <Marquee count={4} text={our_counselor_marquee_text}/>
                         <CounselorSwiper/>
                     </div>
                 </section>
@@ -398,13 +379,7 @@ const Landing: React.FC = () => {
                     </Grow>
                 </section> */}
             </main>
-            <footer style={{
-                backgroundColor: "gray", height: "70px",
-                display: "flex", alignItems: "center", justifyContent:"center"
-                }}
-            >
-                Footer
-            </footer>
+            <Footer/>
         </div>
     )
 }
