@@ -50,7 +50,7 @@ const FPGetVerificationCode = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.error.message || "خطا در ارتباط با سرور");
+        toast.error(data.message || "خطا در ارتباط با سرور");
         return;
       }
       if (data.isFailure) {

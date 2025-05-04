@@ -16,6 +16,10 @@ import DialogTitle from "@mui/material/DialogTitle";
 import ConfirmButton from "@/components/common/ConfirmButton";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { ToastContainer, toast } from "react-toastify";
+import { getToken } from "@/services/auth"; 
+import "react-toastify/dist/ReactToastify.css";
+import "./toast.css"; // Adjust path if different (e.g., src/styles/toast.css)
 
 interface PostData {
   username: string;
@@ -27,11 +31,22 @@ interface PostData {
   content: string;
   profilePic: string;
   workExperience: string;
-  rating: string;
+  rate: string;
+}
+
+interface ApiResponse {
+  isSuccess: boolean;
+  isFailure: boolean;
+  message: string;
+  error: {
+    code: string;
+    message: string;
+  } | null;
+  value: boolean;
 }
 
 const CounselorDisplay: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id?: string }>(); // Optional id for TypeScript
   const [postData, setPostData] = useState<PostData>({
     username: "",
     province: "",
@@ -42,9 +57,8 @@ const CounselorDisplay: React.FC = () => {
     content: "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
     profilePic: "/src/assets/DefaultPerson.png",
     workExperience: "نامشخص",
-    rating: "0",
+    rate: "",
   });
-
   const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const hasFetched = useRef(false);
@@ -54,10 +68,10 @@ const CounselorDisplay: React.FC = () => {
     const fetchPostData = async () => {
       if (hasFetched.current || !id) return;
       hasFetched.current = true;
-
+      
       setIsLoading(true);
       try {
-        const response = await fetch(`http://localhost:8080/api/Counselor/GetById?Id=${id}`, {
+        const response = await fetch(`http://62.60.213.13/api/Counselor/GetById?Id=${id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -65,17 +79,17 @@ const CounselorDisplay: React.FC = () => {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch counselor data");
+          throw new Error(`Failed to fetch counselor data: ${response.status}`);
         }
 
         const data = await response.json();
-        const userData = data.value;
+        const userData = data.value || {};
 
         let profilePicUrl = "/src/assets/DefaultPerson.png";
         if (userData?.picUrl) {
           try {
             const imageResponse = await fetch(
-              `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(userData.picUrl)}`,
+              `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(userData.picUrl)}`,
               {
                 method: "GET",
                 headers: {
@@ -88,13 +102,11 @@ const CounselorDisplay: React.FC = () => {
               const blob = await imageResponse.blob();
               profilePicUrl = URL.createObjectURL(blob);
             } else {
-              console.error("Failed to fetch image, using default:", imageResponse.statusText);
+              console.warn("Failed to fetch image, using default:", imageResponse.statusText);
             }
           } catch (imageError) {
-            console.error("Error fetching profile picture, using default:", imageError);
+            console.warn("Error fetching profile picture, using default:", imageError);
           }
-        } else {
-          console.warn("No picUrl provided, using default image.");
         }
 
         setPostData({
@@ -106,13 +118,18 @@ const CounselorDisplay: React.FC = () => {
           hsMajorTitle: userData.hsMajorTitle || "نامشخص",
           content:
             userData.aboutMe ||
-            ".مشاور کنکور بودن کار دلیه. من تو تک تک ثانیه های سال کنکور در کنارتونم و به عنوان کسی که اختلاف سنی زیادی باهاتون نداره کاملا دغدغه هاتون رو درک میکنم. ...",
+            "مشاور کنکور بودن کار دلیه. من تو تک تک ثانیه های سال کنکور در کنارتونم و به عنوان کسی که اختلاف سنی زیادی باهاتون نداره کاملا دغدغه هاتون رو درک میکنم. ...",
           profilePic: profilePicUrl,
           workExperience: userData.workExperience || "3 سال",
-          rating: userData.rating || "4.8",
+          rate: userData.rate,
         });
-      } catch (error) {
-        console.error("خطا در ارتباط با سرور", error);
+      } catch (error: any) {
+        console.error("Error fetching counselor data:", error);
+        toast.error("خطا در بارگذاری اطلاعات مشاور", {
+          position: "bottom-right",
+          autoClose: 5000,
+          rtl: true,
+        });
         setPostData(prev => ({
           ...prev,
           content: "خطا در بارگذاری اطلاعات مشاور",
@@ -133,9 +150,63 @@ const CounselorDisplay: React.FC = () => {
     setOpenDialog(false);
   };
 
-  const handleConfirm = () => {
-    console.log("Request submitted for counselor:", postData.username);
-    setOpenDialog(false);
+  const handleConfirm = async () => {
+    if (!id) {
+      toast.error("شناسه مشاور نامعتبر است", {
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
+      });
+      return;
+    }
+
+    // Convert id from string to integer
+    const convertedId = parseInt(id, 10);
+    if (isNaN(convertedId)) {
+      toast.error("شناسه مشاور باید یک عدد معتبر باشد", {
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
+      });
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("id", convertedId.toString());
+      const token = getToken();
+      const response = await fetch("http://62.60.213.13/api/RequestCounselor/Create", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },        body: formData, 
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (!response.ok || data.isFailure) {
+        console.error("API error:", {
+          message: data.message,
+          errorCode: data.error?.code,
+          errorMessage: data.error?.message,
+        });
+        throw new Error(data.message || "خطا در ارسال درخواست مشاوره");
+      }
+
+      toast.success(data.message || "درخواست مشاوره با موفقیت ثبت شد!", {
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
+      });
+      setOpenDialog(false);
+    } catch (error: any) {
+      console.error("Error submitting request:", error);
+      toast.error(error.message || "خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.", {
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
+      });
+    }
   };
 
   const typographyStyles = {
@@ -189,7 +260,7 @@ const CounselorDisplay: React.FC = () => {
                   variant={isMobile ? "h5" : "h4"}
                   sx={{ ...typographyStyles, textAlign: "right" }}
                 >
-                  {postData.username}
+                  {postData.username || "نامشخص"}
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                   <StarIcon sx={{ color: "#FFD700", paddingBottom: "5px" }} />
@@ -197,7 +268,7 @@ const CounselorDisplay: React.FC = () => {
                     variant={isMobile ? "subtitle1" : "body1"}
                     sx={{ ...typographyStyles, textAlign: "left" }}
                   >
-                    {postData.rating}
+                    {postData.rate}
                   </Typography>
                 </Box>
               </Box>
@@ -267,7 +338,7 @@ const CounselorDisplay: React.FC = () => {
             sx={{
               width: isMobile ? "100%" : "230px",
               backgroundColor: "#f4c417",
-              borderRadius: isMobile ? "12px 12px 0 0" : "0 0 px 0px 0",
+              borderRadius: isMobile ? "12px 12px 0 0" : "0",
               display: "flex",
               flexDirection: isMobile ? "row" : "column",
               justifyContent: isMobile ? "space-between" : "flex-start",
@@ -313,7 +384,7 @@ const CounselorDisplay: React.FC = () => {
                   variant="body1"
                   sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
                 >
-                  {postData.province}
+                  {postData.province || "نامشخص"}
                 </Typography>
               </Box>
 
@@ -330,7 +401,7 @@ const CounselorDisplay: React.FC = () => {
                   variant="body1"
                   sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
                 >
-                  کنکور {postData.entranceExamYear}
+                  کنکور {postData.entranceExamYear || "نامشخص"}
                 </Typography>
               </Box>
 
@@ -347,7 +418,7 @@ const CounselorDisplay: React.FC = () => {
                   variant="body1"
                   sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
                 >
-                  {postData.uniName}
+                  {postData.uniName || "نامشخص"}
                 </Typography>
               </Box>
 
@@ -364,7 +435,7 @@ const CounselorDisplay: React.FC = () => {
                   variant="body1"
                   sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
                 >
-                  {postData.uniMajor}
+                  {postData.uniMajor || "نامشخص"}
                 </Typography>
               </Box>
             </Box>
@@ -412,7 +483,7 @@ const CounselorDisplay: React.FC = () => {
               textAlign: "center",
             }}
           >
-            آیا مطمئن هستید که می‌خواهید درخواست مشاوره با {postData.username} را ثبت کنید؟
+            آیا مطمئن هستید که می‌خواهید درخواست مشاوره با {postData.username || "مشاور"} را ثبت کنید؟
           </DialogContentText>
         </DialogContent>
         <DialogActions
@@ -444,6 +515,18 @@ const CounselorDisplay: React.FC = () => {
           />
         </DialogActions>
       </Dialog>
+
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        //rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Box>
   );
 };
