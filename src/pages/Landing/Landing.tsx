@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Paper, Grow, useMediaQuery, Fade } from "@mui/material";
+import { useNavigate } from "react-router";
 // import { Card, CardActionArea } from "@mui/material";
-import Marquee from "@/components/Landing/Marquee";
+// import Marquee from "@/components/Landing/Marquee";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import CounselorSwiper from "@/components/Landing/Swiper.tsx";
 import Footer from "@/components/Landing/Footer";
@@ -15,6 +16,7 @@ const Landing: React.FC = () => {
     const [secondTextVisible, setSecondTextVisible] = useState(false);
     const small_screen = useMediaQuery("(min-width: 600px) and (max-width: 749px)");
     const medium_screen = useMediaQuery("(min-width: 750px)");
+    const navigate = useNavigate();
     // const not_mobile = small_screen || medium_screen;
     // const reduced_motion = useMediaQuery("(prefers-reduced-motion)");
 
@@ -33,18 +35,17 @@ const Landing: React.FC = () => {
         in: true,
     }
 
-    // const test_text =  `Lorem ipsum dolor sit amet consectetur, 
-    //                     adipisicing elit. Odit vero minus sed soluta. 
-    //                     Necessitatibus non porro quidem consequuntur,
-    //                     perspiciatis iste laborum tempora quas sapiente, ut amet.`;
     const test_text_fa =   `لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، 
                             و با استفاده از طراحان گرافیک است، چاپگرها ون و سطرآنچنان که لازم است،
                             و برای شرایط فعلی تکنولوژی مورد نیاز، و متخصصان را می طلبد.`;
     const our_counselor_marquee_text = "مشاوران ما";
-    const why_our_site_marquee_text = "چرا مشاوریوم؟";
-    const banner_h = "مشاوریوم";
-    const banner_p = "همراه شما در مسیر موفقیت";
-
+    const our_counselor_motto_text = "همین امروز مشاور خود را انتخاب کن و اولین قدم برای آینده‌ی روشن‌تر را بردار!";
+    // const why_our_site_marquee_text = "چرا مشاوریوم؟";
+    const banner_h = "تحصیل بهتر، با همراهی مشاوران حرفه‌ای";
+    const banner_p = "دوره‌های اختصاصی مشاوره تحصیلی، همراه با ارتباط مستقیم و روزانه با مشاور اختصاصی شما.";
+    const chat_promo_title = "چت آنلاین و ارتباط مستقیم با مشاور";
+    const chat_promo_text = `ارتباط بدون واسطه با مشاور، امکان دریافت راهنمایی روزانه، رفع اشکال در برنامه‌ریزی
+                            و حتی دریافت انگیزه‌بخشی شخصی، همه از طریق چت اختصاصی در طول مسیر تحصیل`;
     const firstRowRef = useRef(null);
 
     useEffect(() => {
@@ -179,9 +180,10 @@ const Landing: React.FC = () => {
         display: "flex", 
         flexDirection: "column",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "start",
         boxSizing: "border-box",
-        rowGap: "15px"
+        rowGap: "20px",
+        direction: "rtl"
     };
 
     return (
@@ -197,8 +199,6 @@ const Landing: React.FC = () => {
             <main>
                 <section className="l-banner">
                     <div className="l-banner-bg"/>
-                    {/* <div className="l-banner-bg-circle"/>
-                    <div className="l-banner-bg-circle2"/> */}
                     <h1 className="l-banner-h">{banner_h}</h1>
                     <p className="l-banner-p">{banner_p}</p>
                 </section>
@@ -240,13 +240,18 @@ const Landing: React.FC = () => {
                             >
                             </div>
                         </div> */}
-                        <Marquee count={4} text={our_counselor_marquee_text}/>
+                        <div className="l-our-counselor-title-wrapper">
+                            <div className="l-our-counselor-title">
+                                <p>{our_counselor_marquee_text}</p>
+                                <p className="l-our-counselor-motto">{our_counselor_motto_text}</p>
+                            </div>
+                        </div>
                         <CounselorSwiper/>
                     </div>
                 </section>
-                <section id="l-marquee2">
+                {/* <section id="l-marquee2">
                     <Marquee count={3} text={why_our_site_marquee_text}/>
-                </section>
+                </section> */}
                 <section className="l-row3">
                     <Box sx={{
                         display: "flex",
@@ -261,8 +266,8 @@ const Landing: React.FC = () => {
                         >
                             <Fade {...fade_sx} in={firstTextVisible}>
                                 <Box sx={text_box_sx}>
-                                    <h1 className="l-text-box-h">لورم ایپسوم متن ساختگی نامفهوم از صنعت چاپ</h1>
-                                    <p id={"firstText"} className="l-text-box-p">{test_text_fa}</p>
+                                    <h1 className="l-text-box-h">{chat_promo_title}</h1>
+                                    <p id={"firstText"} className="l-text-box-p">{chat_promo_text}</p>
                                     <SecondaryButton
                                         name="خدمات ما"
                                         borderRadius={{xs: "6px", sm: "8px", md: "8px"}}
@@ -322,11 +327,12 @@ const Landing: React.FC = () => {
                                     <h1 className="l-text-box-h">لورم ایپسوم متن ساختگی نامفهوم از صنعت چاپ</h1>
                                     <p id={"secondText"} className="l-text-box-p">{test_text_fa}</p>
                                     <SecondaryButton
-                                        name="خدمات ما"
+                                        name="استخدام"
                                         borderRadius={{xs: "6px", sm: "8px", md: "8px"}}
                                         backgroundColor="primary"
                                         fontSize="1rem"
                                         width={"150px"}
+                                        onClick={() => {navigate('./recruitment')}}
                                     />
                                 </Box>
                             </Fade>
