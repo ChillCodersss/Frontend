@@ -9,7 +9,6 @@ import Button from "@mui/material/Button";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { getToken } from "@/services/auth";
 
-
 type ConfirmButtonProps = {
   name: string;
   onClick: () => void;
@@ -61,13 +60,11 @@ const StudentDisplayPopup = () => {
 
       setIsLoading(true);
       try {
-        // Retrieve the authentication token
         const token = getToken();
         if (!token) {
           throw new Error("No authentication token found. Please log in.");
         }
 
-        // Fetch student data with Authorization header
         const response = await fetch(
           `http://62.60.213.13/api/Student/GetById?Id=${studentId}`,
           {
@@ -86,11 +83,9 @@ const StudentDisplayPopup = () => {
         const data = await response.json();
         const userData = data.value;
 
-        // Split fullName into firstName and lastName
         const [firstName, ...lastNameParts] = (userData.fullName || "").split(" ");
         const lastName = lastNameParts.join(" ") || "";
 
-        // Fetch profile picture using StreamImg endpoint
         let picUrl = "/src/assets/DefaultPerson.png";
         if (userData?.picUrl) {
           try {
@@ -223,7 +218,7 @@ const StudentDisplayPopup = () => {
               <Box
                 sx={{
                   width: isMobile ? "100%" : "230px",
-                  backgroundColor: "#f4c417",
+                  backgroundColor: "#1976d2",
                   borderRadius: isMobile ? "12px 12px 0 0" : "0px 0 0 0px",
                   display: "flex",
                   flexDirection: "column",
@@ -289,24 +284,12 @@ const StudentDisplayPopup = () => {
                   overflowX: "hidden",
                 }}
               >
-                <Typography
-                  variant="h5"
-                  sx={{
-                    ...typographyStyles,
-                    textAlign: "right",
-                    mb: 3,
-                    color: "#1976d2",
-                    wordBreak: "break-word",
-                  }}
-                >
-                  مشخصات بیشتر
-                </Typography>
                 <Box
                   sx={{
                     display: "flex",
                     flexDirection: "column",
                     gap: "10px",
-                    mb: 2,
+                    marginBottom: "16px",
                   }}
                 >
                   {[
@@ -336,13 +319,25 @@ const StudentDisplayPopup = () => {
                         overflow: "hidden",
                       }}
                     >
-                      <span style={{ color: "#555" }}>{item.label}</span>
                       <Typography
                         variant="body1"
                         sx={{
                           color: "#555",
-                          fontWeight: "700",
-                          fontSize: isMobile ? "0.8rem" : "0.9rem",
+                          fontWeight: 700,
+                          fontSize: isMobile ? "13px" : "14px",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {item.label}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: "#555",
+                          fontWeight: 700,
+                          fontSize: isMobile ? "13px" : "14px",
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
@@ -358,7 +353,7 @@ const StudentDisplayPopup = () => {
                   sx={{
                     ...typographyStyles,
                     marginBottom: "8px",
-                    fontSize: isMobile ? "1rem" : "1.1rem",
+                    fontSize: isMobile ? "16px" : "18px",
                   }}
                 >
                   درباره من:
@@ -368,7 +363,7 @@ const StudentDisplayPopup = () => {
                   sx={{
                     lineHeight: 1.7,
                     marginBottom: "20px",
-                    fontSize: isMobile ? "0.9rem" : "1rem",
+                    fontSize: isMobile ? "14px" : "16px",
                     wordBreak: "break-word",
                   }}
                 >
