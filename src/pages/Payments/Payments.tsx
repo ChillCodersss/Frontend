@@ -1,6 +1,25 @@
-import { Box } from "@mui/material";
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import PaymentsItem from "../../components/Payments/PaymentsItem";
-import Sidebar from "@/components/Sidebar/Sidebar";
+// import Sidebar from "@/components/Sidebar/Sidebar";
+import {
+  PTableHeadRowStyle,
+  PTableHeadCellStyle,
+  PITableContainerStyle,
+  PNotificationBoxStyle,
+  PNotificationTextStyle,
+  PTableBoxStyle,
+  PMainBoxStyle,
+} from "./PaymentsStyle";
+import ConfirmButton from "@/components/common/ConfirmButton";
 
 const Payments = () => {
   const examplePayments = [
@@ -27,12 +46,34 @@ const Payments = () => {
   return (
     <>
       {/* <Header/> */}
-      <Box sx={{ display: "flex" }}>
-        <Sidebar />
-        <Box sx={{ flexGrow: 1, padding: "50px" }}>
-          {examplePayments.map((payment) => (
-            <PaymentsItem {...payment} />
-          ))}
+      {/* <Sidebar /> */}
+      <Box sx={PMainBoxStyle}>
+        <Box sx={PNotificationBoxStyle}>
+          {/* this shit text need to be fixed */}
+          <Typography sx={PNotificationTextStyle}>
+            با پرداخت مبلغ ۲۰۰۰۰۰ تومان دوره یک ماهه مشاوره خود با استاد محمد
+            احمدی را نهایی کنید.
+          </Typography>
+          <ConfirmButton name="پرداخت" width={"180px"} />
+        </Box>
+        <Box sx={PTableBoxStyle}>
+          <TableContainer sx={PITableContainerStyle}>
+            <Table>
+              <TableHead>
+                <TableRow sx={PTableHeadRowStyle}>
+                  <TableCell sx={PTableHeadCellStyle}>مبلغ</TableCell>
+                  <TableCell sx={PTableHeadCellStyle}>مشاور</TableCell>
+                  <TableCell sx={PTableHeadCellStyle}>تاریخ</TableCell>
+                  <TableCell sx={PTableHeadCellStyle}>طول دوره</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {examplePayments.map((payment) => (
+                  <PaymentsItem {...payment} />
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       </Box>
     </>
