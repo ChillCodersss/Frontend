@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  AppBar,
   Toolbar,
   Avatar,
   TextField,
   Autocomplete,
   useMediaQuery,
   useTheme,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -18,6 +15,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { getToken } from "@/services/auth";
 import InputBox from "@/components/common/inputbox";
 import SecondaryButton from "@/components/common/SecondaryButton";
+import Header from "@/components/Header/Header";
 
 interface FormData {
   id: number;
@@ -60,7 +58,6 @@ const StudentProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
 
   const [initialFormData, setInitialFormData] = useState<FormData>({
     id: 0,
@@ -205,26 +202,26 @@ const StudentProfile = () => {
     try {
       const token = getToken();
       if (!token) {
-        setSnackbar({ open: true, message: "توکن احراز هویت یافت نشد. لطفاً دوباره وارد شوید." });
         return;
       }
-  
+
       // تبدیل رشته به عدد برای GradeLevel
       const gradeLevelMap = {
-        "دهم": 1,
-        "یازدهم": 2,
-        "دوازدهم": 3
+        دهم: 1,
+        یازدهم: 2,
+        دوازدهم: 3,
       };
-      
-      const gradeLevelValue = gradeLevelMap[formData.gradeLevel as keyof typeof gradeLevelMap] || 0;
+
+      const gradeLevelValue =
+        gradeLevelMap[formData.gradeLevel as keyof typeof gradeLevelMap] || 0;
       const majorValue = formData.major ? reverseMajorMap[formData.major] : 0;
       const lastGradeGPAValue = parseFloat(formData.lastGradeGPA) || 0.0;
-  
+
       // فرمت تاریخ به ISO-8601
-      const formattedBirthDate = formData.birthDate 
-        ? new Date(formData.birthDate).toISOString() 
+      const formattedBirthDate = formData.birthDate
+        ? new Date(formData.birthDate).toISOString()
         : new Date().toISOString();
-  
+
       // ساخت آبجکت داده‌ها مطابق با انتظارات سرور
       const requestData = {
         Id: formData.id,
@@ -239,51 +236,68 @@ const StudentProfile = () => {
         Province: formData.province || "",
         BirthDate: formattedBirthDate,
       };
-  
+
       console.log("Request payload:", requestData);
-  
+
       const formDataPayload = new FormData();
       formDataPayload.append("Id", formData.id.toString());
       formDataPayload.append("Email", requestData.Email);
       formDataPayload.append("GradeLevel", requestData.GradeLevel.toString()); // به صورت رشته
       formDataPayload.append("Major", requestData.Major.toString());
-      formDataPayload.append("LastGradeGPA", requestData.LastGradeGPA.toString());
+      formDataPayload.append(
+        "LastGradeGPA",
+        requestData.LastGradeGPA.toString()
+      );
       formDataPayload.append("AboutMe", requestData.AboutMe);
-      formDataPayload.append("StudentPhoneNumber", requestData.StudentPhoneNumber);
-      formDataPayload.append("ParentPhoneNumber", requestData.ParentPhoneNumber);
+      formDataPayload.append(
+        "StudentPhoneNumber",
+        requestData.StudentPhoneNumber
+      );
+      formDataPayload.append(
+        "ParentPhoneNumber",
+        requestData.ParentPhoneNumber
+      );
       formDataPayload.append("SchoolName", requestData.SchoolName);
       formDataPayload.append("Province", requestData.Province);
       formDataPayload.append("BirthDate", requestData.BirthDate);
-  
+
       if (profilePicFile) {
         formDataPayload.append("ProfilePic", profilePicFile);
       }
-  
-      const response = await fetch("http://62.60.213.13/api/Student/UpdateProfile", {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-        body: formDataPayload,
-      });
-  
+
+      const response = await fetch(
+        "http://62.60.213.13/api/Student/UpdateProfile",
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formDataPayload,
+        }
+      );
+
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Error details:", errorData);
-        
+
         if (errorData.errors) {
           const validationErrors = Object.entries(errorData.errors)
-            .map(([field, errors]) => `${field}: ${(errors as string[]).join(", ")}`)
+            .map(
+              ([field, errors]) =>
+                `${field}: ${(errors as string[]).join(", ")}`
+            )
             .join("\n");
           throw new Error(`خطاهای اعتبارسنجی:\n${validationErrors}`);
         }
-        
-        throw new Error(errorData.title || errorData.message || "خطا در بروزرسانی پروفایل");
+
+        throw new Error(
+          errorData.title || errorData.message || "خطا در بروزرسانی پروفایل"
+        );
       }
-  
+
       const data = await response.json();
       console.log("Update response:", data);
-  
+
       if (data.isSuccess) {
         // به‌روزرسانی تصویر پروفایل
         let profilePicUrl = formData.profileImage;
@@ -300,7 +314,7 @@ const StudentProfile = () => {
                 },
               }
             );
-  
+
             if (imageResponse.ok) {
               const blob = await imageResponse.blob();
               profilePicUrl = URL.createObjectURL(blob);
@@ -309,34 +323,26 @@ const StudentProfile = () => {
             console.error("خطا در دریافت تصویر پروفایل:", imageError);
           }
         }
-  
+
         // به‌روزرسانی state
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           profileImage: profilePicUrl,
         }));
-        
-        setInitialFormData(prev => ({
+
+        setInitialFormData((prev) => ({
           ...prev,
-          profileImage: profilePicUrl
+          profileImage: profilePicUrl,
         }));
-        
+
         setProfilePicFile(null);
         setIsEditMode(false);
-        
-        setSnackbar({ open: true, message: "پروفایل با موفقیت به‌روزرسانی شد" });
       } else {
-        setSnackbar({ open: true, message: data.message || "خطا در ذخیره تغییرات" });
       }
     } catch (error) {
       console.error("خطا در ذخیره پروفایل:", error);
-      setSnackbar({ 
-        open: true, 
-        message: error instanceof Error ? error.message : "خطا در ذخیره تغییرات. لطفاً دوباره تلاش کنید." 
-      });
     }
   };
-
 
   const handleCancel = () => {
     setIsEditMode(false);
@@ -406,579 +412,579 @@ const StudentProfile = () => {
   }
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        minHeight: "100vh",
-        backgroundColor: "rgb(255, 255, 255)",
-        direction: "rtl",
-      }}
-    >
-      <AppBar
-        position="fixed"
-        sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          backdropFilter: "blur(10px)",
-          color: "black",
-        }}
-      >
-        <Toolbar />
-      </AppBar>
-
+    <>
+      <Header></Header>
       <Box
-        component="main"
         sx={{
-          flexGrow: 1,
-          padding: isMobile ? "24px 16px" : isTablet ? "36px 24px" : "48px",
-          backgroundColor: "rgba(255, 255, 255, 0.2)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255, 255, 255, 0.3)",
-          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
-          position: "relative",
-          zIndex: 0,
+          display: "flex",
+          minHeight: "100vh",
+          backgroundImage: "url('/src/assets/ProfileBackground.png')",
+          backgroundSize: "100% 100%", // Ensures the wallpaper fits the page size
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat", // Prevents tiling of the image
+          direction: "rtl",
         }}
       >
-        <Toolbar />
         <Box
+          component="main"
           sx={{
-            borderRadius: "16px",
-            padding: isMobile ? "24px" : isTablet ? "32px" : "40px 80px",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-            maxWidth: "800px",
-            margin: "0 auto",
-            border: "1px solid rgba(255, 255, 255, 0.5)",
-            backdropFilter: "blur(4px)",
+            flexGrow: 1,
+            padding: isMobile
+              ? "0px 16px 24px 16px"
+              : isTablet
+              ? "0px px 36px 24px"
+              : "0px 40px 40px 40px",
+            backgroundColor: "rgba(255, 255, 255, 0.3)", // Increased opacity for more blur effect
+            backdropFilter: "blur(0px)", // Further increased blur effect
+            border: "1px solid rgba(255, 255, 255, 0.3)",
+            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+            position: "relative",
+            zIndex: 0,
           }}
         >
+          <Toolbar />
           <Box
             sx={{
-              display: "flex",
-              flexDirection: isMobile ? "column-reverse" : "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "18px",
-              padding: "16px",
-              borderRadius: "8px",
-              gap: isMobile ? "16px" : 0,
+              borderRadius: "16px",
+              padding: isMobile ? "24px" : isTablet ? "32px" : "40px 80px",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+              maxWidth: "800px",
+              margin: "0 auto",
+              border: "1px solid rgba(255, 255, 255, 0.5)",
+              backdropFilter: "blur(100px)",
             }}
           >
-            <h1 style={{ margin: isMobile ? "16px 0 0 0" : 0 }}>
-              {isEditMode ? "تغییر پروفایل" : "پروفایل من"}
-            </h1>
             <Box
               sx={{
-                position: "relative",
                 display: "flex",
-                justifyContent: "center",
+                flexDirection: isMobile ? "column-reverse" : "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "18px",
+                padding: "16px",
+                borderRadius: "8px",
+                gap: isMobile ? "16px" : 0,
               }}
             >
-              <Avatar
+              <h1 style={{ margin: isMobile ? "16px 0 0 0" : 0 }}>
+                {isEditMode ? "تغییر پروفایل" : "پروفایل من"}
+              </h1>
+              <Box
                 sx={{
-                  width: isMobile ? "150px" : "150px",
-                  height: isMobile ? "150px" : "150px",
-                  cursor: isEditMode ? "pointer" : "default",
-                  transition: "filter 0.3s ease",
+                  position: "relative",
+                  display: "flex",
+                  justifyContent: "center",
                 }}
-                src={formData.profileImage}
-                onClick={() =>
-                  isEditMode &&
-                  document.getElementById("profile-pic-input")?.click()
-                }
               >
-                {!formData.profileImage && (
-                  <AccountCircleIcon fontSize="large" />
-                )}
-              </Avatar>
-              {isEditMode && (
-                <EditIcon
+                <Avatar
                   sx={{
-                    color: "black",
-                    fontSize: "20px",
-                    cursor: "pointer",
-                    position: "absolute",
-                    bottom: "5px",
-                    right: "5px",
-                    backgroundColor: "rgba(203, 203, 203, 0.67)",
-                    borderRadius: "50%",
-                    padding: "4px",
-                    backdropFilter: "blur(4px)",
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    width: isMobile ? "150px" : "150px",
+                    height: isMobile ? "150px" : "150px",
+                    cursor: isEditMode ? "pointer" : "default",
+                    transition: "filter 0.3s ease",
                   }}
+                  src={formData.profileImage}
                   onClick={() =>
+                    isEditMode &&
                     document.getElementById("profile-pic-input")?.click()
                   }
-                />
-              )}
-              <input
-                type="file"
-                id="profile-pic-input"
-                accept="image/*"
-                style={{ display: "none" }}
-                onChange={handleProfilePicChange}
-              />
-            </Box>
-          </Box>
-
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                gap: isMobile ? "16px" : "40px",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="نام و نام خانوادگی"
-                  name="fullName"
-                  direction="rtl"
-                  value={`${formData.firstName} ${formData.lastName}`}
-                  onChange={noopChange}
-                  readOnly={true}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="ایمیل"
-                  name="email"
-                  direction="ltr"
-                  value={formData.email}
-                  onChange={handleChange}
-                  readOnly={!isEditMode}
-                />
-              </Box>
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                gap: isMobile ? "16px" : "40px",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="شماره تماس دانش آموز"
-                  name="studentPhoneNumber"
-                  direction="ltr"
-                  value={formData.studentPhoneNumber}
-                  onChange={handleChange}
-                  readOnly={!isEditMode}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="شماره تماس والدین"
-                  name="parentPhoneNumber"
-                  direction="ltr"
-                  value={formData.parentPhoneNumber}
-                  onChange={handleChange}
-                  readOnly={!isEditMode}
-                />
-              </Box>
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                gap: isMobile ? "16px" : "40px",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="نام مدرسه"
-                  name="schoolName"
-                  direction="rtl"
-                  value={formData.schoolName}
-                  onChange={handleChange}
-                  readOnly={!isEditMode}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                {isEditMode ? (
-                  <Box>
-                    <Box
-                      component="label"
-                      sx={{
-                        display: "block",
-                        fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
-                        fontWeight: "500",
-                        marginBottom: "7px",
-                        marginRight: "5px",
-                        color: "black",
-                        textAlign: "right",
-                        direction: "rtl",
-                      }}
-                    >
-                      استان
-                    </Box>
-                    <Autocomplete
-                      value={formData.province}
-                      onChange={(_event, newValue) => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          province: newValue || "",
-                        }));
-                      }}
-                      inputValue={provinceInputValue}
-                      onInputChange={(_event, newInputValue) => {
-                        setProvinceInputValue(newInputValue);
-                      }}
-                      options={provinceOptions}
-                      loading={loadingProvinces}
-                      freeSolo
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          fullWidth
-                          variant="outlined"
-                          placeholder="جستجوی استان..."
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              backgroundColor: "white",
-                              borderRadius: "8px",
-                              height: "35px",
-                              padding: "8px 40px 8px 14px !important",
-                              "& .MuiOutlinedInput-input": {
-                                textAlign: "right",
-                                direction: "rtl",
-                                height: "19px",
-                                "&::placeholder": {
-                                  opacity: 0,
-                                  transition: "opacity 0.2s ease-in-out",
-                                },
-                              },
-                              "&:hover .MuiOutlinedInput-input::placeholder": {
-                                opacity: 0.5,
-                              },
-                              "&:hover .MuiOutlinedInput-notchedOutline": {
-                                borderColor: "rgb(204, 207, 209)",
-                                borderWidth: "2px",
-                              },
-                              "&.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                {
-                                  borderColor: "#1976d2",
-                                  borderWidth: "2.3px",
-                                },
-                            },
-                          }}
-                        />
-                      )}
-                      popupIcon={<ArrowDropDownIcon />}
-                      clearIcon={<CloseIcon />}
-                      forcePopupIcon={true}
-                      sx={{
-                        "& .MuiAutocomplete-endAdornment": {
-                          left: 0,
-                          right: "auto",
-                          display: "flex",
-                          flexDirection: "row",
-                          position: "absolute",
-                          top: "50%",
-                          transform: "translateY(-50%)",
-                          height: "100%",
-                          alignItems: "center",
-                        },
-                        "& .MuiAutocomplete-clearIndicator": {
-                          position: "absolute",
-                          right: "0px",
-                          padding: "2px",
-                          paddingLeft: "0px",
-                        },
-                        "& .MuiAutocomplete-popupIndicator": {
-                          position: "absolute",
-                          left: "8px",
-                          padding: "2px",
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            "& .MuiPaper-root": {
-                              direction: "rtl",
-                              textAlign: "right",
-                            },
-                            "& .MuiAutocomplete-listbox": {
-                              direction: "rtl",
-                              textAlign: "right",
-                            },
-                            "& .MuiAutocomplete-option": {
-                              direction: "rtl",
-                              textAlign: "right",
-                              padding: "8px 16px",
-                            },
-                          },
-                        },
-                      }}
-                    />
-                  </Box>
-                ) : (
-                  <InputBox
-                    label="استان"
-                    name="province"
-                    direction="rtl"
-                    value={formData.province}
-                    onChange={noopChange}
-                    readOnly={true}
+                >
+                  {!formData.profileImage && (
+                    <AccountCircleIcon fontSize="large" />
+                  )}
+                </Avatar>
+                {isEditMode && (
+                  <EditIcon
+                    sx={{
+                      color: "black",
+                      fontSize: "20px",
+                      cursor: "pointer",
+                      position: "absolute",
+                      bottom: "5px",
+                      right: "5px",
+                      backgroundColor: "rgba(203, 203, 203, 0.67)",
+                      borderRadius: "50%",
+                      padding: "4px",
+                      backdropFilter: "blur(4px)",
+                      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    }}
+                    onClick={() =>
+                      document.getElementById("profile-pic-input")?.click()
+                    }
                   />
                 )}
-              </Box>
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                gap: isMobile ? "16px" : "40px",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box sx={{ flex: 1 }}>
-                {isEditMode ? (
-                  <Box>
-                    <Box
-                      component="label"
-                      sx={{
-                        display: "block",
-                        fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
-                        fontWeight: "500",
-                        marginBottom: "7px",
-                        marginRight: "5px",
-                        color: "black",
-                        textAlign: "right",
-                        direction: "rtl",
-                      }}
-                    >
-                      رشته تحصیلی
-                    </Box>
-                    <Autocomplete
-                      value={formData.major || ""}
-                      onChange={(_event, newValue) => {
-                        handleMajorChange(newValue || "");
-                      }}
-                      options={Object.values(majorMap)}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          fullWidth
-                          variant="outlined"
-                          placeholder="انتخاب رشته..."
-                          sx={{
-                            "& .MuiOutlinedInput-root": {
-                              backgroundColor: "white",
-                              borderRadius: "8px",
-                              height: "35px",
-                              padding: "8px 40px 8px 14px !important",
-                              "& .MuiOutlinedInput-input": {
-                                textAlign: "right",
-                                direction: "rtl",
-                                height: "19px",
-                              },
-                            },
-                          }}
-                        />
-                      )}
-                      popupIcon={<ArrowDropDownIcon />}
-                      clearIcon={<CloseIcon />}
-                      sx={{
-                        "& .MuiAutocomplete-endAdornment": {
-                          left: 0,
-                          right: "auto",
-                          display: "flex",
-                          flexDirection: "row",
-                          position: "absolute",
-                          top: "50%",
-                          transform: "translateY(-50%)",
-                          height: "100%",
-                          alignItems: "center",
-                        },
-                        "& .MuiAutocomplete-clearIndicator": {
-                          position: "absolute",
-                          right: "0px",
-                          padding: "2px",
-                          paddingLeft: "0px",
-                        },
-                        "& .MuiAutocomplete-popupIndicator": {
-                          position: "absolute",
-                          left: "8px",
-                          padding: "2px",
-                        },
-                      }}
-                      slotProps={{
-                        popper: {
-                          sx: {
-                            "& .MuiPaper-root": {
-                              direction: "rtl",
-                              textAlign: "right",
-                            },
-                            "& .MuiAutocomplete-listbox": {
-                              direction: "rtl",
-                              textAlign: "right",
-                            },
-                            "& .MuiAutocomplete-option": {
-                              direction: "rtl",
-                              textAlign: "right",
-                              padding: "8px 16px",
-                            },
-                          },
-                        },
-                      }}
-                    />
-                  </Box>
-                ) : (
-                  <InputBox
-                    label="رشته تحصیلی"
-                    name="major"
-                    direction="rtl"
-                    value={formData.major || ""}
-                    onChange={noopChange}
-                    readOnly={true}
-                  />
-                )}
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="پایه تحصیلی"
-                  name="gradeLevel"
-                  direction="ltr"
-                  value={formData.gradeLevel}
-                  onChange={handleChange}
-                  readOnly={!isEditMode}
+                <input
+                  type="file"
+                  id="profile-pic-input"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleProfilePicChange}
                 />
               </Box>
             </Box>
 
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                gap: isMobile ? "16px" : "40px",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="آخرین معدل"
-                  name="lastGradeGPA"
-                  direction="ltr"
-                  value={formData.lastGradeGPA}
-                  onChange={handleChange}
-                  readOnly={!isEditMode}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="تاریخ تولد"
-                  name="birthDate"
-                  direction="ltr"
-                  value={formData.birthDate}
-                  onChange={handleChange}
-                  readOnly={!isEditMode}
-                />
-              </Box>
-            </Box>
-
-            <Box sx={{ width: "100%" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               <Box
-                component="label"
                 sx={{
-                  display: "block",
-                  fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
-                  fontWeight: "500",
-                  marginBottom: "7px",
-                  marginRight: "5px",
-                  color: "black",
-                  textAlign: "right",
-                  direction: "rtl",
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  gap: isMobile ? "16px" : "40px",
+                  justifyContent: "space-between",
                 }}
               >
-                درباره من
+                <Box sx={{ flex: 1 }}>
+                  <InputBox
+                    label="نام و نام خانوادگی"
+                    name="fullName"
+                    direction="rtl"
+                    value={`${formData.firstName} ${formData.lastName}`}
+                    onChange={noopChange}
+                    readOnly={true}
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <InputBox
+                    label="ایمیل"
+                    name="email"
+                    direction="ltr"
+                    value={formData.email}
+                    onChange={handleChange}
+                    readOnly={!isEditMode}
+                  />
+                </Box>
               </Box>
-              <TextField
-                name="aboutMe"
-                value={formData.aboutMe || ""}
-                onChange={handleChange}
-                multiline
-                rows={isMobile ? 4 : 6}
-                fullWidth
-                variant="outlined"
-                margin="none"
-                disabled={!isEditMode}
-                inputProps={{ readOnly: !isEditMode }}
+
+              <Box
                 sx={{
-                  "& .MuiOutlinedInput-root": {
-                    backgroundColor: "white",
-                    borderRadius: "8px",
-                    transition: "border-color 0.3s ease",
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "rgb(204, 207, 209)",
-                      borderWidth: "2px",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: " #1976d2",
-                      borderWidth: "2.3px",
-                    },
-                  },
-                  "& .MuiOutlinedInput-input": {
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  gap: isMobile ? "16px" : "40px",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ flex: 1 }}>
+                  <InputBox
+                    label="شماره تماس دانش آموز"
+                    name="studentPhoneNumber"
+                    direction="ltr"
+                    value={formData.studentPhoneNumber}
+                    onChange={handleChange}
+                    readOnly={!isEditMode}
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <InputBox
+                    label="شماره تماس والدین"
+                    name="parentPhoneNumber"
+                    direction="ltr"
+                    value={formData.parentPhoneNumber}
+                    onChange={handleChange}
+                    readOnly={!isEditMode}
+                  />
+                </Box>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  gap: isMobile ? "16px" : "40px",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ flex: 1 }}>
+                  <InputBox
+                    label="نام مدرسه"
+                    name="schoolName"
+                    direction="rtl"
+                    value={formData.schoolName}
+                    onChange={handleChange}
+                    readOnly={!isEditMode}
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  {isEditMode ? (
+                    <Box>
+                      <Box
+                        component="label"
+                        sx={{
+                          display: "block",
+                          fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+                          fontWeight: "500",
+                          marginBottom: "7px",
+                          marginRight: "5px",
+                          color: "black",
+                          textAlign: "right",
+                          direction: "rtl",
+                        }}
+                      >
+                        استان
+                      </Box>
+                      <Autocomplete
+                        value={formData.province}
+                        onChange={(_event, newValue) => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            province: newValue || "",
+                          }));
+                        }}
+                        inputValue={provinceInputValue}
+                        onInputChange={(_event, newInputValue) => {
+                          setProvinceInputValue(newInputValue);
+                        }}
+                        options={provinceOptions}
+                        loading={loadingProvinces}
+                        freeSolo
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            fullWidth
+                            variant="outlined"
+                            placeholder="جستجوی استان..."
+                            sx={{
+                              "& .MuiOutlinedInput-root": {
+                                backgroundColor: "white",
+                                borderRadius: "8px",
+                                height: "35px",
+                                padding: "8px 40px 8px 14px !important",
+                                "& .MuiOutlinedInput-input": {
+                                  textAlign: "right",
+                                  direction: "rtl",
+                                  height: "19px",
+                                  "&::placeholder": {
+                                    opacity: 0,
+                                    transition: "opacity 0.2s ease-in-out",
+                                  },
+                                },
+                                "&:hover .MuiOutlinedInput-input::placeholder":
+                                  {
+                                    opacity: 0.5,
+                                  },
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                  borderColor: "rgb(204, 207, 209)",
+                                  borderWidth: "2px",
+                                },
+                                "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                  {
+                                    borderColor: "#1976d2",
+                                    borderWidth: "2.3px",
+                                  },
+                              },
+                            }}
+                          />
+                        )}
+                        popupIcon={<ArrowDropDownIcon />}
+                        clearIcon={<CloseIcon />}
+                        forcePopupIcon={true}
+                        sx={{
+                          "& .MuiAutocomplete-endAdornment": {
+                            left: 0,
+                            right: "auto",
+                            display: "flex",
+                            flexDirection: "row",
+                            position: "absolute",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            height: "100%",
+                            alignItems: "center",
+                          },
+                          "& .MuiAutocomplete-clearIndicator": {
+                            position: "absolute",
+                            right: "0px",
+                            padding: "2px",
+                            paddingLeft: "0px",
+                          },
+                          "& .MuiAutocomplete-popupIndicator": {
+                            position: "absolute",
+                            left: "8px",
+                            padding: "2px",
+                          },
+                        }}
+                        slotProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiPaper-root": {
+                                direction: "rtl",
+                                textAlign: "right",
+                              },
+                              "& .MuiAutocomplete-listbox": {
+                                direction: "rtl",
+                                textAlign: "right",
+                              },
+                              "& .MuiAutocomplete-option": {
+                                direction: "rtl",
+                                textAlign: "right",
+                                padding: "8px 16px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </Box>
+                  ) : (
+                    <InputBox
+                      label="استان"
+                      name="province"
+                      direction="rtl"
+                      value={formData.province}
+                      onChange={noopChange}
+                      readOnly={true}
+                    />
+                  )}
+                </Box>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  gap: isMobile ? "16px" : "40px",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ flex: 1 }}>
+                  {isEditMode ? (
+                    <Box>
+                      <Box
+                        component="label"
+                        sx={{
+                          display: "block",
+                          fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+                          fontWeight: "500",
+                          marginBottom: "7px",
+                          marginRight: "5px",
+                          color: "black",
+                          textAlign: "right",
+                          direction: "rtl",
+                        }}
+                      >
+                        رشته تحصیلی
+                      </Box>
+                      <Autocomplete
+                        value={formData.major || ""}
+                        onChange={(_event, newValue) => {
+                          handleMajorChange(newValue || "");
+                        }}
+                        options={Object.values(majorMap)}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            fullWidth
+                            variant="outlined"
+                            placeholder="انتخاب رشته..."
+                            sx={{
+                              "& .MuiOutlinedInput-root": {
+                                backgroundColor: "white",
+                                borderRadius: "8px",
+                                height: "35px",
+                                padding: "8px 40px 8px 14px !important",
+                                "& .MuiOutlinedInput-input": {
+                                  textAlign: "right",
+                                  direction: "rtl",
+                                  height: "19px",
+                                },
+                              },
+                            }}
+                          />
+                        )}
+                        popupIcon={<ArrowDropDownIcon />}
+                        clearIcon={<CloseIcon />}
+                        sx={{
+                          "& .MuiAutocomplete-endAdornment": {
+                            left: 0,
+                            right: "auto",
+                            display: "flex",
+                            flexDirection: "row",
+                            position: "absolute",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            height: "100%",
+                            alignItems: "center",
+                          },
+                          "& .MuiAutocomplete-clearIndicator": {
+                            position: "absolute",
+                            right: "0px",
+                            padding: "2px",
+                            paddingLeft: "0px",
+                          },
+                          "& .MuiAutocomplete-popupIndicator": {
+                            position: "absolute",
+                            left: "8px",
+                            padding: "2px",
+                          },
+                        }}
+                        slotProps={{
+                          popper: {
+                            sx: {
+                              "& .MuiPaper-root": {
+                                direction: "rtl",
+                                textAlign: "right",
+                              },
+                              "& .MuiAutocomplete-listbox": {
+                                direction: "rtl",
+                                textAlign: "right",
+                              },
+                              "& .MuiAutocomplete-option": {
+                                direction: "rtl",
+                                textAlign: "right",
+                                padding: "8px 16px",
+                              },
+                            },
+                          },
+                        }}
+                      />
+                    </Box>
+                  ) : (
+                    <InputBox
+                      label="رشته تحصیلی"
+                      name="major"
+                      direction="rtl"
+                      value={formData.major || ""}
+                      onChange={noopChange}
+                      readOnly={true}
+                    />
+                  )}
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <InputBox
+                    label="پایه تحصیلی"
+                    name="gradeLevel"
+                    direction="ltr"
+                    value={formData.gradeLevel}
+                    onChange={handleChange}
+                    readOnly={!isEditMode}
+                  />
+                </Box>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  gap: isMobile ? "16px" : "40px",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ flex: 1 }}>
+                  <InputBox
+                    label="آخرین معدل"
+                    name="lastGradeGPA"
+                    direction="ltr"
+                    value={formData.lastGradeGPA}
+                    onChange={handleChange}
+                    readOnly={!isEditMode}
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <InputBox
+                    label="تاریخ تولد"
+                    name="birthDate"
+                    direction="ltr"
+                    value={formData.birthDate}
+                    onChange={handleChange}
+                    readOnly={!isEditMode}
+                  />
+                </Box>
+              </Box>
+
+              <Box sx={{ width: "100%" }}>
+                <Box
+                  component="label"
+                  sx={{
+                    display: "block",
+                    fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+                    fontWeight: "500",
+                    marginBottom: "7px",
+                    marginRight: "5px",
+                    color: "black",
                     textAlign: "right",
                     direction: "rtl",
-                  },
-                }}
-              />
+                  }}
+                >
+                  درباره من
+                </Box>
+                <TextField
+                  name="aboutMe"
+                  value={formData.aboutMe || ""}
+                  onChange={handleChange}
+                  multiline
+                  rows={isMobile ? 4 : 6}
+                  fullWidth
+                  variant="outlined"
+                  margin="none"
+                  disabled={!isEditMode}
+                  inputProps={{ readOnly: !isEditMode }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      backgroundColor: "white",
+                      borderRadius: "8px",
+                      transition: "border-color 0.3s ease",
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "rgb(204, 207, 209)",
+                        borderWidth: "2px",
+                      },
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: " #1976d2",
+                        borderWidth: "2.3px",
+                      },
+                    },
+                    "& .MuiOutlinedInput-input": {
+                      textAlign: "right",
+                      direction: "rtl",
+                    },
+                  }}
+                />
+              </Box>
             </Box>
-          </Box>
 
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              justifyContent: "flex-start",
-              gap: 2,
-              marginTop: "32px",
-            }}
-          >
-            {isEditMode ? (
-              <>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                justifyContent: "flex-start",
+                gap: 2,
+                marginTop: "32px",
+              }}
+            >
+              {isEditMode ? (
+                <>
+                  <SecondaryButton
+                    name="ذخیره تغییرات"
+                    variant="contained"
+                    backgroundColor=" #3f51b5"
+                    onClick={handleSave}
+                    fontSize={isMobile ? "0.9rem" : "1rem"}
+                    width={isMobile ? "100%" : "200px"}
+                    height={"40px"}
+                    borderRadius="20px"
+                  />
+                  <SecondaryButton
+                    name="انصراف"
+                    variant="contained"
+                    backgroundColor="rgb(229, 111, 111)"
+                    onClick={handleCancel}
+                    fontSize={isMobile ? "0.9rem" : "1rem"}
+                    width={isMobile ? "100%" : "200px"}
+                    height={"40px"}
+                    borderRadius="20px"
+                  />
+                </>
+              ) : (
                 <SecondaryButton
-                  name="ذخیره تغییرات"
-                  variant="contained"
-                  backgroundColor="rgb(0, 140, 190)"
-                  onClick={handleSave}
+                  name="تغییر اطلاعات"
+                  backgroundColor=" #3f51b5"
                   fontSize={isMobile ? "0.9rem" : "1rem"}
                   width={isMobile ? "100%" : "200px"}
                   height={"40px"}
-                  borderRadius={{ xs: "0px", sm: "0px", md: "0px" }}
+                  borderRadius="20px"
+                  onClick={handleEdit}
                 />
-                <SecondaryButton
-                  name="انصراف"
-                  variant="contained"
-                  backgroundColor="rgb(229, 111, 111)"
-                  onClick={handleCancel}
-                  fontSize={isMobile ? "0.9rem" : "1rem"}
-                  width={isMobile ? "100%" : "200px"}
-                  height={"40px"}
-                  borderRadius={{ xs: "0px", sm: "0px", md: "0px" }}
-                />
-              </>
-            ) : (
-              <SecondaryButton
-                name="تغییر اطلاعات"
-                backgroundColor="rgb(0, 140, 190)"
-                fontSize={isMobile ? "0.9rem" : "1rem"}
-                width={isMobile ? "100%" : "200px"}
-                height={"40px"}
-                borderRadius={{ xs: "0px", sm: "0px", md: "0px" }}
-                onClick={handleEdit}
-              />
-            )}
+              )}
+            </Box>
           </Box>
         </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 
