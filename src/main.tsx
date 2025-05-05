@@ -13,10 +13,12 @@ import OurCounselor from "./pages/OurCounselor";
 import CounselorDisplay from "./pages/CounselorDisplay";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Landing from "./pages/Landing/Landing";
+import ScrollToTop from "./components/ScrollToTop";
 
 createRoot(document.getElementById("root")!).render(
   //<StrictMode>
     <BrowserRouter>
+      <ScrollToTop/>
       <Routes>
         <Route path="/recruitment" element={<Recruitment />} />
         <Route path="/Signup" element={<Signup />} />
