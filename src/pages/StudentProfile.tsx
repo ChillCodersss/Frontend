@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   AppBar,
@@ -8,16 +8,45 @@ import {
   Autocomplete,
   useMediaQuery,
   useTheme,
-  Button,
   Snackbar,
   Alert,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
+import { getToken } from "@/services/auth";
 import InputBox from "@/components/common/inputbox";
 import SecondaryButton from "@/components/common/SecondaryButton";
-import EditIcon from "@mui/icons-material/Edit";
+
+interface FormData {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  major: string;
+  gradeLevel: string;
+  lastGradeGPA: string;
+  aboutMe: string;
+  studentPhoneNumber: string;
+  parentPhoneNumber: string;
+  birthDate: string;
+  schoolName: string;
+  province: string;
+  profilePicUrl: string;
+  profileImage: string;
+}
+
+const majorMap: { [key: number]: string } = {
+  1: "ریاضی",
+  2: "تجربی",
+  3: "انسانی",
+};
+const reverseMajorMap: { [key: string]: number } = {
+  ریاضی: 1,
+  تجربی: 2,
+  انسانی: 3,
+};
 
 const StudentProfile = () => {
   const theme = useTheme();
@@ -28,22 +57,113 @@ const StudentProfile = () => {
   const [provinceOptions, setProvinceOptions] = useState<string[]>([]);
   const [provinceInputValue, setProvinceInputValue] = useState("");
   const [loadingProvinces, setLoadingProvinces] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
 
-  const [formData, setFormData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    majorTitle: "Computer Science",
-    gradeLevel: "12",
-    lastGradeGPA: "3.8",
-    aboutMe:
-      "I am a dedicated student with a passion for learning and technology.",
-    studentPhoneNumber: "123-456-7890",
-    parentPhoneNumber: "987-654-3210",
-    birthDate: "2005-01-01",
-    schoolName: "High School",
+  const [initialFormData, setInitialFormData] = useState<FormData>({
+    id: 0,
+    firstName: "",
+    lastName: "",
+    email: "",
+    major: "",
+    gradeLevel: "",
+    lastGradeGPA: "",
+    aboutMe: "",
+    studentPhoneNumber: "",
+    parentPhoneNumber: "",
+    birthDate: "",
+    schoolName: "",
+    province: "",
+    profilePicUrl: "",
     profileImage: "",
   });
+
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
+
+      const token = getToken();
+      if (!token) {
+        setError("No authentication token found. Please log in.");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          "http://62.60.213.13/api/Student/Profile",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+        console.log("API Response:", data);
+
+        const mappedData: FormData = {
+          id: data.value.id || 0,
+          firstName: data.value.firstName || "",
+          lastName: data.value.lastName || "",
+          email: data.value.email || "",
+          major: majorMap[reverseMajorMap[data.value.majorTitle]] || "",
+          gradeLevel: data.value.gradeLevel || "",
+          lastGradeGPA: data.value.lastGradeGPA?.toString() || "",
+          aboutMe: data.value.aboutMe || "",
+          studentPhoneNumber: data.value.studentPhoneNumber || "",
+          parentPhoneNumber: data.value.parentPhoneNumber || "",
+          birthDate: data.value.birthDate || "",
+          schoolName: data.value.schoolName || "",
+          province: data.value.province || "",
+          profilePicUrl: data.value.profilePicUrl || "",
+          profileImage: "",
+        };
+
+        let profilePicUrl = "";
+        if (data.value.profilePicUrl) {
+          try {
+            const imageResponse = await fetch(
+              `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+                data.value.profilePicUrl
+              )}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            if (imageResponse.ok) {
+              const blob = await imageResponse.blob();
+              profilePicUrl = URL.createObjectURL(blob);
+            } else {
+              console.error("Failed to fetch image:", imageResponse.statusText);
+            }
+          } catch (imageError) {
+            console.error("Error fetching profile picture:", imageError);
+          }
+        }
+        setFormData({ ...mappedData, profileImage: profilePicUrl });
+        setInitialFormData({ ...mappedData, profileImage: profilePicUrl });
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        setError("Error fetching profile data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -53,18 +173,27 @@ const StudentProfile = () => {
     }));
   };
 
+  const handleMajorChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      major: value,
+    }));
+  };
+
   const handleProfilePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target?.files && e.target.files[0]) {
+      const file = e.target.files[0];
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
           setFormData((prev) => ({
             ...prev,
-            profileImage: event.target?.result as string,
+            profileImage: (event.target?.result as string) || "",
           }));
+          setProfilePicFile(file);
         }
       };
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(file);
     }
   };
 
@@ -72,15 +201,209 @@ const StudentProfile = () => {
     setIsEditMode(true);
   };
 
-  const handleSave = () => {
-    setIsEditMode(false);
+  const handleSave = async () => {
+    try {
+      const token = getToken();
+      if (!token) {
+        setSnackbar({ open: true, message: "توکن احراز هویت یافت نشد. لطفاً دوباره وارد شوید." });
+        return;
+      }
+  
+      // تبدیل رشته به عدد برای GradeLevel
+      const gradeLevelMap = {
+        "دهم": 1,
+        "یازدهم": 2,
+        "دوازدهم": 3
+      };
+      
+      const gradeLevelValue = gradeLevelMap[formData.gradeLevel as keyof typeof gradeLevelMap] || 0;
+      const majorValue = formData.major ? reverseMajorMap[formData.major] : 0;
+      const lastGradeGPAValue = parseFloat(formData.lastGradeGPA) || 0.0;
+  
+      // فرمت تاریخ به ISO-8601
+      const formattedBirthDate = formData.birthDate 
+        ? new Date(formData.birthDate).toISOString() 
+        : new Date().toISOString();
+  
+      // ساخت آبجکت داده‌ها مطابق با انتظارات سرور
+      const requestData = {
+        Id: formData.id,
+        Email: formData.email || "",
+        GradeLevel: gradeLevelValue, // ارسال به صورت عددی
+        Major: majorValue,
+        LastGradeGPA: lastGradeGPAValue,
+        AboutMe: formData.aboutMe || "",
+        StudentPhoneNumber: formData.studentPhoneNumber || "",
+        ParentPhoneNumber: formData.parentPhoneNumber || "",
+        SchoolName: formData.schoolName || "",
+        Province: formData.province || "",
+        BirthDate: formattedBirthDate,
+      };
+  
+      console.log("Request payload:", requestData);
+  
+      const formDataPayload = new FormData();
+      formDataPayload.append("Id", formData.id.toString());
+      formDataPayload.append("Email", requestData.Email);
+      formDataPayload.append("GradeLevel", requestData.GradeLevel.toString()); // به صورت رشته
+      formDataPayload.append("Major", requestData.Major.toString());
+      formDataPayload.append("LastGradeGPA", requestData.LastGradeGPA.toString());
+      formDataPayload.append("AboutMe", requestData.AboutMe);
+      formDataPayload.append("StudentPhoneNumber", requestData.StudentPhoneNumber);
+      formDataPayload.append("ParentPhoneNumber", requestData.ParentPhoneNumber);
+      formDataPayload.append("SchoolName", requestData.SchoolName);
+      formDataPayload.append("Province", requestData.Province);
+      formDataPayload.append("BirthDate", requestData.BirthDate);
+  
+      if (profilePicFile) {
+        formDataPayload.append("ProfilePic", profilePicFile);
+      }
+  
+      const response = await fetch("http://62.60.213.13/api/Student/UpdateProfile", {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        body: formDataPayload,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error details:", errorData);
+        
+        if (errorData.errors) {
+          const validationErrors = Object.entries(errorData.errors)
+            .map(([field, errors]) => `${field}: ${(errors as string[]).join(", ")}`)
+            .join("\n");
+          throw new Error(`خطاهای اعتبارسنجی:\n${validationErrors}`);
+        }
+        
+        throw new Error(errorData.title || errorData.message || "خطا در بروزرسانی پروفایل");
+      }
+  
+      const data = await response.json();
+      console.log("Update response:", data);
+  
+      if (data.isSuccess) {
+        // به‌روزرسانی تصویر پروفایل
+        let profilePicUrl = formData.profileImage;
+        if (data.value?.profilePicUrl) {
+          try {
+            const imageResponse = await fetch(
+              `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+                data.value.profilePicUrl
+              )}`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+  
+            if (imageResponse.ok) {
+              const blob = await imageResponse.blob();
+              profilePicUrl = URL.createObjectURL(blob);
+            }
+          } catch (imageError) {
+            console.error("خطا در دریافت تصویر پروفایل:", imageError);
+          }
+        }
+  
+        // به‌روزرسانی state
+        setFormData(prev => ({
+          ...prev,
+          profileImage: profilePicUrl,
+        }));
+        
+        setInitialFormData(prev => ({
+          ...prev,
+          profileImage: profilePicUrl
+        }));
+        
+        setProfilePicFile(null);
+        setIsEditMode(false);
+        
+        setSnackbar({ open: true, message: "پروفایل با موفقیت به‌روزرسانی شد" });
+      } else {
+        setSnackbar({ open: true, message: data.message || "خطا در ذخیره تغییرات" });
+      }
+    } catch (error) {
+      console.error("خطا در ذخیره پروفایل:", error);
+      setSnackbar({ 
+        open: true, 
+        message: error instanceof Error ? error.message : "خطا در ذخیره تغییرات. لطفاً دوباره تلاش کنید." 
+      });
+    }
   };
+
 
   const handleCancel = () => {
     setIsEditMode(false);
+    setFormData(initialFormData);
     setProvinceInputValue("");
     setProvinceOptions([]);
+    setProfilePicFile(null);
   };
+
+  // Dummy onChange handler for read-only fields
+  const noopChange = () => {};
+
+  useEffect(() => {
+    const fetchProvinces = async () => {
+      setLoadingProvinces(true);
+      try {
+        const token = getToken();
+        if (!token) {
+          console.error("No token for province fetch");
+          return;
+        }
+
+        const response = await fetch(
+          `http://62.60.213.13/api/Provinces/Dropdown?input=${encodeURIComponent(
+            provinceInputValue || ""
+          )}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await response.json();
+        if (data.isSuccess) {
+          setProvinceOptions(data.value || []);
+        }
+      } catch (error) {
+        console.error("Error fetching provinces:", error);
+      } finally {
+        setLoadingProvinces(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(() => {
+      if (provinceInputValue.length > 0) {
+        fetchProvinces();
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [provinceInputValue]);
+
+  if (loading) {
+    return (
+      <Box sx={{ textAlign: "center", padding: "40px" }}>
+        Loading profile...
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ textAlign: "center", padding: "40px", color: "error.main" }}>
+        {error}
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -91,7 +414,6 @@ const StudentProfile = () => {
         direction: "rtl",
       }}
     >
-      {/* Header */}
       <AppBar
         position="fixed"
         sx={{
@@ -100,10 +422,9 @@ const StudentProfile = () => {
           color: "black",
         }}
       >
-        <Toolbar></Toolbar>
+        <Toolbar />
       </AppBar>
 
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
@@ -118,7 +439,6 @@ const StudentProfile = () => {
         }}
       >
         <Toolbar />
-        {/* Profile Content Box */}
         <Box
           sx={{
             borderRadius: "16px",
@@ -130,7 +450,6 @@ const StudentProfile = () => {
             backdropFilter: "blur(4px)",
           }}
         >
-          {/* Profile Header */}
           <Box
             sx={{
               display: "flex",
@@ -190,19 +509,17 @@ const StudentProfile = () => {
                   }
                 />
               )}
+              <input
+                type="file"
+                id="profile-pic-input"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleProfilePicChange}
+              />
             </Box>
-            <input
-              type="file"
-              id="profile-pic-input"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleProfilePicChange}
-            />
           </Box>
 
-          {/* Fields Container */}
           <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {/* Name Fields */}
             <Box
               sx={{
                 display: "flex",
@@ -213,35 +530,14 @@ const StudentProfile = () => {
             >
               <Box sx={{ flex: 1 }}>
                 <InputBox
-                  label="نام"
-                  name="firstName"
+                  label="نام و نام خانوادگی"
+                  name="fullName"
                   direction="rtl"
-                  value={formData.firstName}
-                  onChange={handleChange}
+                  value={`${formData.firstName} ${formData.lastName}`}
+                  onChange={noopChange}
                   readOnly={true}
                 />
               </Box>
-              <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="نام خانوادگی"
-                  name="lastName"
-                  direction="rtl"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  readOnly={true}
-                />
-              </Box>
-            </Box>
-
-            {/* Contact Information */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                gap: isMobile ? "16px" : "40px",
-                justifyContent: "space-between",
-              }}
-            >
               <Box sx={{ flex: 1 }}>
                 <InputBox
                   label="ایمیل"
@@ -252,6 +548,16 @@ const StudentProfile = () => {
                   readOnly={!isEditMode}
                 />
               </Box>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                gap: isMobile ? "16px" : "40px",
+                justifyContent: "space-between",
+              }}
+            >
               <Box sx={{ flex: 1 }}>
                 <InputBox
                   label="شماره تماس دانش آموز"
@@ -262,17 +568,6 @@ const StudentProfile = () => {
                   readOnly={!isEditMode}
                 />
               </Box>
-            </Box>
-
-            {/* Parent Contact and School */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                gap: isMobile ? "16px" : "40px",
-                justifyContent: "space-between",
-              }}
-            >
               <Box sx={{ flex: 1 }}>
                 <InputBox
                   label="شماره تماس والدین"
@@ -283,19 +578,8 @@ const StudentProfile = () => {
                   readOnly={!isEditMode}
                 />
               </Box>
-              <Box sx={{ flex: 1 }}>
-                <InputBox
-                  label="نام مدرسه"
-                  name="schoolName"
-                  direction="rtl"
-                  value={formData.schoolName}
-                  onChange={handleChange}
-                  readOnly={!isEditMode}
-                />
-              </Box>
             </Box>
 
-            {/* Academic Information */}
             <Box
               sx={{
                 display: "flex",
@@ -306,13 +590,255 @@ const StudentProfile = () => {
             >
               <Box sx={{ flex: 1 }}>
                 <InputBox
-                  label="رشته تحصیلی"
-                  name="majorTitle"
+                  label="نام مدرسه"
+                  name="schoolName"
                   direction="rtl"
-                  value={formData.majorTitle}
+                  value={formData.schoolName}
                   onChange={handleChange}
                   readOnly={!isEditMode}
                 />
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                {isEditMode ? (
+                  <Box>
+                    <Box
+                      component="label"
+                      sx={{
+                        display: "block",
+                        fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+                        fontWeight: "500",
+                        marginBottom: "7px",
+                        marginRight: "5px",
+                        color: "black",
+                        textAlign: "right",
+                        direction: "rtl",
+                      }}
+                    >
+                      استان
+                    </Box>
+                    <Autocomplete
+                      value={formData.province}
+                      onChange={(_event, newValue) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          province: newValue || "",
+                        }));
+                      }}
+                      inputValue={provinceInputValue}
+                      onInputChange={(_event, newInputValue) => {
+                        setProvinceInputValue(newInputValue);
+                      }}
+                      options={provinceOptions}
+                      loading={loadingProvinces}
+                      freeSolo
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          fullWidth
+                          variant="outlined"
+                          placeholder="جستجوی استان..."
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              backgroundColor: "white",
+                              borderRadius: "8px",
+                              height: "35px",
+                              padding: "8px 40px 8px 14px !important",
+                              "& .MuiOutlinedInput-input": {
+                                textAlign: "right",
+                                direction: "rtl",
+                                height: "19px",
+                                "&::placeholder": {
+                                  opacity: 0,
+                                  transition: "opacity 0.2s ease-in-out",
+                                },
+                              },
+                              "&:hover .MuiOutlinedInput-input::placeholder": {
+                                opacity: 0.5,
+                              },
+                              "&:hover .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "rgb(204, 207, 209)",
+                                borderWidth: "2px",
+                              },
+                              "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                {
+                                  borderColor: "#1976d2",
+                                  borderWidth: "2.3px",
+                                },
+                            },
+                          }}
+                        />
+                      )}
+                      popupIcon={<ArrowDropDownIcon />}
+                      clearIcon={<CloseIcon />}
+                      forcePopupIcon={true}
+                      sx={{
+                        "& .MuiAutocomplete-endAdornment": {
+                          left: 0,
+                          right: "auto",
+                          display: "flex",
+                          flexDirection: "row",
+                          position: "absolute",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          height: "100%",
+                          alignItems: "center",
+                        },
+                        "& .MuiAutocomplete-clearIndicator": {
+                          position: "absolute",
+                          right: "0px",
+                          padding: "2px",
+                          paddingLeft: "0px",
+                        },
+                        "& .MuiAutocomplete-popupIndicator": {
+                          position: "absolute",
+                          left: "8px",
+                          padding: "2px",
+                        },
+                      }}
+                      slotProps={{
+                        popper: {
+                          sx: {
+                            "& .MuiPaper-root": {
+                              direction: "rtl",
+                              textAlign: "right",
+                            },
+                            "& .MuiAutocomplete-listbox": {
+                              direction: "rtl",
+                              textAlign: "right",
+                            },
+                            "& .MuiAutocomplete-option": {
+                              direction: "rtl",
+                              textAlign: "right",
+                              padding: "8px 16px",
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  </Box>
+                ) : (
+                  <InputBox
+                    label="استان"
+                    name="province"
+                    direction="rtl"
+                    value={formData.province}
+                    onChange={noopChange}
+                    readOnly={true}
+                  />
+                )}
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                gap: isMobile ? "16px" : "40px",
+                justifyContent: "space-between",
+              }}
+            >
+              <Box sx={{ flex: 1 }}>
+                {isEditMode ? (
+                  <Box>
+                    <Box
+                      component="label"
+                      sx={{
+                        display: "block",
+                        fontSize: { xs: "0.9rem", sm: "1rem", md: "1.1rem" },
+                        fontWeight: "500",
+                        marginBottom: "7px",
+                        marginRight: "5px",
+                        color: "black",
+                        textAlign: "right",
+                        direction: "rtl",
+                      }}
+                    >
+                      رشته تحصیلی
+                    </Box>
+                    <Autocomplete
+                      value={formData.major || ""}
+                      onChange={(_event, newValue) => {
+                        handleMajorChange(newValue || "");
+                      }}
+                      options={Object.values(majorMap)}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          fullWidth
+                          variant="outlined"
+                          placeholder="انتخاب رشته..."
+                          sx={{
+                            "& .MuiOutlinedInput-root": {
+                              backgroundColor: "white",
+                              borderRadius: "8px",
+                              height: "35px",
+                              padding: "8px 40px 8px 14px !important",
+                              "& .MuiOutlinedInput-input": {
+                                textAlign: "right",
+                                direction: "rtl",
+                                height: "19px",
+                              },
+                            },
+                          }}
+                        />
+                      )}
+                      popupIcon={<ArrowDropDownIcon />}
+                      clearIcon={<CloseIcon />}
+                      sx={{
+                        "& .MuiAutocomplete-endAdornment": {
+                          left: 0,
+                          right: "auto",
+                          display: "flex",
+                          flexDirection: "row",
+                          position: "absolute",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          height: "100%",
+                          alignItems: "center",
+                        },
+                        "& .MuiAutocomplete-clearIndicator": {
+                          position: "absolute",
+                          right: "0px",
+                          padding: "2px",
+                          paddingLeft: "0px",
+                        },
+                        "& .MuiAutocomplete-popupIndicator": {
+                          position: "absolute",
+                          left: "8px",
+                          padding: "2px",
+                        },
+                      }}
+                      slotProps={{
+                        popper: {
+                          sx: {
+                            "& .MuiPaper-root": {
+                              direction: "rtl",
+                              textAlign: "right",
+                            },
+                            "& .MuiAutocomplete-listbox": {
+                              direction: "rtl",
+                              textAlign: "right",
+                            },
+                            "& .MuiAutocomplete-option": {
+                              direction: "rtl",
+                              textAlign: "right",
+                              padding: "8px 16px",
+                            },
+                          },
+                        },
+                      }}
+                    />
+                  </Box>
+                ) : (
+                  <InputBox
+                    label="رشته تحصیلی"
+                    name="major"
+                    direction="rtl"
+                    value={formData.major || ""}
+                    onChange={noopChange}
+                    readOnly={true}
+                  />
+                )}
               </Box>
               <Box sx={{ flex: 1 }}>
                 <InputBox
@@ -326,7 +852,6 @@ const StudentProfile = () => {
               </Box>
             </Box>
 
-            {/* GPA and Birth Date */}
             <Box
               sx={{
                 display: "flex",
@@ -352,12 +877,11 @@ const StudentProfile = () => {
                   direction="ltr"
                   value={formData.birthDate}
                   onChange={handleChange}
-                  readOnly={true}
+                  readOnly={!isEditMode}
                 />
               </Box>
             </Box>
 
-            {/* About Me */}
             <Box sx={{ width: "100%" }}>
               <Box
                 component="label"
@@ -408,7 +932,6 @@ const StudentProfile = () => {
             </Box>
           </Box>
 
-          {/* Edit Button */}
           <Box
             sx={{
               display: "flex",
