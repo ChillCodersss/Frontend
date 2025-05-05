@@ -1,14 +1,21 @@
 import { Divider } from "@mui/material";
 import logo from "@/assets/LogoG.png";
-import telegramLogo from "@/assets/TelegramLogo.png";
-import linkedinLogo from "@/assets/LinkedinLogo.png";
+import telegramLogo from "@/assets/TelegramLogo.svg";
+import linkedinLogo from "@/assets/LinkedinLogo.svg";
 import "./Footer.css"
 
 function Footer() {
     const copyrightText = "© تمامی حقوق برای مشاوریوم محفوظ است و هرگونه کپی برداری پیگرد قانونی خواهد داشت.";
-    const test_text_fa =   `لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، 
-                            و با استفاده از طراحان گرافیک است، چاپگرها ون و سطرآنچنان که لازم است،
-                            و برای شرایط فعلی تکنولوژی مورد نیاز، و متخصصان را می طلبد.`;
+    const address_text = "آدرس دفتر مرکزی: ایران، تهران، رسالت، خیابان هنگام، خیابان دانشگاه، دانشگاه علم و صنعت ایران";
+    const email_address = "ایمیل: Moshaverium@gmail.com";
+    const post_address = "کد پستــی: ۱۳۱۱۴-۱۶۸۴۶";
+
+    const footerLinkItems = [
+        {href: "./recruitment", text: "استخدام"},
+        {href: "./", text: "درباره ما"},
+        {href: "./", text: "خدمات"},
+        {href: "./OurCounselor", text: "مشاوران ما"},
+    ];
 
     return (
         <footer
@@ -21,15 +28,28 @@ function Footer() {
             <div className="l-footer-content">
                 <div>
                     <nav className="l-footer-links">
-                        <a className="l-footer-link-item" href="./recruitment">استخدام</a>
-                        <a className="l-footer-link-item">درباره ما</a>
-                        <a className="l-footer-link-item">خدمات</a>
-                        <a className="l-footer-link-item" href="./OurCounselor">مشاوران ما</a>
+                        {
+                            footerLinkItems.map((item, index) => 
+                                <a
+                                    key={index}
+                                    className="l-footer-link-item"
+                                    href={item.href}
+                                >
+                                    {item.text}
+                                </a>
+                            )
+                        }
                     </nav>
                 </div>
                 <div>
                     <p className="l-footer-address">
-                        {test_text_fa}
+                        {address_text}
+                    </p>
+                    <p className="l-footer-address">
+                        {post_address}
+                    </p>
+                    <p className="l-footer-address">
+                        {email_address}
                     </p>
                 </div>
             </div>
