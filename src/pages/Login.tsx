@@ -14,6 +14,7 @@ import "./Login.css";
 import "@/index.css";
 import { useNavigate } from "react-router-dom";
 import { storeToken, storeUserInfo } from "@/services/auth";
+import "./toast.css";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch("http://localhost:8080/api/Auth/Login", {
+      const response = await fetch("http://62.60.213.13/api/Auth/Login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

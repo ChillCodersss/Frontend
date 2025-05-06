@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
@@ -11,15 +11,19 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./BackgroundStyle.css";
 
-const FPGetNewPassword = () => {
+import { changePassword } from "@/services/changePassword";
+import { getToken } from "@/services/auth";
+
+const ChangePassword = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const sentEmail = location.state?.sentEmail || "";
 
   const [formData, setFormData] = useState({
+    oldPassword: "",
     newPassword: "",
     confirmedNewPassword: "",
   });
+
+  const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -34,7 +38,7 @@ const FPGetNewPassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.newPassword || !formData.confirmedNewPassword) {
-      toast.error("لطفا رمز عبور را وارد کنید");
+      toast.error("لطفا رمز عبور جدید را وارد کنید");
       return;
     }
     if (formData.newPassword !== formData.confirmedNewPassword) {
@@ -62,22 +66,18 @@ const FPGetNewPassword = () => {
       return;
     }
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/Auth/ChangeForgotPassword",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: sentEmail,
-            newPassword: formData.newPassword,
-            confirmedNewPassword: formData.confirmedNewPassword,
-          }),
-        }
+      const token = getToken();
+      if (!token) {
+        toast.error("لطفا وارد حساب کاربری خود شوید");
+        return;
+      }
+      const data = await changePassword(
+        token,
+        formData.oldPassword,
+        formData.newPassword,
+        formData.confirmedNewPassword
       );
-      const data = await response.json();
-      if (!response.ok || data.isFailure) {
+      if (data.isFailure) {
         toast.error(data.message || "خطا در ارتباط با سرور");
         return;
       }
@@ -85,7 +85,7 @@ const FPGetNewPassword = () => {
         toast.success("رمز عبور با موفقیت تغییر کرد");
       }
       setTimeout(() => {
-        navigate("/login");
+        navigate("/");
       }, 1000);
     } catch (error) {
       console.error("Server error:", error);
@@ -170,6 +170,28 @@ const FPGetNewPassword = () => {
               }}
             >
               <InputBox
+                label="رمز عبور فعلی"
+                name="oldPassword"
+                type={showOldPassword ? "text" : "password"}
+                placeholder="••••••••"
+                fullWidth={true}
+                width={"280px"}
+                direction="ltr"
+                onChange={handleInputChange}
+                value={formData.oldPassword}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <IconButton
+                      sx={{ marginLeft: "-10px" }}
+                      onClick={() => setShowOldPassword((prev) => !prev)}
+                      edge="end"
+                    >
+                      {showOldPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+              <InputBox
                 label="رمز عبور جدید"
                 name="newPassword"
                 type={showPassword ? "text" : "password"}
@@ -244,4 +266,4 @@ const FPGetNewPassword = () => {
   );
 };
 
-export default FPGetNewPassword;
+export default ChangePassword;
