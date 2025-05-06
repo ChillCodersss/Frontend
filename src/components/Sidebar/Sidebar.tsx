@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import {
   Drawer,
   List,
@@ -43,7 +44,7 @@ const sidebarItems: SidebarItem[] = [
 const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [activeItem, setActiveItem] = useState<string>("کاربران");
-
+  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -201,6 +202,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               if (isMobile && open) {
                 setOpen(false);
               }
+              navigate("/Landing");
             }}
           >
             <Box
@@ -257,7 +259,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               right: "1rem",
               color: "#057abe",
               backgroundColor: "rgb(111, 189, 234)",
-              "&:hover": { backgroundColor: "#e0e0e0" },
+              "&:hover": { backgroundColor: " #e0e0e0" },
               zIndex: 1200, // Ensure it appears above other content
             }}
           >

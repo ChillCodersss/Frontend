@@ -431,6 +431,7 @@ const StudentList: React.FC = () => {
               sx={{ 
                 boxShadow: 3, 
                 maxHeight: isSmallScreen ? '60vh' : '70vh', 
+                // marginBottom: '35px',
                 overflowY: 'auto', 
                 marginTop: isSmallScreen ? '20px' : '50px',
                 minWidth: isSmallScreen ? '100%' : 'auto'
@@ -566,6 +567,12 @@ const StudentList: React.FC = () => {
                                 </Typography>
                                 <Typography variant="caption">
                                   <strong>معدل:</strong> {student.lastGradeGPA}
+                                </Typography>
+                                <Typography variant="caption">
+                                  <strong>استان:</strong> {student.province}
+                                </Typography>
+                                <Typography variant="caption">
+                                  <strong>مدرسه:</strong> {student.schoolName}
                                 </Typography>
                               </Box>
                               <Typography variant="caption" sx={{ display: 'flex', gap: 1 }}>
