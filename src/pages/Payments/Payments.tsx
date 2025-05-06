@@ -14,6 +14,7 @@ import PaymentsItem, {
 import { useEffect, useState } from "react";
 import { PaymentsHistory } from "@/services/payments";
 import { getToken } from "@/services/auth";
+import Header from "@/components/Header/Header";
 // import Sidebar from "@/components/Sidebar/Sidebar";
 import {
   PTableHeadRowStyle,
@@ -52,7 +53,7 @@ const Payments = () => {
 
   return (
     <>
-      {/* <Header/> */}
+      <Header />
       {/* <Sidebar /> */}
       {Loading ? (
         <Typography sx={NotificationTextStyle}>در حال بارگزاری</Typography>
