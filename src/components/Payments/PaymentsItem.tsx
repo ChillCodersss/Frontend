@@ -2,7 +2,7 @@ import React from "react";
 import { TableRow, TableCell } from "@mui/material";
 import { PITableCellStyles, PITableRowStyles } from "./PaymentsItemStyle";
 
-interface PaymentsItemProps {
+export interface PaymentsItemProps {
   date: string;
   amount: number;
   payTo: string;
