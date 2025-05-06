@@ -14,25 +14,29 @@ import CounselorDisplay from "./pages/CounselorDisplay";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Landing from "./pages/Landing";
 import StudentList from "./pages/CounselorRequests";
+import Payments from "./pages/Payments/Payments";
 
 createRoot(document.getElementById("root")!).render(
   //<StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/recruitment" element={<Recruitment />} />
-        <Route path="/Signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<FPGetEmail />} />
-        <Route path="/verification-code" element={<FPGetVerificationCode />} />
-        <Route path="/set-new-password" element={<FPGetNewPassword />} />
-        <Route path="/CounselorProfile" element={<CounselorProfile />} />
-        <Route path="/OurCounselor" element={<OurCounselor />} />
-        <Route path="/CounselorDisplay" element={<CounselorDisplay />} />
-        <Route path="/OurCounselor/CounselorPage/:id" element={<CounselorDisplay />} />
-        {/* <Route path="/sidebar" element={<Sidebar />} /> */}
-        <Route path="/Landing" element={<Landing></Landing>} />
-        <Route path="/dashboard" element={<StudentList></StudentList>} />
-      </Routes>
-    </BrowserRouter>
+  <BrowserRouter>
+    <Routes>
+      <Route path="/recruitment" element={<Recruitment />} />
+      <Route path="/Signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<FPGetEmail />} />
+      <Route path="/verification-code" element={<FPGetVerificationCode />} />
+      <Route path="/set-new-password" element={<FPGetNewPassword />} />
+      <Route path="/CounselorProfile" element={<CounselorProfile />} />
+      <Route path="/OurCounselor" element={<OurCounselor />} />
+      <Route path="/CounselorDisplay" element={<CounselorDisplay />} />
+      <Route
+        path="/OurCounselor/CounselorPage/:id"
+        element={<CounselorDisplay />}
+      />
+      <Route path="/Landing" element={<Landing></Landing>} />
+      <Route path="/Payments" element={<Payments />} />
+      <Route path="/dashboard" element={<StudentList></StudentList>} />
+    </Routes>
+  </BrowserRouter>
   //</StrictMode>
 );
