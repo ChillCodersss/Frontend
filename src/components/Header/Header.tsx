@@ -15,23 +15,30 @@ import {
   Button,
 } from "@mui/material";
 import { getToken, getUserInfo, removeToken } from "@/services/auth";
-//icons
+// Icons
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
 import LockIcon from "@mui/icons-material/Lock";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ListItemIcon from "@mui/material/ListItemIcon";
-///styles
+// Styles
 import { headerNavLink, loginButton } from "./HeaderStyles";
 
 interface HeaderProps {
-  isWhiteMode?: boolean; // Optional prop to toggle header mode
+  isWhiteMode?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
   const navigate = useNavigate();
-  let profilePicUrl = "";
+  const [profilePicUrl, setProfilePicUrl] = React.useState<string>("");
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
   const pages = [
     { label: "درباره ما", path: "/about-us" },
@@ -39,26 +46,21 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
     { label: "خدمات", path: "/#" },
     { label: "مشاوران ما", path: "/OurCounselor" },
   ];
+
   const settings = [
     {
       label: "پروفایل",
       icon: <AccountCircleIcon />,
       clickFunction: () => {
         const info = getUserInfo();
-        if (!info) {
-          return;
-        }
+        if (!info) return;
         if (info.role === "Counselor") {
           navigate("/CounselorProfile");
-          return;
-        } // there may be a problem here
-        if (info.role === "Student") {
+        } else if (info.role === "Student") {
           navigate("/StudentProfile");
-          return;
         }
       },
     },
-    // we should fix here
     {
       label: "تغییر رمز عبور",
       icon: <LockIcon />,
@@ -71,22 +73,16 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
       icon: <ExitToAppIcon />,
       clickFunction: () => {
         removeToken();
+        navigate("/Landing");
         window.location.reload();
       },
     },
   ];
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -104,38 +100,32 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
   React.useEffect(() => {
     const fetchUser = async () => {
       const token = getToken();
-      if (!token) {
-        return;
-      }
+      if (!token) return;
+
       const info = getUserInfo();
-      if (!info) {
-        return;
-      }
+      if (!info) return;
+
       setIsLoggedIn(true);
-      // Fetch user profile picture
+
       try {
-        const response =
+        const response = await fetch(
           info.role === "Counselor"
-            ? await fetch("http://localhost:8080/api/Counselor/Profile", {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-              })
-            : await fetch("http://localhost:8080/api/Student/Profile", {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-              });
+            ? "http://62.60.213.13/api/Counselor/Profile"
+            : "http://62.60.213.13/api/Student/Profile",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         const data = await response.json();
         if (data.isSuccess && data.value.profilePicUrl) {
           try {
             const imageResponse = await fetch(
-              `http://localhost:8080/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+              `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
                 data.value.profilePicUrl
               )}`,
               {
@@ -145,22 +135,30 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
                 },
               }
             );
+
             if (imageResponse.ok) {
               const blob = await imageResponse.blob();
-              profilePicUrl = URL.createObjectURL(blob);
-              // need to fix here
+              const url = URL.createObjectURL(blob);
+              setProfilePicUrl(url);
             } else {
-              console.error("failed to fetch image", imageResponse.statusText);
+              console.error("Failed to fetch image:", imageResponse.statusText);
             }
           } catch (imageError) {
-            console.error("error in fetching profile picture", imageError);
+            console.error("Error fetching profile picture:", imageError);
           }
         }
       } catch (error) {
-        console.error("error in fetching profile image", error);
+        console.error("Error fetching profile data:", error);
       }
     };
+
     fetchUser();
+
+    return () => {
+      if (profilePicUrl) {
+        URL.revokeObjectURL(profilePicUrl);
+      }
+    };
   }, []);
 
   return (
@@ -180,7 +178,11 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
                   onClick={handleOpenUserMenu}
                   sx={{ p: 0, width: 40, height: 40 }}
                 >
-                  <Avatar alt="profile picture" src={profilePicUrl} />
+                  <Avatar
+                    alt="profile picture"
+                    src={profilePicUrl}
+                    sx={{ width: "45px", height: "45px" }}
+                  />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -301,7 +303,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
               }}
             />
           </Box>
-          {/* logo boxes */}
+          {/* Mobile Menu */}
           <Box
             sx={{
               flexGrow: 1,
@@ -363,7 +365,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/Landing"
             sx={{
               ml: 2,
               display: {
@@ -395,7 +397,6 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
               }}
             />
           </Box>
-          {/* logo boxes */}
         </Toolbar>
       </Container>
     </AppBar>

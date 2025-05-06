@@ -38,7 +38,7 @@ const SignUpForm: React.FC = () => {
     event.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = await fetch("http://localhost:8080/api/Auth/Register", {
+      const response = await fetch("http://62.60.213.13/api/Auth/Register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
