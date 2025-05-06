@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { PaymentsHistory } from "@/services/payments";
 import { getToken } from "@/services/auth";
 import Header from "@/components/Header/Header";
-// import Sidebar from "@/components/Sidebar/Sidebar";
+import Sidebar from "@/components/Sidebar/Sidebar";
 import {
   PTableHeadRowStyle,
   PTableHeadCellStyle,
@@ -37,9 +37,10 @@ const Payments = () => {
         return;
       }
       setLoading(true);
-      const response = await PaymentsHistory(token, 10, 1);
-      if (response.data.isSuccess) {
-        setPayments(response.data.value.items);
+      const data = await PaymentsHistory(token, 10, 1);
+      if (data.isSuccess) {
+        setPayments(data.value.items);
+        setLoading(false);
       } else {
         console.error("خطا در ارتباط با سرور");
       }
@@ -54,37 +55,42 @@ const Payments = () => {
   return (
     <>
       <Header />
-      {/* <Sidebar /> */}
-      {Loading ? (
-        <Typography sx={NotificationTextStyle}>در حال بارگزاری</Typography>
-      ) : (
-        <Box sx={PMainBoxStyle}>
-          {Payments.filter((payment) => !payment.isPaid).map((payment) => (
-            <NotificationBox {...payment} />
-          ))}
-          <Box sx={PTableBoxStyle}>
-            <TableContainer sx={PITableContainerStyle}>
-              <Table>
-                <TableHead>
-                  <TableRow sx={PTableHeadRowStyle}>
-                    <TableCell sx={PTableHeadCellStyle}>مبلغ</TableCell>
-                    <TableCell sx={PTableHeadCellStyle}>مشاور</TableCell>
-                    <TableCell sx={PTableHeadCellStyle}>تاریخ</TableCell>
-                    <TableCell sx={PTableHeadCellStyle}>طول دوره</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Payments.filter((payment) => payment.isPaid).map(
-                    (payment) => (
-                      <PaymentsItem {...payment} />
-                    )
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+      <Sidebar>
+        {Loading ? (
+          <Typography sx={NotificationTextStyle}>در حال بارگزاری</Typography>
+        ) : (
+          <Box sx={PMainBoxStyle}>
+            {Payments.filter((payment) => !payment.isPaid).map((payment) => (
+              <NotificationBox {...payment} />
+            ))}
+            <Box sx={PTableBoxStyle}>
+              <TableContainer sx={PITableContainerStyle}>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={PTableHeadRowStyle}>
+                      <TableCell sx={PTableHeadCellStyle}>مبلغ</TableCell>
+                      <TableCell sx={PTableHeadCellStyle}>مشاور</TableCell>
+                      <TableCell sx={PTableHeadCellStyle}>تاریخ</TableCell>
+                      <TableCell sx={PTableHeadCellStyle}>طول دوره</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {Payments ? (
+                      Payments.filter((payment) => payment.isPaid).map(
+                        (payment) => (
+                          <PaymentsItem key={payment.id} {...payment} />
+                        )
+                      )
+                    ) : (
+                      <Typography></Typography>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
           </Box>
-        </Box>
-      )}
+        )}
+      </Sidebar>
     </>
   );
 };

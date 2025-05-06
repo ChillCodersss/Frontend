@@ -15,11 +15,11 @@ export const NotificationBox = (payment: PaymentsItemProps) => {
   const handlePaymentClick = async () => {
     try {
       const token = getToken() || "";
-      const result = await payingPayments(token, payment.id);
-      if (result.data.isSuccess) {
-        toast.success(result.data.message);
-      } else if (result.data.isFailure) {
-        toast.error(result.data.message);
+      const data = await payingPayments(token, payment.id);
+      if (data.isSuccess) {
+        toast.success(data.message);
+      } else if (data.isFailure) {
+        toast.error(data.message);
       }
     } catch (error) {
       console.error("Error during payment:", error);

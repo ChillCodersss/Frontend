@@ -5,13 +5,15 @@ export const PaymentsHistory = async (
   PageSize: number,
   PageIndex: number
 ) => {
-  const response = await fetch(`http://${baseURL}/api/Payments`, {
+  const url = new URL(`http://${baseURL}/api/Payments`);
+  url.searchParams.append("PageSize", PageSize.toString());
+  url.searchParams.append("PageIndex", PageIndex.toString());
+  const response = await fetch(url.toString(), {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ PageSize: PageSize, PageIndex: PageIndex }),
   });
 
   if (!response.ok) {
@@ -23,7 +25,7 @@ export const PaymentsHistory = async (
 };
 
 export const payingPayments = async (token: string, id: number) => {
-  const response = await fetch(`http://${baseURL}/api/Payments`, {
+  const response = await fetch(`http://${baseURL}/api/Payments?id=${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
