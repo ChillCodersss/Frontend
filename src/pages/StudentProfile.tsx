@@ -79,6 +79,15 @@ const StudentProfile = () => {
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
+  // Function to check if there are any changes
+  const hasChanges = () => {
+    const formDataKeys = Object.keys(formData) as (keyof FormData)[];
+    return (
+      formDataKeys.some((key) => formData[key] !== initialFormData[key]) ||
+      profilePicFile !== null
+    );
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
@@ -951,12 +960,13 @@ const StudentProfile = () => {
                   <SecondaryButton
                     name="ذخیره تغییرات"
                     variant="contained"
-                    backgroundColor=" #3f51b5"
+                    backgroundColor="#3f51b5"
                     onClick={handleSave}
                     fontSize={isMobile ? "0.9rem" : "1rem"}
                     width={isMobile ? "100%" : "200px"}
                     height={"40px"}
                     borderRadius="20px"
+                    disabled={!hasChanges()}
                   />
                   <SecondaryButton
                     name="انصراف"
@@ -972,7 +982,7 @@ const StudentProfile = () => {
               ) : (
                 <SecondaryButton
                   name="تغییر اطلاعات"
-                  backgroundColor=" #3f51b5"
+                  backgroundColor="#3f51b5"
                   fontSize={isMobile ? "0.9rem" : "1rem"}
                   width={isMobile ? "100%" : "200px"}
                   height={"40px"}
