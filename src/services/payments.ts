@@ -16,8 +16,25 @@ export const PaymentsHistory = async (
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to get payments history");
+    console.log(errorData.message || "خطا در ارتباط با سرور");
   }
 
+  return response.json();
+};
+
+export const payingPayments = async (token: string, id: number) => {
+  const response = await fetch(`http://${baseURL}/api/Payments`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ Id: id }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.log(errorData.message || "خطا در ارتباط با سرور");
+  }
   return response.json();
 };

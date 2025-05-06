@@ -3,24 +3,26 @@ import { TableRow, TableCell } from "@mui/material";
 import { PITableCellStyles, PITableRowStyles } from "./PaymentsItemStyle";
 
 export interface PaymentsItemProps {
-  date: string;
+  id: number;
   amount: number;
-  payTo: string;
-  description: string;
+  isPaid: boolean;
+  counselingDuration: number;
+  payableTo: string;
+  paymentDate: string;
 }
 
 const PaymentsItem: React.FC<PaymentsItemProps> = ({
-  date,
+  paymentDate,
   amount,
-  payTo,
-  description,
+  payableTo,
+  counselingDuration,
 }) => {
   return (
     <TableRow sx={PITableRowStyles}>
       <TableCell sx={PITableCellStyles}>{amount}</TableCell>
-      <TableCell sx={PITableCellStyles}>{payTo}</TableCell>
-      <TableCell sx={PITableCellStyles}>{date}</TableCell>
-      <TableCell sx={PITableCellStyles}>{description}</TableCell>
+      <TableCell sx={PITableCellStyles}>{payableTo}</TableCell>
+      <TableCell sx={PITableCellStyles}>{paymentDate}</TableCell>
+      <TableCell sx={PITableCellStyles}>{counselingDuration}</TableCell>
     </TableRow>
   );
 };
