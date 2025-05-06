@@ -9,6 +9,9 @@ import {
   Typography,
 } from "@mui/material";
 import PaymentsItem from "../../components/Payments/PaymentsItem";
+import { useEffect } from "react";
+import { PaymentsHistory } from "@/services/payments";
+import { getToken } from "@/services/auth";
 // import Sidebar from "@/components/Sidebar/Sidebar";
 import {
   PTableHeadRowStyle,
@@ -42,6 +45,24 @@ const Payments = () => {
       description: "دوره ۶ ماهه",
     },
   ];
+
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const token = getToken();
+        if (!token) {
+          console.error("کاربر وارد نشده است.");
+          return;
+        }
+        const response = await PaymentsHistory(token, 10, 1);
+        console.log(response);
+      } catch (error) {
+        console.error("خطا در ارتباط با سرور", error);
+      }
+    };
+
+    fetchPayments();
+  }, []);
 
   return (
     <>
