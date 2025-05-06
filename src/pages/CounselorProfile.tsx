@@ -9,16 +9,16 @@ import {
   useMediaQuery,
   useTheme,
   Button,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CloseIcon from "@mui/icons-material/Close";
+import EditIcon from "@mui/icons-material/Edit";
 import InputBox from "@/components/common/inputbox";
 import SecondaryButton from "@/components/common/SecondaryButton";
-import EditIcon from "@mui/icons-material/Edit";
-import { getToken } from "@/services/auth"; 
+import { getToken } from "@/services/auth";
+import { toast, ToastContainer } from "react-toastify"; 
+import "react-toastify/dist/ReactToastify.css"; 
 
 const CounselorProfile = () => {
   const theme = useTheme();
@@ -31,10 +31,8 @@ const CounselorProfile = () => {
   const [loadingProvinces, setLoadingProvinces] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
-  const [counselorId, setCounselorId] = useState<number | null>(null); 
+  const [counselorId, setCounselorId] = useState<number | null>(null);
   const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
-
 
   const [initialFormData, setInitialFormData] = useState({
     Name: "",
@@ -52,7 +50,6 @@ const CounselorProfile = () => {
 
   const [formData, setFormData] = useState(initialFormData);
 
-
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
@@ -60,7 +57,7 @@ const CounselorProfile = () => {
 
       const token = getToken();
       if (!token) {
-        setError("No authentication token found. Please log in.");
+        toast.error("No authentication token found. Please log in.");
         setLoading(false);
         return;
       }
@@ -88,7 +85,7 @@ const CounselorProfile = () => {
             province: data.value.province || "",
             workExperience: data.value.employmenthistory || "",
             description_text: data.value.aboutMe || "",
-            profileImage: "", 
+            profileImage: "",
           };
 
           let profilePicUrl = "";
@@ -122,13 +119,13 @@ const CounselorProfile = () => {
 
           setFormData({ ...mappedData, profileImage: profilePicUrl });
           setInitialFormData({ ...mappedData, profileImage: profilePicUrl });
-          setCounselorId(data.value.id || null); // Store Id
+          setCounselorId(data.value.id || null);
         } else {
-          setError(data.message || "Failed to load profile data.");
+          toast.error(data.message || "Failed to load profile data.");
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
-        setError("Error fetching profile data. Please try again.");
+        toast.error("Error fetching profile data. Please try again."); 
       } finally {
         setLoading(false);
       }
@@ -170,12 +167,12 @@ const CounselorProfile = () => {
   const handleSave = async () => {
     const token = getToken();
     if (!token) {
-      setSnackbar({ open: true, message: "No authentication token found. Please log in." });
+      toast.error("No authentication token found. Please log in.");
       return;
     }
 
     if (!counselorId) {
-      setSnackbar({ open: true, message: "Counselor ID is missing. Cannot update profile." });
+      toast.error("Counselor ID is missing. Cannot update profile."); 
       return;
     }
 
@@ -231,9 +228,6 @@ const CounselorProfile = () => {
 
         const mappedData = {
           Name: formData.Name,
-          // data.value
-          //   ? `${data.value.firstName || ""} ${data.value.lastName || ""}`.trim()
-          //   : 
           phone: data.value?.phoneNumber || formData.phone,
           email: data.value?.email || formData.email,
           university: data.value?.uniName || formData.university,
@@ -248,17 +242,15 @@ const CounselorProfile = () => {
 
         setFormData(mappedData);
         setInitialFormData(mappedData);
-        setProfilePicFile(null); // Clear file inputs
-        setIsEditMode(false); // Exit edit mode
+        setProfilePicFile(null);
+        setIsEditMode(false);
+        toast.success("تغییرات اعمال شد!"); 
       } else {
-        setSnackbar({
-          open: true,
-          message: data.message || "Failed to save profile.",
-        });
+        toast.error(data.message.split("|")[0] || "Failed to save profile.");
       }
     } catch (error) {
       console.error("Error saving profile:", error);
-      setSnackbar({ open: true, message: "Failed to save profile. Please try again." });
+      toast.error("Failed to save profile. Please try again.");
     }
   };
 
@@ -308,7 +300,6 @@ const CounselorProfile = () => {
     return () => clearTimeout(debounceTimer);
   }, [provinceInputValue]);
 
-  // Show loading state
   if (loading) {
     return (
       <Box sx={{ textAlign: "center", padding: "40px" }}>
@@ -326,6 +317,19 @@ const CounselorProfile = () => {
         direction: "rtl",
       }}
     >
+      {/* Add ToastContainer to render toasts */}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       {/* Header */}
       <AppBar
         position="fixed"
@@ -791,21 +795,6 @@ const CounselorProfile = () => {
           </Box>
         </Box>
       </Box>
-
-      {/* Snackbar for errors */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-      >
-        <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 };

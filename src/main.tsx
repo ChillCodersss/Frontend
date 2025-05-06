@@ -13,6 +13,7 @@ import OurCounselor from "./pages/OurCounselor";
 import CounselorDisplay from "./pages/CounselorDisplay";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Landing from "./pages/Landing";
+import StudentList from "./pages/CounselorRequests";
 import Payments from "./pages/Payments/Payments";
 
 createRoot(document.getElementById("root")!).render(
@@ -32,9 +33,9 @@ createRoot(document.getElementById("root")!).render(
         path="/OurCounselor/CounselorPage/:id"
         element={<CounselorDisplay />}
       />
-      <Route path="/sidebar" element={<Sidebar />} />
       <Route path="/Landing" element={<Landing></Landing>} />
       <Route path="/Payments" element={<Payments />} />
+      <Route path="/dashboard" element={<StudentList></StudentList>} />
     </Routes>
   </BrowserRouter>
   //</StrictMode>
