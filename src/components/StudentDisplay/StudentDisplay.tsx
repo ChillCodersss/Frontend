@@ -8,6 +8,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { getToken } from "@/services/auth";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 type ConfirmButtonProps = {
   name: string;
@@ -214,34 +216,47 @@ const StudentDisplayPopup = () => {
                 overflowX: "hidden",
               }}
             >
-              {/* Profile Section (Fixed) */}
-              <Box
-                sx={{
-                  width: isMobile ? "100%" : "230px",
-                  backgroundColor: "#1976d2",
-                  borderRadius: isMobile ? "12px 12px 0 0" : "0px 0 0 0px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  padding: isMobile ? "15px 20px" : "20px",
-                  gap: "10px",
-                  flexShrink: 0,
-                  boxSizing: "border-box",
-                }}
-              >
-                <img
-                  src={studentData.picUrl}
-                  alt="Profile"
-                  onError={(e) => {
-                    e.currentTarget.src = "/src/assets/DefaultPerson.png";
-                  }}
-                  style={{
-                    width: isMobile ? "120px" : "180px",
-                    height: isMobile ? "120px" : "180px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                  }}
-                />
+<Box
+  sx={{
+    width: isMobile ? "100%" : "230px",
+    backgroundColor: "#1976d2",
+    borderRadius: isMobile ? "12px 12px 0 0" : "0px 0 0 0px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: isMobile ? "15px 20px" : "20px",
+    gap: "10px",
+    flexShrink: 0,
+    boxSizing: "border-box",
+    position: "relative", // required for absolute positioning
+  }}
+>
+  <IconButton
+    onClick={handleClosePopup}
+    sx={{
+      position: "absolute",
+      top: 4,
+      right: 4,
+      color: "white",
+      zIndex: 1,
+    }}
+  >
+    <CloseIcon />
+  </IconButton>
+
+  <img
+    src={studentData.picUrl}
+    alt="Profile"
+    onError={(e) => {
+      e.currentTarget.src = "/src/assets/DefaultPerson.png";
+    }}
+    style={{
+      width: isMobile ? "120px" : "180px",
+      height: isMobile ? "120px" : "180px",
+      borderRadius: "50%",
+      objectFit: "cover",
+    }}
+  />
                 <Box
                   sx={{
                     width: "100%",
