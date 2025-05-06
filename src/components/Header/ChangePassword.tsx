@@ -83,10 +83,10 @@ const ChangePassword = () => {
       }
       if (data.isSuccess) {
         toast.success("رمز عبور با موفقیت تغییر کرد");
+        setTimeout(() => {
+          navigate("/Landing");
+        }, 1000);
       }
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
     } catch (error) {
       console.error("Server error:", error);
       toast.error("خطا در ارتباط با سرور");
