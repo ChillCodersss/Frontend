@@ -21,10 +21,15 @@ import {
   BarChart as BarChartIcon,
   Logout as LogoutIcon,
 } from "@mui/icons-material";
+import { removeToken } from "@/services/auth";
 
 interface SidebarItem {
   label: string;
   icon: React.ReactNode;
+}
+
+interface SidebarProps {
+  children: React.ReactNode;
 }
 
 const sidebarItems: SidebarItem[] = [
@@ -35,12 +40,12 @@ const sidebarItems: SidebarItem[] = [
   { label: "آمار", icon: <BarChartIcon /> },
 ];
 
-const Sidebar: React.FC = () => {
+const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [activeItem, setActiveItem] = useState<string>("داشبورد");
+  const [activeItem, setActiveItem] = useState<string>("کاربران");
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); 
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleDrawerToggle = () => {
     setOpen(!open);
@@ -48,184 +53,108 @@ const Sidebar: React.FC = () => {
 
   const handleItemClick = (label: string) => {
     setActiveItem(label);
+    if (isMobile && open) {
+      setOpen(false);
+    }
   };
 
-  const headerHeight = isMobile ? "56px" : "68.5px";
+  const headerHeight = isMobile ? "56px" : "69px";
+  const sidebarWidth = open ? 204 : 68;
 
   return (
-    <>
-      {/* Global Wrapper to Control Scroll */}
-      <Box
+    <Box sx={{ display: "flex", direction: "rtl" }}>
+      {/* Sidebar Drawer */}
+      <Drawer
+        variant={isMobile ? "temporary" : "permanent"}
+        anchor="right"
+        open={isMobile ? open : true}
+        onClose={isMobile ? handleDrawerToggle : undefined}
         sx={{
-          height: "100vh",
-          overflow: "hidden",
-          margin: 0,
-          padding: 0,
+          "& .MuiDrawer-paper": {
+            width: isMobile ? (open ? "75%" : 0) : sidebarWidth,
+            backgroundColor: "rgb(111, 189, 234)",
+            color: "rgb(165, 179, 217)",
+            padding: "0.5rem 0",
+            boxSizing: "border-box",
+            transition: "width 0.3s ease-in-out",
+            top: headerHeight, // Start below the Header
+            height: `calc(100vh - ${headerHeight})`, // Span remaining height
+            overflowX: "hidden",
+          },
         }}
       >
-        {/* Header */}
+        {/* Toggle Button Inside Drawer */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-start",
+            padding: "0.5rem 1rem",
+            backgroundColor: "rgb(111, 189, 234)",
+          }}
+        >
+          <IconButton
+            onClick={handleDrawerToggle}
+            sx={{
+              color: "#057abe",
+              backgroundColor: "rgb(111, 189, 234)",
+              "&:hover": { backgroundColor: "#e0e0e0" },
+            }}
+          >
+            {open ? <CloseIcon /> : <MenuIcon />}
+          </IconButton>
+        </Box>
+
+        {/* Logo Section */}
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-end",
-            padding: "0 1rem",
-            height: headerHeight, 
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            backgroundColor: "#F7F6FB",
-            zIndex: 1200,
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-          }}
-        ></Box>
-
-        {/* Sidebar Drawer */}
-        <Drawer
-          variant={isMobile ? "temporary" : "permanent"}
-          anchor="right"
-          open={isMobile ? open : true}
-          onClose={isMobile ? handleDrawerToggle : undefined}
-          sx={{
-            width: isMobile ? (open ? "75%" : 68) : 68,
-            flexShrink: 0,
-            "& .MuiDrawer-paper": {
-              width: isMobile ? (open ? "75%" : 68) : open ? 224 : 68,
-              backgroundColor: "#057abe",
-              color: "rgb(165, 179, 217)",
-              padding: "0.5rem 0",
-              boxSizing: "border-box",
-              transition: "width 0.3s ease-in-out",
-              overflow: "hidden",
-              top: headerHeight,
-              height: `calc(100vh - ${headerHeight})`, 
-              zIndex: 1100,
-            },
+            padding: "0.5rem 1rem",
+            marginBottom: "0.2rem",
+            justifyContent: "center",
+            minHeight: "24px",
           }}
         >
-          {/* Close Button for Mobile */}
-          {isMobile && open && (
-            <IconButton
-              onClick={handleDrawerToggle}
-              sx={{
-                position: "absolute",
-                top: "1rem",
-                left: "1rem",
-                color: "#F7F6FB",
-                backgroundColor: "transparent",
-                zIndex: 1200,
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                },
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-          )}
-
-          {/* Logo Section */}
-          <Box
+          <Typography
+            variant="h6"
             sx={{
-              display: "flex",
-              alignItems: "center",
-              padding: "0.5rem 1rem",
-              marginBottom: "0.2rem",
-              justifyContent: "center",
-              minHeight: "24px",
+              color: "rgb(8, 3, 31)",
+              visibility: open ? "visible" : "hidden",
+              whiteSpace: "nowrap",
+              fontWeight: "700",
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{
-                color: "#F7F6FB",
-                visibility: open ? "visible" : "hidden",
-                whiteSpace: "nowrap",
-                fontWeight: "700",
-              }}
-            >
-              پنل کاربری
-            </Typography>
-          </Box>
+            پنل کاربری
+          </Typography>
+        </Box>
 
-          {/* Sidebar Items */}
-          <List>
-            {sidebarItems.map((item) => (
-              <ListItem
-                key={item.label}
-                onClick={() => {
-                  handleItemClick(item.label);
-                  if (isMobile && open) {
-                    setOpen(false);
-                  }
-                }}
-                sx={{
-                  padding: "0.5rem 1rem",
-                  cursor: "pointer",
-                  marginBottom: "1.5rem",
-                  color:
-                    activeItem === item.label
-                      ? "#F7F6FB"
-                      : "rgb(161, 191, 241)",
-                  "&:hover": { color: "#F7F6FB" },
-                  position: "relative",
-                  height: "40px",
-                  ...(activeItem === item.label && {
-                    "&::before": {
-                      content: '""',
-                      position: "absolute",
-                      right: 0,
-                      width: "4px",
-                      height: "32px",
-                      backgroundColor: "rgb(212, 212, 212)",
-                    },
-                  }),
-                }}
-              >
-                <Box
-                  sx={{
-                    position: "absolute",
-                    right: "4.3rem",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    whiteSpace: "nowrap",
-                    zIndex: 1100,
-                  }}
-                >
-                  <ListItemText primary={item.label} />
-                </Box>
-                <ListItemIcon
-                  sx={{
-                    color: "inherit",
-                    minWidth: "40px",
-                    position: "absolute",
-                    right: "0.6rem",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    zIndex: 1100,
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-              </ListItem>
-            ))}
-          </List>
-
-          <Box sx={{ flexGrow: 1 }} />
-
-          <List>
+        {/* Sidebar Items */}
+        <List>
+          {sidebarItems.map((item) => (
             <ListItem
+              key={item.label}
+              onClick={() => handleItemClick(item.label)}
               sx={{
                 padding: "0.5rem 1rem",
-                color: "rgb(161, 191, 241)",
-                "&:hover": { color: "#F7F6FB" },
+                cursor: "pointer",
+                marginBottom: "1.5rem",
+                color:
+                  activeItem === item.label
+                    ? "rgb(126, 124, 134)"
+                    : "rgb(4, 32, 80)",
+                "&:hover": { color: " #F7F6FB" },
                 position: "relative",
                 height: "40px",
-              }}
-              onClick={() => {
-                if (isMobile && open) {
-                  setOpen(false);
-                }
+                ...(activeItem === item.label && {
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    right: 0,
+                    width: "4px",
+                    height: "32px",
+                    backgroundColor: "rgb(129, 121, 121)",
+                  },
+                }),
               }}
             >
               <Box
@@ -235,48 +164,91 @@ const Sidebar: React.FC = () => {
                   top: "50%",
                   transform: "translateY(-50%)",
                   whiteSpace: "nowrap",
-                  zIndex: 1100,
+                  visibility: open ? "visible" : "hidden",
                 }}
               >
-                <ListItemText
-                  primary="خروج"
-                  sx={{ textAlign: "right", cursor: "pointer" }}
-                />
+                <ListItemText primary={item.label} />
               </Box>
               <ListItemIcon
                 sx={{
                   color: "inherit",
                   minWidth: "40px",
                   position: "absolute",
-                  right: "0.6rem",
+                  right: "1.5rem",
                   top: "50%",
                   transform: "translateY(-50%)",
-                  zIndex: 1100,
                 }}
               >
-                <LogoutIcon />
+                {item.icon}
               </ListItemIcon>
             </ListItem>
-          </List>
-        </Drawer>
+          ))}
+        </List>
 
-        {/* Main Content */}
-        <Box
-          component="main"
-          sx={{
-            marginRight: isMobile ? 0 : open ? "224px" : "68px",
-            marginLeft: 0,
-            marginTop: headerHeight, 
-            padding: "1rem",
-            backgroundColor: "#F7F6FB",
-            height: `calc(100vh - ${headerHeight})`, 
-            overflow: "hidden", 
-            transition: isMobile ? "none" : "margin-right 0.3s ease-in-out",
-            position: "relative",
-            zIndex: 1000,
-            boxSizing: "border-box",
-          }}
-        >
+        <Box sx={{ flexGrow: 1 }} />
+
+        <List>
+          <ListItem
+            sx={{
+              padding: "0.5rem 1rem",
+              color: "rgb(4, 32, 80)",
+              "&:hover": { color: "#F7F6FB" },
+              position: "relative",
+              height: "40px",
+            }}
+            onClick={() => {
+              removeToken();
+              if (isMobile && open) {
+                setOpen(false);
+              }
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                right: "4.3rem",
+                top: "50%",
+                transform: "translateY(-50%)",
+                whiteSpace: "nowrap",
+                visibility: open ? "visible" : "hidden",
+              }}
+            >
+              <ListItemText
+                primary="خروج"
+                sx={{ textAlign: "right", cursor: "pointer" }}
+              />
+            </Box>
+            <ListItemIcon
+              sx={{
+                color: "inherit",
+                minWidth: "40px",
+                position: "absolute",
+                right: "1.5rem",
+                top: "50%",
+                transform: "translateY(-50%)",
+              }}
+            >
+              <LogoutIcon />
+            </ListItemIcon>
+          </ListItem>
+        </List>
+      </Drawer>
+
+      {/* Main Content */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: "1rem",
+          backgroundColor: "rgb(255, 255, 255)",
+          marginRight: isMobile ? 0 : `${sidebarWidth}px`,
+          transition: "margin-right 0.3s ease-in-out",
+          boxSizing: "border-box",
+          position: "relative",
+        }}
+      >
+        {/* Mobile Toggle Button */}
+        {isMobile && (
           <IconButton
             onClick={handleDrawerToggle}
             sx={{
@@ -284,27 +256,17 @@ const Sidebar: React.FC = () => {
               top: "1rem",
               right: "1rem",
               color: "#057abe",
-              backgroundColor: "#F7F6FB",
-              zIndex: 1300,
-              "&:hover": {
-                backgroundColor: "#F7F6FB",
-                boxShadow: "none",
-              },
-              "&:focus, &:active": {
-                backgroundColor: "#F7F6FB",
-                boxShadow: "none",
-                outline: "none",
-              },
-              "& .MuiTouchRipple-root": {
-                display: "none",
-              },
+              backgroundColor: "rgb(111, 189, 234)",
+              "&:hover": { backgroundColor: "#e0e0e0" },
+              zIndex: 1200, // Ensure it appears above other content
             }}
           >
-            {open ? <CloseIcon /> : <MenuIcon />}
+            <MenuIcon />
           </IconButton>
-        </Box>
+        )}
+        {children}
       </Box>
-    </>
+    </Box>
   );
 };
 
