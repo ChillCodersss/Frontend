@@ -42,7 +42,7 @@ const Landing: React.FC = () => {
     const banner_p = "دوره‌های اختصاصی مشاوره تحصیلی، همراه با ارتباط مستقیم و روزانه با مشاور شخصی شما.";
     const chat_promo_title = "چت آنلاین و ارتباط مستقیم با مشاور";
     const chat_promo_text = `ارتباط بدون واسطه با مشاور، امکان دریافت راهنمایی روزانه، رفع اشکال در برنامه‌ریزی
-                            و حتی دریافت انگیزه‌بخشی شخصی، همه از طریق چت اختصاصی در طول مسیر تحصیل`;
+                            و حتی دریافت انگیزه‌بخشی شخصی، همه از طریق چت اختصاصی در طول مسیر تحصیل.`;
     const recruitment_promo_title = "به جمع مشاوران ما بپیوندید";
     const recruitment_promo_text = `اگر تجربه مشاوره تحصیلی دارید و به پیشرفت دانش‌آموزان علاقه‌مندید، مشاوریوم جای شماست!
                                     با ثبت‌نام به عنوان مشاور، می‌توانید با دانش‌آموزان پرتلاش کار کنید،
@@ -148,7 +148,7 @@ const Landing: React.FC = () => {
             >
                 Header
             </header>
-            {/* <Header></Header> */}
+            {/* <Header isWhiteMode=true/> */}
             <main>
                 <section className="l-banner">
                     <div className="l-banner-bg">
@@ -267,6 +267,9 @@ const Landing: React.FC = () => {
                                         "translate(-50%,-50%) translateY(-10px)",
                                 }}
                             />
+                            <div className="l-row3-img-wrapper">
+                                <img className="l-row3-img"/>
+                            </div>
                         </Box>
                     </Box>
                 </section>
@@ -326,6 +329,9 @@ const Landing: React.FC = () => {
                                         "translate(50%,-50%)",
                                 }}
                             />
+                            <div className="l-row4-img-wrapper">
+                                <img className="l-row4-img"/>
+                            </div>
                         </Box>
                     </Box>
                 </section>
