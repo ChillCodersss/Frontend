@@ -63,7 +63,7 @@ const CounselorSwiper = () => {
   const fetchCounselors = async () => {
     try {
       const response = await axios.get<ApiResponse>(
-        "http://localhost:8080/api/Counselor/GetList",
+        "http://62.60.213.13/api/Counselor/GetList",
         {
           params: { PageSize: 5, PageIndex: 1 },
         }
