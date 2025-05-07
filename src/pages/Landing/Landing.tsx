@@ -9,7 +9,7 @@ import SecondaryButton from "@/components/common/SecondaryButton";
 import CounselorSwiper from "@/components/Landing/Swiper.tsx";
 import Footer from "@/components/Landing/Footer";
 import RoadMap from "@/components/Landing/RoadMap";
-// import Header from "@/components/Header/Header";
+import Header from "@/components/Header/Header";
 import Logo from "@/assets/landing_banner_logo.png";
 import './Landing.css';
 
@@ -142,15 +142,15 @@ const Landing: React.FC = () => {
 
     return (
         <div style={{width: "100%",}}>
-            <header style={{
+            {/* <header style={{
                 backgroundColor: "gray", height: "70px", 
                 // position: "sticky", top: "0px",
                 display: "flex", alignItems: "center", justifyContent:"center"
                 }}
             >
                 Header
-            </header>
-            {/* <Header isWhiteMode=true/> */}
+            </header> */}
+            <Header isWhiteMode={true}/>
             <main>
                 <section className="l-banner">
                     <div className="l-banner-bg">
