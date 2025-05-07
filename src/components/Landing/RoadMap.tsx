@@ -5,7 +5,9 @@ import { Stepper, Step, StepLabel, useMediaQuery } from '@mui/material';
 // import VideoLabelIcon from '@mui/icons-material/VideoLabel';
 import StepConnector, { stepConnectorClasses } from '@mui/material/StepConnector';
 import { StepIconProps } from '@mui/material/StepIcon';
-import testLogo from "@/assets/LogoG.png";
+import step1 from "@/assets/select_counselor.jpg";
+import step2 from "@/assets/submit_request.jpg";
+import step3 from "@/assets/start_study.jpg";
 import './RoadMap.css'
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
@@ -90,25 +92,28 @@ function ColorlibStepIcon(props: StepIconProps) {
     );
 }
 
-const steps = [
-    {
-        label: "1", src: `${testLogo}`, text: "انتخاب مشاور شخصی",
-    },
-    {
-        label: "2", src: `${testLogo}`, text: "ثبت درخواست و ثبت‌نام دوره",
-    },
-    {
-        label: "3", src: `${testLogo}`, text: "شروع مشاوره تخصصی و دریافت برنامه تحصیلی",
-    }
-];
-
 export default function RoadMap() {
     const small_screen = useMediaQuery("(max-width: 600px)");
+
+    let steps = [
+        {
+            label: "1", src: step1, text: "انتخاب مشاور شخصی",
+        },
+        {
+            label: "2", src: step2, text: "ثبت درخواست و ثبت‌نام دوره",
+        },
+        {
+            label: "3", src: step3, text: "شروع مشاوره تخصصی و دریافت برنامه تحصیلی",
+        }
+    ];
+
+    if (!small_screen)
+        steps = steps.reverse();
 
     return (
             !small_screen ? 
             <Stepper alternativeLabel activeStep={3} connector={<ColorlibConnector/>} sx={{width: "100%"}}>
-                {steps.reverse().map((step, index) => (
+                {steps.map((step, index) => (
                     <Step key={index}>
                         <StepLabel StepIconComponent={ColorlibStepIcon}>
                             <div className='rm-step-label-wrapper'>
