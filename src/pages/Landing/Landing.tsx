@@ -6,12 +6,13 @@ import { useNavigate } from "react-router";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import CounselorSwiper from "@/components/Landing/Swiper.tsx";
 import Footer from "@/components/Landing/Footer";
+import RoadMap from "@/components/Landing/RoadMap";
+// import Header from "@/components/Header/Header";
 import './Landing.css';
 
 
 const Landing: React.FC = () => {
     const [firstRowVisible, setFirstRowVisible] = useState(false);
-    // const [lastRowVisible, setLastRowVisible] = useState(false);
     const [firstTextVisible, setFirstTextVisible] = useState(false);
     const [secondTextVisible, setSecondTextVisible] = useState(false);
     const small_screen = useMediaQuery("(min-width: 600px) and (max-width: 749px)");
@@ -25,11 +26,6 @@ const Landing: React.FC = () => {
         in: firstRowVisible,
     };
 
-    // const card_transition_props = {
-    //     timeout: 600,     // timeout in millisecond
-    //     in: lastRowVisible,
-    // };
-
     const fade_sx = {
         timeout: 600,     // timeout in millisecond
         in: true,
@@ -39,13 +35,16 @@ const Landing: React.FC = () => {
                             و با استفاده از طراحان گرافیک است، چاپگرها ون و سطرآنچنان که لازم است،
                             و برای شرایط فعلی تکنولوژی مورد نیاز، و متخصصان را می طلبد.`;
     const our_counselor_marquee_text = "مشاوران ما";
-    const our_counselor_motto_text = "همین امروز مشاور خود را انتخاب کن و اولین قدم برای آینده‌ی روشن‌تر را بردار!";
+    const our_counselor_motto_text = "همین امروز مشاور خودت رو انتخاب کن و اولین قدم برای آینده‌ی روشن‌تر رو بردار!";
     // const why_our_site_marquee_text = "چرا مشاوریوم؟";
     const banner_h = "تحصیل بهتر، با همراهی مشاوران حرفه‌ای";
     const banner_p = "دوره‌های اختصاصی مشاوره تحصیلی، همراه با ارتباط مستقیم و روزانه با مشاور اختصاصی شما.";
     const chat_promo_title = "چت آنلاین و ارتباط مستقیم با مشاور";
     const chat_promo_text = `ارتباط بدون واسطه با مشاور، امکان دریافت راهنمایی روزانه، رفع اشکال در برنامه‌ریزی
                             و حتی دریافت انگیزه‌بخشی شخصی، همه از طریق چت اختصاصی در طول مسیر تحصیل`;
+    const road_map_header = "چطور با مشاوریوم شروع کنم؟";
+    const road_map_text = "تمام مراحل فقط در چند دقیقه و کاملاً آنلاین!";
+
     const firstRowRef = useRef(null);
 
     useEffect(() => {
@@ -64,23 +63,6 @@ const Landing: React.FC = () => {
 
         observer.observe(firstRow[0]);
     }, []);
-
-    // useEffect(() => {
-    //     const lastRow = document.querySelectorAll(".l-last-row");
-
-    //     const observer = new IntersectionObserver((entries) => {
-    //         const entry = entries[0];
-
-    //         if (entry.isIntersecting) {
-    //             setLastRowVisible(true);
-    //             observer.unobserve(lastRow[0]);
-    //         }
-    //     }, {
-    //         threshold: 0.5,
-    //     });
-
-    //     observer.observe(lastRow[0]);
-    // }, []);
 
     useEffect(() => {
         const firstText = document.querySelectorAll(`[id="firstText"]`);
@@ -134,41 +116,6 @@ const Landing: React.FC = () => {
         paper_sx = {...paper_sx, ...medium_screen_paper_sx};
     }
 
-    // const left_card_sx = {
-    //     position: "absolute",
-    //     left: (not_mobile) ? "15%" : "unset",
-    //     bottom: (not_mobile) ? "unset" : "50px",
-    //     height: (not_mobile) ? "30vw" : "230px",
-    //     width: (not_mobile) ? "30vw" : "230px",
-    //     boxShadow: "5",
-    //     fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
-    //     borderRadius: {xs: "6px", sm: "8px", md: "8px"},
-    //     "&:hover": {
-    //         height: (not_mobile) ? "32vw" : "240px",
-    //         width: (not_mobile) ? "32vw" : "240px",
-    //         boxShadow: "7",
-    //     }
-    // };
-
-    // const right_card_sx = {
-    //     position: "absolute",
-    //     right: (not_mobile) ? "15%" : "unset",
-    //     bottom: (not_mobile) ? "unset" : "50px",
-    //     height: (not_mobile) ? "30vw" : "230px",
-    //     width: (not_mobile) ? "30vw" : "230px",
-    //     boxShadow: "5",
-    //     fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
-    //     borderRadius: {xs: "6px", sm: "8px", md: "8px"},
-    //     "&:hover": {
-    //         height: (not_mobile) ? "32vw" : "240px",
-    //         width: (not_mobile) ? "32vw" : "240px",
-    //         boxShadow: "7",
-    //     }
-    // };
-
-    // const text_max_width = "260px";
-    // const text_font_size = "1rem";
-
     const description_box_sx = {
         display: "flex",
         justifyContent: "center",
@@ -196,11 +143,16 @@ const Landing: React.FC = () => {
             >
                 Header
             </header>
+            {/* <Header></Header> */}
             <main>
                 <section className="l-banner">
                     <div className="l-banner-bg"/>
-                    <h1 className="l-banner-h">{banner_h}</h1>
-                    <p className="l-banner-p">{banner_p}</p>
+                    <Fade {...fade_sx}>
+                        <h1 className="l-banner-h">{banner_h}</h1>
+                    </Fade>
+                    <Fade {...fade_sx}>
+                            <p className="l-banner-p">{banner_p}</p>
+                    </Fade>
                 </section>
                 <section id={"firstRow"} ref={firstRowRef} className="l-container l-first-row">
                     <Grow {...paper_transition_props} timeout={paper_transition_props.timeout + 800} >
@@ -219,15 +171,17 @@ const Landing: React.FC = () => {
                         </Paper>
                     </Grow>
                 </section>
-                <section id={"RoadMap"} className="l-container">
-
+                <section id={"RoadMap"} className="l-container l-road-map-container">
+                    <h2 className="l-road-map-header">{road_map_header}</h2>
+                    <p className="l-road-map-text">{road_map_text}</p>
+                    <RoadMap/>
                 </section>
                 {/* <section id="l-marquee1">
                     <Marquee count={4} text={our_counselor_marquee_text}/>
                 </section> */}
                 <section className="l-container">
                     <div
-                        className="l-swiper-bg-wrapper"
+                        className="l-swiper-bg-wrapper l-swiper-container"
                     >
                         {/* <div
                             className="l-swiper-bg"
@@ -368,22 +322,6 @@ const Landing: React.FC = () => {
                         </Box>
                     </Box>
                 </section>
-                {/* <section className="l-container l-last-row">
-                    <Grow {...card_transition_props} timeout={card_transition_props.timeout + 400}>
-                        <Card sx={left_card_sx}>
-                            <CardActionArea>
-
-                            </CardActionArea>
-                        </Card>
-                    </Grow>
-                    <Grow {...card_transition_props}>
-                        <Card sx={right_card_sx}>
-                            <CardActionArea>
-
-                            </CardActionArea>
-                        </Card>
-                    </Grow>
-                </section> */}
             </main>
             <Footer/>
         </div>

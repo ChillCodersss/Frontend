@@ -20,17 +20,7 @@
     align-items: center;
     padding: 30px 0px;
     row-gap: 20px;
-    background-color: #f9fafb;
-}
-
-.l-last-row {
-    position: relative;
-    display: flex;
-    height: 610px;
-    flex-direction: column;
-    align-items: center;
-    padding: 50px 0px;
-    row-gap: 50px;
+    background-color: #e6e6e6;
 }
 
 .l-banner {
@@ -77,6 +67,29 @@
     text-align: center;
 }
 
+.l-road-map-container {
+    overflow: hidden;
+    height: fit-content;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 30px;
+}
+
+.l-road-map-header {
+    text-align: center;
+    direction: rtl;
+    margin-bottom: 30px;
+}
+
+.l-road-map-text {
+    text-align: center;
+    direction: rtl;
+    margin-bottom: 30px;
+}
+
 .l-row3 {
     width: 100%;
     box-sizing: border-box;
@@ -102,6 +115,11 @@
     color: #8a8a8a;
 }
 
+.l-swiper-container {
+    padding-bottom: 50px;
+    min-height: 580px;
+}
+
 .l-swiper-bg-wrapper {
     position: relative;
     /* height: calc(100vh - var(--l-marquee-height)); */
@@ -110,8 +128,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* background-color: #f9fafb; */
-    background-image: linear-gradient(to left, #ffe78f, #fff3ca);
+    background-color: #e6e6e6;
+    /* background-image: linear-gradient(to left, #ffe78f, #fff3ca); */
     /* background-image: linear-gradient(to left, #ffad42, #ffda54); */
 }
 
@@ -214,13 +232,14 @@
         column-gap: 10px;
     }
 
-    .l-last-row {
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        column-gap: 150px;
-        padding: 80px 0px;
-        height: calc(30vw + 160px);
+    .l-road-map-container {
+        /* height: 100vh; */
+        padding: 0px;
+    }
+
+    .l-swiper-container {
+        padding-left: calc(10% - 20px);
+        padding-right: calc(10% - 20px);
     }
 
     .l-swiper-bg {
@@ -276,13 +295,9 @@
         column-gap: 30px;
     }
 
-    .l-last-row {
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        column-gap: 150px;
-        padding: 150px 50px;
-        height: (30vw + 300px);
+    .l-swiper-container {
+        padding-left: calc(5% - 20px);
+        padding-right: calc(5% - 20px);
     }
 
     .l-swiper-bg {
@@ -303,6 +318,10 @@
         left: auto;
         right: 0;
         transform: translateX(50%) translateX(calc(7.29167*1vw));
+    }
+
+    .l-road-map-container {
+        padding: 0px 5%;
     }
 }
 
