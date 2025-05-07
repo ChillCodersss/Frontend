@@ -27,3 +27,16 @@ export const PTableHeadCellStyle: SxProps = {
   textAlign: "center",
   padding: "8px",
 };
+
+export const PPaginationStyle: SxProps = {
+  "& .MuiPaginationItem-root": {
+    color: " #057abe",
+    "&.Mui-selected": {
+      backgroundColor: " #057abe",
+      color: "white",
+    },
+    "&.MuiPaginationItem-previousNext": {
+      transform: "rotate(180deg)",
+    },
+  },
+};
