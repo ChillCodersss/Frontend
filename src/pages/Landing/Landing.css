@@ -243,6 +243,7 @@
     height: auto;
     top: 0;
     left: 0;
+    border-radius: 13px;
 }
 
 .l-row4-img-wrapper {
@@ -262,6 +263,7 @@
     height: auto;
     top: 0;
     left: 0;
+    border-radius: 13px;
 }
 
 @media (prefers-reduced-motion: no-preference) {

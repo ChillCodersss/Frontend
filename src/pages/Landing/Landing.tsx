@@ -1,5 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Box, Paper, Grow, useMediaQuery, Fade } from "@mui/material";
+import React, { useEffect, useState } from "react";
+// import { useRef } from "react";
+import { Box, useMediaQuery, Fade } from "@mui/material";
+// import { Paper, Grow } from "@mui/material";
 import { useNavigate } from "react-router";
 // import { Card, CardActionArea } from "@mui/material";
 // import Marquee from "@/components/Landing/Marquee";
@@ -13,7 +15,7 @@ import './Landing.css';
 
 
 const Landing: React.FC = () => {
-    const [firstRowVisible, setFirstRowVisible] = useState(false);
+    // const [firstRowVisible, setFirstRowVisible] = useState(false);
     const [firstTextVisible, setFirstTextVisible] = useState(false);
     const [secondTextVisible, setSecondTextVisible] = useState(false);
     const small_screen = useMediaQuery("(min-width: 600px) and (max-width: 749px)");
@@ -22,19 +24,19 @@ const Landing: React.FC = () => {
     // const not_mobile = small_screen || medium_screen;
     // const reduced_motion = useMediaQuery("(prefers-reduced-motion)");
 
-    const paper_transition_props = {
-        timeout: 600,     // timeout in millisecond
-        in: firstRowVisible,
-    };
+    // const paper_transition_props = {
+    //     timeout: 600,     // timeout in millisecond
+    //     in: firstRowVisible,
+    // };
 
     const fade_sx = {
         timeout: 600,     // timeout in millisecond
         in: true,
     }
 
-    const test_text_fa =   `لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، 
-                            و با استفاده از طراحان گرافیک است، چاپگرها ون و سطرآنچنان که لازم است،
-                            و برای شرایط فعلی تکنولوژی مورد نیاز، و متخصصان را می طلبد.`;
+    // const test_text_fa =   `لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، 
+    //                         و با استفاده از طراحان گرافیک است، چاپگرها ون و سطرآنچنان که لازم است،
+    //                         و برای شرایط فعلی تکنولوژی مورد نیاز، و متخصصان را می طلبد.`;
     const our_counselor_marquee_text = "مشاوران ما";
     const our_counselor_motto_text = "همین امروز مشاور خودت رو انتخاب کن و اولین قدم برای آینده‌ی روشن‌تر رو بردار!";
     // const why_our_site_marquee_text = "چرا مشاوریوم؟";
@@ -50,24 +52,24 @@ const Landing: React.FC = () => {
     const road_map_header = "چطور با مشاوریوم شروع کنم؟";
     const road_map_text = "تمام مراحل فقط در چند دقیقه و کاملاً آنلاین!";
 
-    const firstRowRef = useRef(null);
+    // const firstRowRef = useRef(null);
 
-    useEffect(() => {
-        const firstRow = document.querySelectorAll(".l-first-row");
+    // useEffect(() => {
+    //     const firstRow = document.querySelectorAll(".l-first-row");
 
-        const observer = new IntersectionObserver((entries) => {
-            const entry = entries[0];
+    //     const observer = new IntersectionObserver((entries) => {
+    //         const entry = entries[0];
 
-            if (entry.isIntersecting) {
-                setFirstRowVisible(true);
-                observer.unobserve(firstRow[0]);
-            }
-        }, {
-            threshold: 0.5,
-        });
+    //         if (entry.isIntersecting) {
+    //             setFirstRowVisible(true);
+    //             observer.unobserve(firstRow[0]);
+    //         }
+    //     }, {
+    //         threshold: 0.5,
+    //     });
 
-        observer.observe(firstRow[0]);
-    }, []);
+    //     observer.observe(firstRow[0]);
+    // }, []);
 
     useEffect(() => {
         const firstText = document.querySelectorAll(`[id="firstText"]`);
@@ -161,7 +163,7 @@ const Landing: React.FC = () => {
                             <p className="l-banner-p">{banner_p}</p>
                     </Fade>
                 </section>
-                <section id={"firstRow"} ref={firstRowRef} className="l-container l-first-row">
+                {/* <section id={"firstRow"} ref={firstRowRef} className="l-container l-first-row">
                     <Grow {...paper_transition_props} timeout={paper_transition_props.timeout + 800} >
                         <Paper elevation={4} sx={ paper_sx }>
                             {test_text_fa}
@@ -177,7 +179,7 @@ const Landing: React.FC = () => {
                             {test_text_fa}
                         </Paper>
                     </Grow>
-                </section>
+                </section> */}
                 <section id={"RoadMap"} className="l-container l-road-map-container">
                     <h2 className="l-road-map-h">{road_map_header}</h2>
                     <p className="l-road-map-p">{road_map_text}</p>
