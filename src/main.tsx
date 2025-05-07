@@ -12,7 +12,8 @@ import CounselorProfile from "./pages/CounselorProfile";
 import OurCounselor from "./pages/OurCounselor";
 import CounselorDisplay from "./pages/CounselorDisplay";
 import Sidebar from "./components/Sidebar/Sidebar";
-import Landing from "./pages/Landing";
+import Landing from "./pages/Landing/Landing";
+import ScrollToTop from "./components/ScrollToTop";
 import StudentDisplayPopup from "./components/StudentDisplay/StudentDisplay";
 import StudentList from "./pages/CounselorRequests";
 import Payments from "./pages/Payments/Payments";
@@ -22,6 +23,7 @@ import StudentProfile from "./pages/StudentProfile";
 createRoot(document.getElementById("root")!).render(
   //<StrictMode>
   <BrowserRouter>
+    <ScrollToTop/>
     <Routes>
       <Route path="/recruitment" element={<Recruitment />} />
       <Route path="/Signup" element={<Signup />} />
@@ -43,6 +45,7 @@ createRoot(document.getElementById("root")!).render(
       <Route path="/Payments" element={<Payments />} />
       <Route path="/dashboard" element={<StudentList></StudentList>} />
       <Route path="/StudentProfile" element={<StudentProfile />} />
+      <Route path="/" element={<Landing></Landing>} />
     </Routes>
   </BrowserRouter>
   //</StrictMode>

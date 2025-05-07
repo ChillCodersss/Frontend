@@ -1,4 +1,4 @@
-import { useMediaQuery } from '@mui/material';
+// import { useMediaQuery } from '@mui/material';
 import './Marquee.css'
 
 interface Props {
@@ -6,15 +6,15 @@ interface Props {
     text: string;
 }
 
-function Marquee({ count, text }: Props) {
-    const reduced_motion = useMediaQuery("(prefers-reduced-motion)");
+function Marquee({ text }: Props) {
+    // const reduced_motion = useMediaQuery("(prefers-reduced-motion)");
 
-    const items = Array.from(".".repeat(count));
+    // const items = Array.from(".".repeat(count));
     
     return (
         <>
             <div className="marquee-wrapper">
-                { reduced_motion ? 
+                {/* { reduced_motion ? 
                     <div className="marquee-item">
                         <p>{text}</p>
                     </div>
@@ -31,7 +31,10 @@ function Marquee({ count, text }: Props) {
                             <p>{text}</p>
                         </div>
                     )
-                }
+                } */}
+                <div className="marquee-item">
+                    <p>{text}</p>
+                </div>
             </div>
         </>
     )
