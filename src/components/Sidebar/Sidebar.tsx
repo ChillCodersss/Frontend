@@ -59,7 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     }
   };
 
-  const headerHeight = isMobile ? "56px" : "69px";
+  const headerHeight = isMobile ? "58px" : "64px";
   const sidebarWidth = open ? 204 : 68;
 
   return (

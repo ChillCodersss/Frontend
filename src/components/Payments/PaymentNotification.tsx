@@ -54,7 +54,7 @@ export const NotificationBox = (payment: PaymentsItemProps) => {
         <Typography sx={NotificationTextStyle}>{text}</Typography>
         <ConfirmButton
           name="پرداخت"
-          width={"180px"}
+          width={"150px"}
           onClick={handlePaymentClick}
         />
       </Box>

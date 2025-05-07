@@ -80,7 +80,7 @@ const Payments = () => {
               {payments
                 .filter((payment) => !payment.isPaid)
                 .map((payment) => (
-                  <NotificationBox {...payment} />
+                  <NotificationBox key={payment.id} {...payment} />
                 ))}
               <Box sx={PTableBoxStyle}>
                 <TableContainer sx={PITableContainerStyle}>
