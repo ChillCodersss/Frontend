@@ -11,10 +11,10 @@ function Footer() {
     const post_address = "کد پستــی: ۱۳۱۱۴-۱۶۸۴۶";
 
     const footerLinkItems = [
+        {href: "./OurCounselor", text: "مشاوران ما"},
+        {href: "./", text: "خدمات"},
         {href: "./recruitment", text: "استخدام"},
         {href: "./", text: "درباره ما"},
-        {href: "./", text: "خدمات"},
-        {href: "./OurCounselor", text: "مشاوران ما"},
     ];
 
     return (
