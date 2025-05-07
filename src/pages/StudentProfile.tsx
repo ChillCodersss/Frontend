@@ -59,6 +59,9 @@ const StudentProfile = () => {
   const [error, setError] = useState<string | null>(null);
   const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
 
+  // Static birthdate
+  const staticBirthDate = "2000-01-01";
+
   const [initialFormData, setInitialFormData] = useState<FormData>({
     id: 0,
     firstName: "",
@@ -70,14 +73,17 @@ const StudentProfile = () => {
     aboutMe: "",
     studentPhoneNumber: "",
     parentPhoneNumber: "",
-    birthDate: "",
+    birthDate: staticBirthDate,
     schoolName: "",
     province: "",
     profilePicUrl: "",
     profileImage: "",
   });
 
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState<FormData>({
+    ...initialFormData,
+    birthDate: staticBirthDate,
+  });
 
   // Function to check if there are any changes
   const hasChanges = () => {
@@ -126,7 +132,7 @@ const StudentProfile = () => {
           aboutMe: data.value.aboutMe || "",
           studentPhoneNumber: data.value.studentPhoneNumber || "",
           parentPhoneNumber: data.value.parentPhoneNumber || "",
-          birthDate: data.value.birthDate || "",
+          birthDate: staticBirthDate, // Use static birthdate
           schoolName: data.value.schoolName || "",
           province: data.value.province || "",
           profilePicUrl: data.value.profilePicUrl || "",
@@ -214,7 +220,6 @@ const StudentProfile = () => {
         return;
       }
 
-      // تبدیل رشته به عدد برای GradeLevel
       const gradeLevelMap = {
         دهم: 1,
         یازدهم: 2,
@@ -226,16 +231,13 @@ const StudentProfile = () => {
       const majorValue = formData.major ? reverseMajorMap[formData.major] : 0;
       const lastGradeGPAValue = parseFloat(formData.lastGradeGPA) || 0.0;
 
-      // فرمت تاریخ به ISO-8601
-      const formattedBirthDate = formData.birthDate
-        ? new Date(formData.birthDate).toISOString()
-        : new Date().toISOString();
+      // Use static birthdate in ISO-8601 format
+      const formattedBirthDate = new Date(staticBirthDate).toISOString();
 
-      // ساخت آبجکت داده‌ها مطابق با انتظارات سرور
       const requestData = {
         Id: formData.id,
         Email: formData.email || "",
-        GradeLevel: gradeLevelValue, // ارسال به صورت عددی
+        GradeLevel: gradeLevelValue,
         Major: majorValue,
         LastGradeGPA: lastGradeGPAValue,
         AboutMe: formData.aboutMe || "",
@@ -251,7 +253,7 @@ const StudentProfile = () => {
       const formDataPayload = new FormData();
       formDataPayload.append("Id", formData.id.toString());
       formDataPayload.append("Email", requestData.Email);
-      formDataPayload.append("GradeLevel", requestData.GradeLevel.toString()); // به صورت رشته
+      formDataPayload.append("GradeLevel", requestData.GradeLevel.toString());
       formDataPayload.append("Major", requestData.Major.toString());
       formDataPayload.append(
         "LastGradeGPA",
@@ -308,7 +310,6 @@ const StudentProfile = () => {
       console.log("Update response:", data);
 
       if (data.isSuccess) {
-        // به‌روزرسانی تصویر پروفایل
         let profilePicUrl = formData.profileImage;
         if (data.value?.profilePicUrl) {
           try {
@@ -333,7 +334,6 @@ const StudentProfile = () => {
           }
         }
 
-        // به‌روزرسانی state
         setFormData((prev) => ({
           ...prev,
           profileImage: profilePicUrl,
@@ -346,7 +346,6 @@ const StudentProfile = () => {
 
         setProfilePicFile(null);
         setIsEditMode(false);
-      } else {
       }
     } catch (error) {
       console.error("خطا در ذخیره پروفایل:", error);
@@ -355,13 +354,12 @@ const StudentProfile = () => {
 
   const handleCancel = () => {
     setIsEditMode(false);
-    setFormData(initialFormData);
+    setFormData({ ...initialFormData, birthDate: staticBirthDate });
     setProvinceInputValue("");
     setProvinceOptions([]);
     setProfilePicFile(null);
   };
 
-  // Dummy onChange handler for read-only fields
   const noopChange = () => {};
 
   useEffect(() => {
@@ -422,15 +420,15 @@ const StudentProfile = () => {
 
   return (
     <>
-      <Header></Header>
+      <Header />
       <Box
         sx={{
           display: "flex",
           minHeight: "100vh",
           backgroundImage: "url('/src/assets/ProfileBackground.png')",
-          backgroundSize: "100% 100%", // Ensures the wallpaper fits the page size
+          backgroundSize: "100% 100%",
           backgroundPosition: "center",
-          backgroundRepeat: "no-repeat", // Prevents tiling of the image
+          backgroundRepeat: "no-repeat",
           direction: "rtl",
         }}
       >
@@ -441,10 +439,10 @@ const StudentProfile = () => {
             padding: isMobile
               ? "0px 16px 24px 16px"
               : isTablet
-              ? "0px px 36px 24px"
+              ? "0px 36px 24px"
               : "0px 40px 40px 40px",
-            backgroundColor: "rgba(255, 255, 255, 0.3)", // Increased opacity for more blur effect
-            backdropFilter: "blur(0px)", // Further increased blur effect
+            backgroundColor: "rgba(255, 255, 255, 0.3)",
+            backdropFilter: "blur(0px)",
             border: "1px solid rgba(255, 255, 255, 0.3)",
             boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
             position: "relative",
@@ -933,7 +931,7 @@ const StudentProfile = () => {
                         borderWidth: "2px",
                       },
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                        borderColor: " #1976d2",
+                        borderColor: "#1976d2",
                         borderWidth: "2.3px",
                       },
                     },

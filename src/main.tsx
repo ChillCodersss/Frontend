@@ -17,6 +17,7 @@ import StudentDisplayPopup from "./components/StudentDisplay/StudentDisplay";
 import StudentList from "./pages/CounselorRequests";
 import Payments from "./pages/Payments/Payments";
 import ChangePassword from "./components/Header/ChangePassword";
+import StudentProfile from "./pages/StudentProfile";
 
 createRoot(document.getElementById("root")!).render(
   //<StrictMode>
@@ -36,12 +37,12 @@ createRoot(document.getElementById("root")!).render(
         path="/OurCounselor/CounselorPage/:id"
         element={<CounselorDisplay />}
       />
-      <Route path="/sidebar" element={<Sidebar />} />
       <Route path="/Landing" element={<Landing></Landing>} />
       <Route path="/StudentDisplayPopup" element={<StudentDisplayPopup />} />
       <Route path="/Landing" element={<Landing></Landing>} />
       <Route path="/Payments" element={<Payments />} />
       <Route path="/dashboard" element={<StudentList></StudentList>} />
+      <Route path="/StudentProfile" element={<StudentProfile />} />
     </Routes>
   </BrowserRouter>
   //</StrictMode>
