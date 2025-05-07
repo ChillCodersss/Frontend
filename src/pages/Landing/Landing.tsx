@@ -8,6 +8,7 @@ import CounselorSwiper from "@/components/Landing/Swiper.tsx";
 import Footer from "@/components/Landing/Footer";
 import RoadMap from "@/components/Landing/RoadMap";
 // import Header from "@/components/Header/Header";
+import Logo from "@/assets/landing_banner_logo.png";
 import './Landing.css';
 
 
@@ -38,10 +39,14 @@ const Landing: React.FC = () => {
     const our_counselor_motto_text = "همین امروز مشاور خودت رو انتخاب کن و اولین قدم برای آینده‌ی روشن‌تر رو بردار!";
     // const why_our_site_marquee_text = "چرا مشاوریوم؟";
     const banner_h = "تحصیل بهتر، با همراهی مشاوران حرفه‌ای";
-    const banner_p = "دوره‌های اختصاصی مشاوره تحصیلی، همراه با ارتباط مستقیم و روزانه با مشاور اختصاصی شما.";
+    const banner_p = "دوره‌های اختصاصی مشاوره تحصیلی، همراه با ارتباط مستقیم و روزانه با مشاور شخصی شما.";
     const chat_promo_title = "چت آنلاین و ارتباط مستقیم با مشاور";
     const chat_promo_text = `ارتباط بدون واسطه با مشاور، امکان دریافت راهنمایی روزانه، رفع اشکال در برنامه‌ریزی
                             و حتی دریافت انگیزه‌بخشی شخصی، همه از طریق چت اختصاصی در طول مسیر تحصیل`;
+    const recruitment_promo_title = "به جمع مشاوران ما بپیوندید";
+    const recruitment_promo_text = `اگر تجربه مشاوره تحصیلی دارید و به پیشرفت دانش‌آموزان علاقه‌مندید، مشاوریوم جای شماست!
+                                    با ثبت‌نام به عنوان مشاور، می‌توانید با دانش‌آموزان پرتلاش کار کنید،
+                                    درآمد کسب کنید و تاثیر واقعی بسازید.`;
     const road_map_header = "چطور با مشاوریوم شروع کنم؟";
     const road_map_text = "تمام مراحل فقط در چند دقیقه و کاملاً آنلاین!";
 
@@ -146,7 +151,9 @@ const Landing: React.FC = () => {
             {/* <Header></Header> */}
             <main>
                 <section className="l-banner">
-                    <div className="l-banner-bg"/>
+                    <div className="l-banner-bg">
+                        <img className="l-banner-bg-img" src={Logo}/>
+                    </div>
                     <Fade {...fade_sx}>
                         <h1 className="l-banner-h">{banner_h}</h1>
                     </Fade>
@@ -172,8 +179,8 @@ const Landing: React.FC = () => {
                     </Grow>
                 </section>
                 <section id={"RoadMap"} className="l-container l-road-map-container">
-                    <h2 className="l-road-map-header">{road_map_header}</h2>
-                    <p className="l-road-map-text">{road_map_text}</p>
+                    <h2 className="l-road-map-h">{road_map_header}</h2>
+                    <p className="l-road-map-p">{road_map_text}</p>
                     <RoadMap/>
                 </section>
                 {/* <section id="l-marquee1">
@@ -278,8 +285,8 @@ const Landing: React.FC = () => {
                         >
                             <Fade {...fade_sx} in={secondTextVisible}>
                                 <Box sx={text_box_sx}>
-                                    <h1 className="l-text-box-h">لورم ایپسوم متن ساختگی نامفهوم از صنعت چاپ</h1>
-                                    <p id={"secondText"} className="l-text-box-p">{test_text_fa}</p>
+                                    <h1 className="l-text-box-h">{recruitment_promo_title}</h1>
+                                    <p id={"secondText"} className="l-text-box-p">{recruitment_promo_text}</p>
                                     <SecondaryButton
                                         name="استخدام"
                                         borderRadius={{xs: "6px", sm: "8px", md: "8px"}}

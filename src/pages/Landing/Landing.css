@@ -53,11 +53,23 @@
     z-index: -2;
 }
 
+.l-banner-bg-img {
+    position: absolute;
+    height: 80%;
+    aspect-ratio: 1;
+    z-index: -1;
+    left: 0;
+    transform: translateX(-40%);
+    opacity: 10%;
+}
+
+
 .l-banner-h {
     direction: rtl;
     font-size: 2.5rem;
     color: white;
     text-align: center;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .l-banner-p {
@@ -65,29 +77,37 @@
     font-size: 1.1rem;
     color: white;
     text-align: center;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .l-road-map-container {
     overflow: hidden;
     height: fit-content;
-    min-height: 500px;
+    min-height: 600px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding-top: 30px;
+    padding-bottom: 30px;
 }
 
-.l-road-map-header {
+.l-road-map-h {
     text-align: center;
     direction: rtl;
-    margin-bottom: 30px;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
-.l-road-map-text {
+.l-road-map-p {
     text-align: center;
     direction: rtl;
-    margin-bottom: 30px;
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .l-row3 {
@@ -276,6 +296,11 @@
         align-items: end;
     }
 
+    .l-banner-bg-img {
+        height: 100%;
+        transform: translateX(-25%);
+    }
+
     .l-banner-h {
         direction: rtl;
         font-size: 3.5rem;
@@ -286,6 +311,7 @@
     .l-banner-p {
         direction: rtl;
         font-size: 1.5rem;
+        text-align: unset;
     }
 
     .l-first-row {
