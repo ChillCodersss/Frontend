@@ -29,6 +29,7 @@ import axios from 'axios';
 import { getToken } from "@/services/auth";
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Header from '@/components/Header/Header';
+import { Navigate } from 'react-router-dom';
 
 // TypeScript interfaces
 interface Student {
@@ -67,14 +68,12 @@ interface ApiResponse {
   };
 }
 
-const token = getToken();
-
-// Custom hook for fetching students
 const useStudents = (
   currentPage: number,
   pageSize: number,
   majorFilter: string,
-  gradeFilter: string
+  gradeFilter: string,
+  token: string | null 
 ) => {
   const [value, setValue] = useState<Value | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -100,6 +99,7 @@ const useStudents = (
   };
 
   const fetchImage = async (picUrl: string) => {
+    if (!token) return '';
     try {
       const response = await fetch(
         `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(picUrl)}`,
@@ -124,6 +124,11 @@ const useStudents = (
   };
 
   const fetchStudents = useCallback(async () => {
+    if (!token) {
+      setError('لطفاً دوباره وارد شوید');
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
@@ -142,7 +147,6 @@ const useStudents = (
         const newImageUrls: Record<string, string> = {};
         for (const student of response.data.value.items) {
           if (student.picUrl) {
-            newImageUrls[student.picUrl] = ''; // Placeholder for lazy loading
           }
         }
         setImageUrls(newImageUrls);
@@ -157,7 +161,7 @@ const useStudents = (
     } finally {
       setLoading(false);
     }
-  }, [currentPage, majorFilter, gradeFilter, pageSize]);
+  }, [currentPage, majorFilter, gradeFilter, pageSize, token]);
 
   useEffect(() => {
     fetchStudents();
@@ -173,22 +177,31 @@ const useStudents = (
   return { value, loading, error, imageUrls, setImageUrls, fetchImage };
 };
 
-// StudentList component
 const StudentList: React.FC = () => {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm')); // 600px or smaller
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [currentPage, setCurrentPage] = useState(1);
   const [majorFilter, setMajorFilter] = useState<string>('همه');
   const [gradeFilter, setGradeFilter] = useState<string>('همه');
   const [selectedAboutMe, setSelectedAboutMe] = useState<string | null>(null);
   const [actionStatus, setActionStatus] = useState<Record<number, 'approved' | 'rejected' | null>>({});
+  const [token, setToken] = useState<string | null>(null);
+  const [tokenLoading, setTokenLoading] = useState(true);
   const pageSize = isSmallScreen ? 2 : 4;
+
+
+  useEffect(() => {
+    const fetchedToken = getToken();
+    setToken(fetchedToken);
+    setTokenLoading(false);
+  }, []);
 
   const { value, loading, error, imageUrls, setImageUrls, fetchImage } = useStudents(
     currentPage,
     pageSize,
     majorFilter,
-    gradeFilter
+    gradeFilter,
+    token
   );
 
   // Lazy loading images with IntersectionObserver
@@ -257,6 +270,7 @@ const StudentList: React.FC = () => {
   }, []);
 
   const handleApprove = useCallback(async (studentId: number) => {
+    if (!token) return;
     try {
       const formData = new FormData();
       formData.append('Id', studentId.toString());
@@ -281,9 +295,10 @@ const StudentList: React.FC = () => {
     } catch (error) {
       console.error('Error approving student:', error);
     }
-  }, []);
+  }, [token]);
 
   const handleReject = useCallback(async (studentId: number) => {
+    if (!token) return;
     try {
       const response = await axios.post(
         'http://62.60.213.13/api/RequestCounselor/Reject',
@@ -305,7 +320,7 @@ const StudentList: React.FC = () => {
     } catch (error) {
       console.error('Error rejecting student:', error);
     }
-  }, []);
+  }, [token]);
 
   // Memoize filtered items
   const filteredItems = useMemo(() => value?.items || [], [value]);
@@ -315,6 +330,19 @@ const StudentList: React.FC = () => {
     if (!text || text === 'ندارد') return 'ندارد';
     return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
   };
+
+  // Handle token loading and absence
+  if (tokenLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
 
   const content = (
     <Box sx={{ 
@@ -431,7 +459,6 @@ const StudentList: React.FC = () => {
               sx={{ 
                 boxShadow: 3, 
                 maxHeight: isSmallScreen ? '60vh' : '70vh', 
-                // marginBottom: '35px',
                 overflowY: 'auto', 
                 marginTop: isSmallScreen ? '20px' : '50px',
                 minWidth: isSmallScreen ? '100%' : 'auto'
@@ -622,7 +649,7 @@ const StudentList: React.FC = () => {
           {/* Pagination */}
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
             <Pagination
-              count={value.totalPages}
+              count={value?.totalPages || 1}
               page={currentPage}
               onChange={handlePageChange}
               color="primary"
