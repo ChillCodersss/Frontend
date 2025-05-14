@@ -40,3 +40,8 @@ export const PPaginationStyle: SxProps = {
     },
   },
 };
+
+export const PTextStyle: SxProps = {
+  textAlign: "center",
+  margin: "20px 10px",
+};
