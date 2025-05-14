@@ -11,6 +11,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { ToastContainer } from "react-toastify";
 import PaymentsItem, {
   PaymentsItemProps,
 } from "../../components/Payments/PaymentsItem";
@@ -26,9 +27,9 @@ import {
   PTableBoxStyle,
   PMainBoxStyle,
   PPaginationStyle,
+  PTextStyle,
 } from "./PaymentsStyle";
-import { NotificationTextStyle } from "@/components/Payments/PaymentNotificationStyle";
-import { NotificationBox } from "@/components/Payments/PaymentNotification";
+import { NotificationItem } from "@/components/Payments/PaymentNotification";
 
 const Payments = () => {
   const theme = useTheme();
@@ -70,44 +71,69 @@ const Payments = () => {
 
   return (
     <>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        toastStyle={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "right",
+          width: "220px",
+          padding: "5px 10px",
+          gap: "2px",
+          fontSize: "0.9rem",
+          textAlign: "right",
+        }}
+      />
       <Header />
       <Sidebar>
         {loading ? (
-          <Typography sx={NotificationTextStyle}>در حال بارگزاری</Typography>
+          <Typography sx={PTextStyle}>در حال بارگزاری</Typography>
         ) : (
           <Box>
             <Box sx={PMainBoxStyle}>
-              {payments
-                .filter((payment) => !payment.isPaid)
-                .map((payment) => (
-                  <NotificationBox key={payment.id} {...payment} />
-                ))}
               <Box sx={PTableBoxStyle}>
-                <TableContainer sx={PITableContainerStyle}>
-                  <Table>
-                    <TableHead>
-                      <TableRow sx={PTableHeadRowStyle}>
-                        <TableCell sx={PTableHeadCellStyle}>مبلغ</TableCell>
-                        <TableCell sx={PTableHeadCellStyle}>مشاور</TableCell>
-                        <TableCell sx={PTableHeadCellStyle}>تاریخ</TableCell>
-                        <TableCell sx={PTableHeadCellStyle}>طول دوره</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {payments ? (
-                        payments
+                {!payments ? (
+                  <Typography sx={PTextStyle}>شما پرداختی ندارید</Typography>
+                ) : (
+                  <TableContainer sx={PITableContainerStyle}>
+                    <Table>
+                      <TableHead>
+                        <TableRow sx={PTableHeadRowStyle}>
+                          <TableCell sx={PTableHeadCellStyle}>مبلغ</TableCell>
+                          <TableCell sx={PTableHeadCellStyle}>مشاور</TableCell>
+                          <TableCell sx={PTableHeadCellStyle}>
+                            طول دوره
+                          </TableCell>
+                          <TableCell sx={PTableHeadCellStyle}>تاریخ</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {payments
+                          .filter((payment) => !payment.isPaid)
+                          .map((payment) => (
+                            <NotificationItem
+                              key={payment.id}
+                              {...payment}
+                              onPaymentSuccess={fetchPayments}
+                            />
+                          ))}
+                        {payments
                           .filter((payment) => payment.isPaid)
                           .map((payment) => (
                             <PaymentsItem key={payment.id} {...payment} />
-                          ))
-                      ) : (
-                        <Typography sx={NotificationTextStyle}>
-                          {"شما پرداختی ندارید"}
-                        </Typography>
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
               </Box>
               <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                 <Pagination

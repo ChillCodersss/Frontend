@@ -21,10 +21,10 @@ const PaymentsItem: React.FC<PaymentsItemProps> = ({
     <TableRow sx={PITableRowStyles}>
       <TableCell sx={PITableCellStyles}>{`${amount} تومان`}</TableCell>
       <TableCell sx={PITableCellStyles}>{payableTo}</TableCell>
-      <TableCell sx={PITableCellStyles}>{paymentDate}</TableCell>
       <TableCell
         sx={PITableCellStyles}
       >{`${counselingDuration} ماهه`}</TableCell>
+      <TableCell sx={PITableCellStyles}>{paymentDate}</TableCell>
     </TableRow>
   );
 };
