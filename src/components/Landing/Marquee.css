@@ -1,10 +1,11 @@
 .marquee-wrapper {
     width: 100%;
-    height: 200px;
-    padding: 50px 0px;
+    height: var(--l-marquee-height);
+    padding: 0px 20px;
     display: flex;
     position: relative;
     overflow: hidden;
+    box-sizing: border-box;
     /* mask-image: linear-gradient(
         to right,
         rgba(0,0,0,0),
@@ -16,27 +17,35 @@
 
 .marquee-item {
     width: 400px;
-    height: 200px;
-    border-radius: 6px;
+    height: var(--l-marquee-height);
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
     flex-grow: 1;
     font-size: 4rem;
-    font-weight: 900;
+    font-weight: 300;
 }
 
-@media (prefers-reduced-motion: no-preference) {
+/* ----- Removed Marquee Animation ----- */
+/* @media (prefers-reduced-motion: no-preference) {
     @keyframes scrollLeft {
         to {
             left: -400px;
         }
     }
 
+    .marquee-wrapper {
+        width: 100%;
+        height: var(--l-marquee-height);
+        padding: 50px 0px;
+        display: flex;
+        position: relative;
+        overflow: hidden;
+    }
+
     .marquee-item {
         width: 400px;
-        height: 200px;
-        border-radius: 6px;
+        height: var(--l-marquee-height);
         position: absolute;
         display: flex;
         justify-content: center;
@@ -49,4 +58,4 @@
         font-size: 4rem;
         font-weight: 900;
     }
-}
+} */
