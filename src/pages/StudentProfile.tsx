@@ -878,8 +878,21 @@ const StudentProfile = () => {
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
               maxWidth: "800px",
               margin: "0 auto",
+              background:
+                "linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)",
+              backdropFilter: "blur(10px)",
               border: "1px solid rgba(255, 255, 255, 0.5)",
-              backdropFilter: "blur(100px)",
+              animation: "grow 0.5s ease-out",
+              "@keyframes grow": {
+                "0%": {
+                  transform: "scale(0.95)",
+                  opacity: 0,
+                },
+                "100%": {
+                  transform: "scale(1)",
+                  opacity: 1,
+                },
+              },
             }}
           >
             <Box
