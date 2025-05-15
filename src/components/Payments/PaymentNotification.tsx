@@ -1,5 +1,12 @@
 import React from "react";
-import { TableRow, TableCell, useTheme, useMediaQuery } from "@mui/material";
+import { useNavigate } from "react-router";
+import {
+  TableRow,
+  TableCell,
+  Link,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import SecondaryButton from "../common/SecondaryButton";
 import { PITableCellStyles, PITableRowStyles } from "./PaymentsItemStyle";
 import { payingPayments } from "@/services/payments";
@@ -16,10 +23,15 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   amount,
   payableTo,
   counselingDuration,
+  counselorId,
   onPaymentSuccess,
 }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const viewProfile = () => {
+    navigate(`/OurCounselor/CounselorPage/${counselorId}`);
+  };
   const handlePaymentClick = async () => {
     try {
       const token = getToken() || "";
@@ -39,7 +51,11 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   return (
     <TableRow sx={PITableRowStyles}>
       <TableCell sx={PITableCellStyles}>{`${amount} تومان`}</TableCell>
-      <TableCell sx={PITableCellStyles}>{payableTo}</TableCell>
+      <TableCell sx={PITableCellStyles}>
+        <Link onClick={viewProfile} underline="always">
+          {payableTo}
+        </Link>
+      </TableCell>
       <TableCell
         sx={PITableCellStyles}
       >{`${counselingDuration} ماهه`}</TableCell>

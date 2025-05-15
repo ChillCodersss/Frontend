@@ -1,6 +1,7 @@
 import React from "react";
-import { TableRow, TableCell } from "@mui/material";
+import { TableRow, TableCell, Link } from "@mui/material";
 import { PITableCellStyles, PITableRowStyles } from "./PaymentsItemStyle";
+import { useNavigate } from "react-router";
 
 export interface PaymentsItemProps {
   id: number;
@@ -9,6 +10,7 @@ export interface PaymentsItemProps {
   counselingDuration: number;
   payableTo: string;
   paymentDate: string;
+  counselorId: number;
 }
 
 const PaymentsItem: React.FC<PaymentsItemProps> = ({
@@ -16,11 +18,20 @@ const PaymentsItem: React.FC<PaymentsItemProps> = ({
   amount,
   payableTo,
   counselingDuration,
+  counselorId,
 }) => {
+  const navigate = useNavigate();
+  const viewProfile = () => {
+    navigate(`/OurCounselor/CounselorPage/${counselorId}`);
+  };
   return (
     <TableRow sx={PITableRowStyles}>
       <TableCell sx={PITableCellStyles}>{`${amount} تومان`}</TableCell>
-      <TableCell sx={PITableCellStyles}>{payableTo}</TableCell>
+      <TableCell sx={PITableCellStyles}>
+        <Link onClick={viewProfile} underline="always">
+          {payableTo}
+        </Link>
+      </TableCell>
       <TableCell
         sx={PITableCellStyles}
       >{`${counselingDuration} ماهه`}</TableCell>
