@@ -39,7 +39,7 @@ createRoot(document.getElementById("root")!).render(
         path="/OurCounselor/CounselorPage/:id"
         element={<CounselorDisplay />}
       />
-      <Route path="/Landing" element={<Landing></Landing>} />
+      {/* <Route path="/Landing" element={<Landing></Landing>} /> */}
       <Route path="/StudentDisplayPopup" element={<StudentDisplayPopup />} />
       <Route path="/Landing" element={<Landing></Landing>} />
       <Route path="/Payments" element={<Payments />} />

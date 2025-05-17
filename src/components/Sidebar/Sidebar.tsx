@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import {
   Drawer,
@@ -21,39 +21,66 @@ import {
   Folder as FolderIcon,
   BarChart as BarChartIcon,
   Logout as LogoutIcon,
+  School as SchoolIcon,
+  Person as PersonIcon,
 } from "@mui/icons-material";
-import { removeToken } from "@/services/auth";
+import { getUserInfo, removeToken } from "@/services/auth";
 
 interface SidebarItem {
   label: string;
   icon: React.ReactNode;
+  path: string;
 }
 
 interface SidebarProps {
   children: React.ReactNode;
 }
 
-const sidebarItems: SidebarItem[] = [
-  { label: "داشبورد", icon: <DashboardIcon /> },
-  { label: "کاربران", icon: <PeopleIcon /> },
-  { label: "چت با مشاور", icon: <MessageIcon /> },
-  { label: "فایل‌ها", icon: <FolderIcon /> },
-  { label: "آمار", icon: <BarChartIcon /> },
-];
-
 const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [activeItem, setActiveItem] = useState<string>("کاربران");
+  const [activeItem, setActiveItem] = useState<string>("");
+  const [role, setRole] = useState<string | null>(null);
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Define sidebar items for each role
+  const counselorSidebarItems: SidebarItem[] = [
+    { label: "داشبورد", icon: <DashboardIcon />, path: "/dashboard" },
+    { label: "دانشجویان", icon: <PeopleIcon />, path: "/students" },
+    { label: "چت با دانشجو", icon: <MessageIcon />, path: "/chat-student" },
+    { label: "فایل‌های مشاوره", icon: <FolderIcon />, path: "/counseling-files" },
+    { label: "آمار مشاوره", icon: <BarChartIcon />, path: "/counseling-stats" },
+  ];
+
+  const studentSidebarItems: SidebarItem[] = [
+    { label: "داشبورد", icon: <DashboardIcon />, path: "/dashboard" },
+    { label: "مشاوران", icon: <PersonIcon />, path: "/counselors" },
+    { label: "چت با مشاور", icon: <MessageIcon />, path: "/chat-counselor" },
+    { label: "منابع آموزشی", icon: <SchoolIcon />, path: "/educational-resources" },
+    { label: "پیشرفت تحصیلی", icon: <BarChartIcon />, path: "/academic-progress" },
+  ];
+
+  // Fetch user role on mount
+  useEffect(() => {
+    const info = getUserInfo();
+    if (info) {
+      setRole(info.role);
+      // Set initial active item based on current path
+      setActiveItem(window.location.pathname);
+    }
+  }, []);
+
+  // Determine which sidebar items to display based on role
+  const sidebarItems = role === "Counselor" ? counselorSidebarItems : role === "Student" ? studentSidebarItems : [];
 
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
 
-  const handleItemClick = (label: string) => {
-    setActiveItem(label);
+  const handleItemClick = (item: SidebarItem) => {
+    setActiveItem(item.path);
+    navigate(item.path);
     if (isMobile && open) {
       setOpen(false);
     }
@@ -78,8 +105,8 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
             padding: "0.5rem 0",
             boxSizing: "border-box",
             transition: "width 0.3s ease-in-out",
-            top: headerHeight, // Start below the Header
-            height: `calc(100vh - ${headerHeight})`, // Span remaining height
+            top: headerHeight,
+            height: `calc(100vh - ${headerHeight})`,
             overflowX: "hidden",
           },
         }}
@@ -134,19 +161,19 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
           {sidebarItems.map((item) => (
             <ListItem
               key={item.label}
-              onClick={() => handleItemClick(item.label)}
+              onClick={() => handleItemClick(item)}
               sx={{
                 padding: "0.5rem 1rem",
                 cursor: "pointer",
                 marginBottom: "1.5rem",
                 color:
-                  activeItem === item.label
+                  activeItem === item.path
                     ? "rgb(126, 124, 134)"
                     : "rgb(4, 32, 80)",
                 "&:hover": { color: " #F7F6FB" },
                 position: "relative",
                 height: "40px",
-                ...(activeItem === item.label && {
+                ...(activeItem === item.path && {
                   "&::before": {
                     content: '""',
                     position: "absolute",
@@ -260,7 +287,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               color: "#057abe",
               backgroundColor: "rgb(111, 189, 234)",
               "&:hover": { backgroundColor: " #e0e0e0" },
-              zIndex: 1200, // Ensure it appears above other content
+              zIndex: 1200,
             }}
           >
             <MenuIcon />

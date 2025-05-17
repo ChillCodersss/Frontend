@@ -9,6 +9,7 @@ import {
   Typography,
   Menu,
   MenuItem,
+
   Container,
   Avatar,
   Tooltip,
@@ -81,7 +82,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
       icon: <ExitToAppIcon />,
       clickFunction: () => {
         removeToken();
-        navigate("/Landing");
+        navigate("/");
         window.location.reload();
       },
     },
@@ -373,7 +374,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
             variant="h6"
             noWrap
             component="a"
-            href="/Landing"
+            href="/"
             sx={{
               ml: 2,
               display: {

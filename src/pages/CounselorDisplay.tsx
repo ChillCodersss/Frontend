@@ -71,10 +71,12 @@ const CounselorDisplay: React.FC = () => {
       
       setIsLoading(true);
       try {
+        const token = getToken()
         const response = await fetch(`http://62.60.213.13/api/Counselor/GetById?Id=${id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}` 
           },
         });
 
