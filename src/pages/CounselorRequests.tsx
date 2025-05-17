@@ -261,12 +261,12 @@ const StudentList: React.FC = () => {
     };
   }, [imageUrls, fetchImage, setImageUrls]);
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
+  const handlePageChange = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
   }, []);
 
   const handleMajorFilterChange = useCallback(
-    (event: React.MouseEvent<HTMLElement>, newFilter: string) => {
+    (_: React.MouseEvent<HTMLElement>, newFilter: string) => {
       if (newFilter !== null) {
         setMajorFilter(newFilter);
         setCurrentPage(1);
@@ -276,7 +276,7 @@ const StudentList: React.FC = () => {
   );
 
   const handleGradeFilterChange = useCallback(
-    (event: React.MouseEvent<HTMLElement>, newFilter: string) => {
+    (_: React.MouseEvent<HTMLElement>, newFilter: string) => {
       if (newFilter !== null) {
         setGradeFilter(newFilter);
         setCurrentPage(1);
@@ -286,7 +286,7 @@ const StudentList: React.FC = () => {
   );
 
   const handleStatusFilterChange = useCallback(
-    (event: React.SyntheticEvent, newFilter: string) => {
+    (_: React.SyntheticEvent, newFilter: string) => {
       if (newFilter !== null) {
         setStatusFilter(newFilter);
         setCurrentPage(1);
