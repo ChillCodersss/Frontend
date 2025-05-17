@@ -39,7 +39,7 @@ const Payments = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const handlePageChange = useCallback(
-    (event: React.ChangeEvent<unknown>, page: number) => {
+    (_: React.ChangeEvent<unknown>, page: number) => {
       setCurrentPage(page);
     },
     []

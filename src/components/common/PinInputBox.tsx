@@ -80,7 +80,7 @@ const PinInput: React.FC<PinInputProps> = ({
           inputRef={(el) => (inputRefs.current[index] = el)}
           value={pin}
           onChange={(e) => handleChange(index, e.target.value)}
-          onKeyDown={(e) => handleKeyDown(index, e)}
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(index, e)}
           onPaste={handlePaste}
           inputProps={{
             maxLength: 1,
