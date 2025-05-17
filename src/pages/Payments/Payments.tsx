@@ -101,7 +101,7 @@ const Payments = () => {
           <Box>
             <Box sx={PMainBoxStyle}>
               <Box sx={PTableBoxStyle}>
-                {!payments ? (
+                {payments.length === 0 ? (
                   <Typography sx={PTextStyle}>شما پرداختی ندارید</Typography>
                 ) : (
                   <TableContainer sx={PITableContainerStyle}>
