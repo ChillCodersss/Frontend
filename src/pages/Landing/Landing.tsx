@@ -1,31 +1,32 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Box, Paper, Grow, useMediaQuery, Fade } from "@mui/material";
+import React, { useEffect, useState } from "react";
+// import { useRef } from "react";
+import { Box, useMediaQuery, Fade } from "@mui/material";
+// import { Paper, Grow } from "@mui/material";
+import { useNavigate } from "react-router";
 // import { Card, CardActionArea } from "@mui/material";
-import Marquee from "@/components/Landing/Marquee";
+// import Marquee from "@/components/Landing/Marquee";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import CounselorSwiper from "@/components/Landing/Swiper.tsx";
-// import Footer from "@/components/Footer/Footer";
+import Footer from "@/components/Landing/Footer";
+import RoadMap from "@/components/Landing/RoadMap";
+import Header from "@/components/Header/Header";
+import Logo from "@/assets/landing_banner_logo.png";
 import './Landing.css';
 
 
 const Landing: React.FC = () => {
-    const [firstRowVisible, setFirstRowVisible] = useState(false);
-    // const [lastRowVisible, setLastRowVisible] = useState(false);
+    // const [firstRowVisible, setFirstRowVisible] = useState(false);
     const [firstTextVisible, setFirstTextVisible] = useState(false);
     const [secondTextVisible, setSecondTextVisible] = useState(false);
     const small_screen = useMediaQuery("(min-width: 600px) and (max-width: 749px)");
     const medium_screen = useMediaQuery("(min-width: 750px)");
+    const navigate = useNavigate();
     // const not_mobile = small_screen || medium_screen;
     // const reduced_motion = useMediaQuery("(prefers-reduced-motion)");
 
-    const paper_transition_props = {
-        timeout: 600,     // timeout in millisecond
-        in: firstRowVisible,
-    };
-
-    // const card_transition_props = {
+    // const paper_transition_props = {
     //     timeout: 600,     // timeout in millisecond
-    //     in: lastRowVisible,
+    //     in: firstRowVisible,
     // };
 
     const fade_sx = {
@@ -33,52 +34,41 @@ const Landing: React.FC = () => {
         in: true,
     }
 
-    // const test_text =  `Lorem ipsum dolor sit amet consectetur, 
-    //                     adipisicing elit. Odit vero minus sed soluta. 
-    //                     Necessitatibus non porro quidem consequuntur,
-    //                     perspiciatis iste laborum tempora quas sapiente, ut amet.`;
-    const test_text_fa =   `لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، 
-                            و با استفاده از طراحان گرافیک است، چاپگرها ون و سطرآنچنان که لازم است،
-                            و برای شرایط فعلی تکنولوژی مورد نیاز، و متخصصان را می طلبد.`;
+    // const test_text_fa =   `لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، 
+    //                         و با استفاده از طراحان گرافیک است، چاپگرها ون و سطرآنچنان که لازم است،
+    //                         و برای شرایط فعلی تکنولوژی مورد نیاز، و متخصصان را می طلبد.`;
     const our_counselor_marquee_text = "مشاوران ما";
-    const why_our_site_marquee_text = "چرا مشاوریوم؟";
-    const banner_h = "مشاوریوم";
-    const banner_p = "همراه شما در مسیر موفقیت";
+    const our_counselor_motto_text = "همین امروز مشاور خودت رو انتخاب کن و اولین قدم برای آینده‌ی روشن‌تر رو بردار!";
+    // const why_our_site_marquee_text = "چرا مشاوریوم؟";
+    const banner_h = "تحصیل بهتر، با همراهی مشاوران حرفه‌ای";
+    const banner_p = "دوره‌های اختصاصی مشاوره تحصیلی، همراه با ارتباط مستقیم و روزانه با مشاور شخصی شما.";
+    const chat_promo_title = "چت آنلاین و ارتباط مستقیم با مشاور";
+    const chat_promo_text = `ارتباط بدون واسطه با مشاور، امکان دریافت راهنمایی روزانه، رفع اشکال در برنامه‌ریزی
+                            و حتی دریافت انگیزه‌بخشی شخصی، همه از طریق چت اختصاصی در طول مسیر تحصیل.`;
+    const recruitment_promo_title = "به جمع مشاوران ما بپیوندید";
+    const recruitment_promo_text = `اگر تجربه مشاوره تحصیلی دارید و به پیشرفت دانش‌آموزان علاقه‌مندید، مشاوریوم جای شماست!
+                                    با ثبت‌نام به عنوان مشاور، می‌توانید با دانش‌آموزان پرتلاش کار کنید،
+                                    درآمد کسب کنید و تاثیر واقعی بسازید.`;
+    const road_map_header = "چطور با مشاوریوم شروع کنم؟";
+    const road_map_text = "تمام مراحل فقط در چند دقیقه و کاملاً آنلاین!";
 
-    const firstRowRef = useRef(null);
-
-    useEffect(() => {
-        const firstRow = document.querySelectorAll(".l-first-row");
-
-        const observer = new IntersectionObserver((entries) => {
-            const entry = entries[0];
-
-            if (entry.isIntersecting) {
-                setFirstRowVisible(true);
-                observer.unobserve(firstRow[0]);
-            }
-        }, {
-            threshold: 0.5,
-        });
-
-        observer.observe(firstRow[0]);
-    }, []);
+    // const firstRowRef = useRef(null);
 
     // useEffect(() => {
-    //     const lastRow = document.querySelectorAll(".l-last-row");
+    //     const firstRow = document.querySelectorAll(".l-first-row");
 
     //     const observer = new IntersectionObserver((entries) => {
     //         const entry = entries[0];
 
     //         if (entry.isIntersecting) {
-    //             setLastRowVisible(true);
-    //             observer.unobserve(lastRow[0]);
+    //             setFirstRowVisible(true);
+    //             observer.unobserve(firstRow[0]);
     //         }
     //     }, {
     //         threshold: 0.5,
     //     });
 
-    //     observer.observe(lastRow[0]);
+    //     observer.observe(firstRow[0]);
     // }, []);
 
     useEffect(() => {
@@ -133,41 +123,6 @@ const Landing: React.FC = () => {
         paper_sx = {...paper_sx, ...medium_screen_paper_sx};
     }
 
-    // const left_card_sx = {
-    //     position: "absolute",
-    //     left: (not_mobile) ? "15%" : "unset",
-    //     bottom: (not_mobile) ? "unset" : "50px",
-    //     height: (not_mobile) ? "30vw" : "230px",
-    //     width: (not_mobile) ? "30vw" : "230px",
-    //     boxShadow: "5",
-    //     fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
-    //     borderRadius: {xs: "6px", sm: "8px", md: "8px"},
-    //     "&:hover": {
-    //         height: (not_mobile) ? "32vw" : "240px",
-    //         width: (not_mobile) ? "32vw" : "240px",
-    //         boxShadow: "7",
-    //     }
-    // };
-
-    // const right_card_sx = {
-    //     position: "absolute",
-    //     right: (not_mobile) ? "15%" : "unset",
-    //     bottom: (not_mobile) ? "unset" : "50px",
-    //     height: (not_mobile) ? "30vw" : "230px",
-    //     width: (not_mobile) ? "30vw" : "230px",
-    //     boxShadow: "5",
-    //     fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
-    //     borderRadius: {xs: "6px", sm: "8px", md: "8px"},
-    //     "&:hover": {
-    //         height: (not_mobile) ? "32vw" : "240px",
-    //         width: (not_mobile) ? "32vw" : "240px",
-    //         boxShadow: "7",
-    //     }
-    // };
-
-    // const text_max_width = "260px";
-    // const text_font_size = "1rem";
-
     const description_box_sx = {
         display: "flex",
         justifyContent: "center",
@@ -179,30 +134,36 @@ const Landing: React.FC = () => {
         display: "flex", 
         flexDirection: "column",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "start",
         boxSizing: "border-box",
-        rowGap: "15px"
+        rowGap: "20px",
+        direction: "rtl"
     };
 
     return (
-        <div style={{width: "100%",}}> {/*overflowX: "hidden"*/}
-            <header style={{
+        <div style={{width: "100%",}}>
+            {/* <header style={{
                 backgroundColor: "gray", height: "70px", 
                 // position: "sticky", top: "0px",
                 display: "flex", alignItems: "center", justifyContent:"center"
                 }}
             >
                 Header
-            </header>
+            </header> */}
+            <Header isWhiteMode={true}/>
             <main>
                 <section className="l-banner">
-                    <div className="l-banner-bg"/>
-                    <div className="l-banner-bg-circle"/>
-                    <div className="l-banner-bg-circle2"/>
-                    <h1 className="l-banner-h">{banner_h}</h1>
-                    <p className="l-banner-p">{banner_p}</p>
+                    <div className="l-banner-bg">
+                        <img className="l-banner-bg-img" src={Logo}/>
+                    </div>
+                    <Fade {...fade_sx}>
+                        <h1 className="l-banner-h">{banner_h}</h1>
+                    </Fade>
+                    <Fade {...fade_sx}>
+                            <p className="l-banner-p">{banner_p}</p>
+                    </Fade>
                 </section>
-                <section id={"firstRow"} ref={firstRowRef} className="l-container l-first-row">
+                {/* <section id={"firstRow"} ref={firstRowRef} className="l-container l-first-row">
                     <Grow {...paper_transition_props} timeout={paper_transition_props.timeout + 800} >
                         <Paper elevation={4} sx={ paper_sx }>
                             {test_text_fa}
@@ -218,38 +179,20 @@ const Landing: React.FC = () => {
                             {test_text_fa}
                         </Paper>
                     </Grow>
+                </section> */}
+                <section id={"RoadMap"} className="l-container l-road-map-container">
+                    <h2 className="l-road-map-h">{road_map_header}</h2>
+                    <p className="l-road-map-p">{road_map_text}</p>
+                    <RoadMap/>
                 </section>
-                <section id="l-marquee1">
+                {/* <section id="l-marquee1">
                     <Marquee count={4} text={our_counselor_marquee_text}/>
-                    {/* <div className="l-marquee-wrapper">
-                        <Marquee count={4} text={our_counselor_marquee_text}/>
-                        { reduced_motion ? 
-                        <div className="l-marquee-item">
-                            <p>{our_counselor_marquee_text}</p>
-                        </div>
-                        :
-                        <>
-                        <div className="l-marquee-item" style={{animationDelay: "calc(30s / 4 * (4 - 1) * -1)"}}>
-                            <p>{our_counselor_marquee_text}</p>
-                        </div>
-                        <div className="l-marquee-item" style={{animationDelay: "calc(30s / 4 * (4 - 2) * -1)"}}>
-                            <p>{our_counselor_marquee_text}</p>
-                        </div>
-                        <div className="l-marquee-item" style={{animationDelay: "calc(30s / 4 * (4 - 3) * -1)"}}>
-                            <p>{our_counselor_marquee_text}</p>
-                        </div>
-                        <div className="l-marquee-item" style={{animationDelay: "calc(30s / 4 * (4 - 4) * -1)"}}>
-                            <p>{our_counselor_marquee_text}</p>
-                        </div>
-                        </>
-                        }
-                    </div> */}
-                </section>
+                </section> */}
                 <section className="l-container">
                     <div
-                        className="l-swiper-bg-wrapper"
+                        className="l-swiper-bg-wrapper l-swiper-container"
                     >
-                        <div
+                        {/* <div
                             className="l-swiper-bg"
                         />
                         <div
@@ -258,15 +201,20 @@ const Landing: React.FC = () => {
                             <div
                                 className="l-swiper-bg-circle-wrapper"
                             >
-                                {/* <div className="l-swiper-bg-circle"/> */}
+                            </div>
+                        </div> */}
+                        <div className="l-our-counselor-title-wrapper">
+                            <div className="l-our-counselor-title">
+                                <p>{our_counselor_marquee_text}</p>
+                                <p className="l-our-counselor-motto">{our_counselor_motto_text}</p>
                             </div>
                         </div>
                         <CounselorSwiper/>
                     </div>
                 </section>
-                <section id="l-marquee2">
+                {/* <section id="l-marquee2">
                     <Marquee count={3} text={why_our_site_marquee_text}/>
-                </section>
+                </section> */}
                 <section className="l-row3">
                     <Box sx={{
                         display: "flex",
@@ -281,8 +229,8 @@ const Landing: React.FC = () => {
                         >
                             <Fade {...fade_sx} in={firstTextVisible}>
                                 <Box sx={text_box_sx}>
-                                    <h1 className="l-text-box-h">لورم ایپسوم متن ساختگی نامفهوم از صنعت چاپ</h1>
-                                    <p id={"firstText"} className="l-text-box-p">{test_text_fa}</p>
+                                    <h1 className="l-text-box-h">{chat_promo_title}</h1>
+                                    <p id={"firstText"} className="l-text-box-p">{chat_promo_text}</p>
                                     <SecondaryButton
                                         name="خدمات ما"
                                         borderRadius={{xs: "6px", sm: "8px", md: "8px"}}
@@ -321,6 +269,9 @@ const Landing: React.FC = () => {
                                         "translate(-50%,-50%) translateY(-10px)",
                                 }}
                             />
+                            <div className="l-row3-img-wrapper">
+                                <img className="l-row3-img"/>
+                            </div>
                         </Box>
                     </Box>
                 </section>
@@ -339,14 +290,15 @@ const Landing: React.FC = () => {
                         >
                             <Fade {...fade_sx} in={secondTextVisible}>
                                 <Box sx={text_box_sx}>
-                                    <h1 className="l-text-box-h">لورم ایپسوم متن ساختگی نامفهوم از صنعت چاپ</h1>
-                                    <p id={"secondText"} className="l-text-box-p">{test_text_fa}</p>
+                                    <h1 className="l-text-box-h">{recruitment_promo_title}</h1>
+                                    <p id={"secondText"} className="l-text-box-p">{recruitment_promo_text}</p>
                                     <SecondaryButton
-                                        name="خدمات ما"
+                                        name="استخدام"
                                         borderRadius={{xs: "6px", sm: "8px", md: "8px"}}
                                         backgroundColor="primary"
                                         fontSize="1rem"
                                         width={"150px"}
+                                        onClick={() => {navigate('./recruitment')}}
                                     />
                                 </Box>
                             </Fade>
@@ -379,33 +331,14 @@ const Landing: React.FC = () => {
                                         "translate(50%,-50%)",
                                 }}
                             />
+                            <div className="l-row4-img-wrapper">
+                                <img className="l-row4-img"/>
+                            </div>
                         </Box>
                     </Box>
                 </section>
-                {/* <section className="l-container l-last-row">
-                    <Grow {...card_transition_props} timeout={card_transition_props.timeout + 400}>
-                        <Card sx={left_card_sx}>
-                            <CardActionArea>
-
-                            </CardActionArea>
-                        </Card>
-                    </Grow>
-                    <Grow {...card_transition_props}>
-                        <Card sx={right_card_sx}>
-                            <CardActionArea>
-
-                            </CardActionArea>
-                        </Card>
-                    </Grow>
-                </section> */}
             </main>
-            <footer style={{
-                backgroundColor: "gray", height: "70px",
-                display: "flex", alignItems: "center", justifyContent:"center"
-                }}
-            >
-                Footer
-            </footer>
+            <Footer/>
         </div>
     )
 }

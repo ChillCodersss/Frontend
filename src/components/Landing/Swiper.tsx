@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Typography, Avatar, useMediaQuery, Fab } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import EventIcon from "@mui/icons-material/Event";
@@ -56,14 +56,14 @@ interface ApiResponse {
 const CounselorSwiper = () => {
   const isMobile = useMediaQuery("(max-width:600px)");
   const isTablet = useMediaQuery("(min-width:601px) and (max-width:960px)");
-  const isDesktop = useMediaQuery("(min-width:961px)");
+  // const isDesktop = useMediaQuery("(min-width:961px)");
   const [counselors, setCounselors] = useState<Counselor[]>([]);
   const navigate = useNavigate();
 
   const fetchCounselors = async () => {
     try {
       const response = await axios.get<ApiResponse>(
-        "http://localhost:8080/api/Counselor/GetList",
+        "http://62.60.213.13/api/Counselor/GetList",
         {
           params: { PageSize: 5, PageIndex: 1 },
         }
@@ -79,24 +79,23 @@ const CounselorSwiper = () => {
       setCounselors([]);
     }
   };
-
+  console.log(isMobile);
   useEffect(() => {
     fetchCounselors();
   }, []);
 
-  const SPV = isMobile || isTablet ? 1 : 3;
+  const SPV = isMobile ? "auto" : isTablet ? 2 : 3;
   const centered = isMobile ? true : false;
 
   return (
     <Box
       sx={{
-        padding: "20px 0px",
-        height: "100vh",
+        height: "fit-content",
         width: "100%",
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center"
+        justifyContent: "center",
       }}
     >
       <Box
@@ -137,7 +136,7 @@ const CounselorSwiper = () => {
           }}
           modules={[Navigation]}
           className="mySwiper"
-          style={{ padding: "0 20px" }}
+          style={{ padding: "4px 20px" }}
         >
           {counselors.map((counselor) => (
             <SwiperSlide key={counselor.id}>
@@ -155,7 +154,7 @@ const CounselorSwiper = () => {
                   border: "1px solid rgb(183, 183, 183)",
                   position: "relative",
                   "&:hover": {
-                    boxShadow: "0 4px 4px rgba(0,0,0,0.2)",
+                    boxShadow: "0 2px 4px rgb(0, 0, 0, 0.25)",
                   },
                 }}
               >
@@ -253,7 +252,7 @@ const CounselorSwiper = () => {
               sx={{
                 height: "250px",
                 width: "100%",
-                maxWidth: isMobile ? "300px" : "500px",
+                maxWidth: "300px",
                 backgroundColor: "#fff",
                 borderRadius: "8px",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
@@ -269,13 +268,13 @@ const CounselorSwiper = () => {
             >
               <SecondaryButton
                 name="مشاهده بیشتر"
-                width={"50%"}
+                width={"60%"}
                 height={"60px"}
                 backgroundColor={"#f4c417"}
                 fontSize={"20px"}
                 borderRadius={"9px"}
                 onClick={() => {
-                  navigate("./ourcounselor");
+                  navigate("/OurCounselor");
                 }}
               />
             </Box>

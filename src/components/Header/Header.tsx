@@ -22,6 +22,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 // Styles
 import { headerNavLink, loginButton } from "./HeaderStyles";
 
@@ -48,6 +49,13 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
   ];
 
   const settings = [
+    {
+      label: "داشبورد",
+      icon: <DashboardIcon />,
+      clickFunction: () => {
+        navigate("/dashboard");
+      },
+    },
     {
       label: "پروفایل",
       icon: <AccountCircleIcon />,
