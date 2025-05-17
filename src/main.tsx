@@ -39,13 +39,12 @@ createRoot(document.getElementById("root")!).render(
         path="/OurCounselor/CounselorPage/:id"
         element={<CounselorDisplay />}
       />
-      <Route path="/Landing" element={<Landing></Landing>} />
+      {/* <Route path="/Landing" element={<Landing></Landing>} /> */}
       <Route path="/StudentDisplayPopup" element={<StudentDisplayPopup />} />
       <Route path="/Landing" element={<Landing></Landing>} />
       <Route path="/Payments" element={<Payments />} />
       <Route path="/dashboard" element={<StudentList></StudentList>} />
       <Route path="/StudentProfile" element={<StudentProfile />} />
-      <Route path="/" element={<Landing></Landing>} />
     </Routes>
   </BrowserRouter>
   //</StrictMode>
