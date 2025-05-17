@@ -100,10 +100,10 @@ const Payments = () => {
         ) : (
           <Box>
             <Box sx={PMainBoxStyle}>
-              <Box sx={PTableBoxStyle}>
-                {payments.length === 0 ? (
-                  <Typography sx={PTextStyle}>شما پرداختی ندارید</Typography>
-                ) : (
+              {payments.length === 0 ? (
+                <Typography sx={PTextStyle}>شما پرداختی ندارید</Typography>
+              ) : (
+                <Box sx={PTableBoxStyle}>
                   <TableContainer sx={PITableContainerStyle}>
                     <Table>
                       <TableHead>
@@ -134,19 +134,21 @@ const Payments = () => {
                       </TableBody>
                     </Table>
                   </TableContainer>
-                )}
-              </Box>
-              <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                <Pagination
-                  count={totalPages}
-                  page={currentPage}
-                  onChange={handlePageChange}
-                  color="primary"
-                  dir="rtl"
-                  size={isSmallScreen ? "small" : "medium"}
-                  sx={PPaginationStyle}
-                />
-              </Box>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+                  >
+                    <Pagination
+                      count={totalPages}
+                      page={currentPage}
+                      onChange={handlePageChange}
+                      color="primary"
+                      dir="rtl"
+                      size={isSmallScreen ? "small" : "medium"}
+                      sx={PPaginationStyle}
+                    />
+                  </Box>
+                </Box>
+              )}
             </Box>
           </Box>
         )}
