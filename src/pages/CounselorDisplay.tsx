@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -14,12 +14,14 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import ConfirmButton from "@/components/common/ConfirmButton";
+import RejectButton from "@/components/common/RejectButton";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ToastContainer, toast } from "react-toastify";
-import { getToken } from "@/services/auth"; 
+import { getToken } from "@/services/auth";
 import "react-toastify/dist/ReactToastify.css";
-import "./toast.css"; // Adjust path if different (e.g., src/styles/toast.css)
+import "./toast.css";
+import Header from "@/components/Header/Header";
 
 interface PostData {
   username: string;
@@ -32,6 +34,7 @@ interface PostData {
   profilePic: string;
   workExperience: string;
   rate: string;
+  studentCounselorId: string | null;
 }
 
 interface ApiResponse {
@@ -46,7 +49,8 @@ interface ApiResponse {
 }
 
 const CounselorDisplay: React.FC = () => {
-  const { id } = useParams<{ id?: string }>(); // Optional id for TypeScript
+  const { id } = useParams<{ id?: string }>();
+  const navigate = useNavigate();
   const [postData, setPostData] = useState<PostData>({
     username: "",
     province: "",
@@ -58,25 +62,40 @@ const CounselorDisplay: React.FC = () => {
     profilePic: "/src/assets/DefaultPerson.png",
     workExperience: "نامشخص",
     rate: "",
+    studentCounselorId: null,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const hasFetched = useRef(false);
+  const [isCancelMode, setIsCancelMode] = useState(false);
   const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     const fetchPostData = async () => {
-      if (hasFetched.current || !id) return;
-      hasFetched.current = true;
-      
+      if (!id) return;
+
       setIsLoading(true);
+      // Reset postData to initial state to avoid stale data
+      setPostData({
+        username: "",
+        province: "",
+        entranceExamYear: "",
+        uniMajor: "",
+        uniName: "",
+        hsMajorTitle: "",
+        content: "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
+        profilePic: "/src/assets/DefaultPerson.png",
+        workExperience: "نامشخص",
+        rate: "",
+        studentCounselorId: null,
+      });
+
       try {
-        const token = getToken()
+        const token = getToken();
         const response = await fetch(`http://62.60.213.13/api/Counselor/GetById?Id=${id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}` 
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -118,13 +137,16 @@ const CounselorDisplay: React.FC = () => {
           uniMajor: userData.uniMajor || "نامشخص",
           uniName: userData.uniName || "",
           hsMajorTitle: userData.hsMajorTitle || "نامشخص",
-          content:
-            userData.aboutMe ||
-            "مشاور کنکور بودن کار دلیه. من تو تک تک ثانیه های سال کنکور در کنارتونم و به عنوان کسی که اختلاف سنی زیادی باهاتون نداره کاملا دغدغه هاتون رو درک میکنم. ...",
+          content: userData.aboutMe || "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
           profilePic: profilePicUrl,
           workExperience: userData.workExperience || "3 سال",
-          rate: userData.rate,
+          rate: userData.rate || "",
+          studentCounselorId: userData.studentCounselorId ? String(userData.studentCounselorId) : null,
         });
+
+        const normalizedId = String(id);
+        const normalizedStudentCounselorId = userData.studentCounselorId ? String(userData.studentCounselorId) : null;
+        setIsCancelMode(normalizedId === normalizedStudentCounselorId);
       } catch (error: any) {
         console.error("Error fetching counselor data:", error);
         toast.error("خطا در بارگذاری اطلاعات مشاور", {
@@ -142,7 +164,7 @@ const CounselorDisplay: React.FC = () => {
     };
 
     fetchPostData();
-  }, [id]);
+  }, [id]); // Re-run effect when id changes
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -162,48 +184,85 @@ const CounselorDisplay: React.FC = () => {
       return;
     }
 
-    // Convert id from string to integer
-    const convertedId = parseInt(id, 10);
-    if (isNaN(convertedId)) {
-      toast.error("شناسه مشاور باید یک عدد معتبر باشد", {
-        position: "bottom-right",
-        autoClose: 5000,
-        rtl: true,
-      });
-      return;
-    }
-
     try {
-      const formData = new FormData();
-      formData.append("id", convertedId.toString());
       const token = getToken();
-      const response = await fetch("http://62.60.213.13/api/RequestCounselor/Create", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },        body: formData, 
-      });
 
-      const data: ApiResponse = await response.json();
-
-      if (!response.ok || data.isFailure) {
-        console.error("API error:", {
-          message: data.message,
-          errorCode: data.error?.code,
-          errorMessage: data.error?.message,
+      if (isCancelMode) {
+        const response = await fetch("http://62.60.213.13/api/RequestCounselor/Cancel", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "text/plain",
+          },
+          body: JSON.stringify({}),
         });
-        throw new Error(data.message || "خطا در ارسال درخواست مشاوره");
-      }
 
-      toast.success(data.message || "درخواست مشاوره با موفقیت ثبت شد!", {
-        position: "bottom-right",
-        autoClose: 5000,
-        rtl: true,
-      });
+        const data: ApiResponse = await response.json();
+
+        if (!response.ok || data.isFailure) {
+          throw new Error(data.message || "خطا در لغو درخواست مشاوره");
+        }
+
+        toast.success(data.message || "درخواست مشاوره با موفقیت لغو شد!", {
+          position: "bottom-right",
+          autoClose: 5000,
+          rtl: true,
+        });
+        setIsCancelMode(false);
+        setPostData(prev => ({ ...prev, studentCounselorId: null }));
+      } else {
+        const convertedId = parseInt(id, 10);
+        if (isNaN(convertedId)) {
+          toast.error("شناسه مشاور باید یک عدد معتبر باشد", {
+            position: "bottom-right",
+            autoClose: 5000,
+            rtl: true,
+          });
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("id", convertedId.toString());
+
+        const response = await fetch("http://62.60.213.13/api/RequestCounselor/Create", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        const data: ApiResponse = await response.json();
+
+        if (!response.ok || data.isFailure) {
+          throw new Error(data.message || "خطا در ارسال درخواست مشاوره");
+        }
+
+        toast.success(data.message || "درخواست مشاوره با موفقیت ثبت شد!", {
+          position: "bottom-right",
+          autoClose: 5000,
+          rtl: true,
+        });
+        setIsCancelMode(true);
+        setPostData(prev => ({ ...prev, studentCounselorId: id }));
+      }
       setOpenDialog(false);
     } catch (error: any) {
-      console.error("Error submitting request:", error);
-      toast.error(error.message || "خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.", {
+      console.error("Error handling request:", error);
+      toast.error(error.message || "خطا در ثبت/لغو درخواست. لطفاً دوباره تلاش کنید.", {
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
+      });
+    }
+  };
+
+  const handleNavigateToCounselor = () => {
+    if (postData.studentCounselorId) {
+      navigate(`/OurCounselor/CounselorPage/${postData.studentCounselorId}`);
+    } else {
+      toast.error("شناسه مشاور فعلی در دسترس نیست", {
         position: "bottom-right",
         autoClose: 5000,
         rtl: true,
@@ -217,6 +276,8 @@ const CounselorDisplay: React.FC = () => {
   };
 
   return (
+  <>
+    <Header  />
     <Box
       sx={{
         position: "relative",
@@ -228,6 +289,7 @@ const CounselorDisplay: React.FC = () => {
         direction: "rtl",
       }}
     >
+
       {isLoading ? (
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
           <CircularProgress />
@@ -244,6 +306,7 @@ const CounselorDisplay: React.FC = () => {
             width: "100%",
             margin: "0 auto",
             overflow: "hidden",
+            mt: 2,
           }}
         >
           <Box
@@ -270,7 +333,7 @@ const CounselorDisplay: React.FC = () => {
                     variant={isMobile ? "subtitle1" : "body1"}
                     sx={{ ...typographyStyles, textAlign: "left" }}
                   >
-                    {postData.rate}
+                    {postData.rate || "نامشخص"}
                   </Typography>
                 </Box>
               </Box>
@@ -309,7 +372,7 @@ const CounselorDisplay: React.FC = () => {
                 border: "1px solid #ddd",
                 borderRadius: "12px",
                 padding: isMobile ? "15px" : "20px",
-                backgroundColor: "#fdfaf4",
+                backgroundColor: " #fdfaf4",
                 display: "flex",
                 flexDirection: isMobile ? "column" : "row",
                 alignItems: "center",
@@ -318,28 +381,63 @@ const CounselorDisplay: React.FC = () => {
                 mt: 3,
               }}
             >
-              <Typography
-                variant="body1"
-                sx={{
-                  color: "#444",
-                  fontWeight: "600",
-                  textAlign: "right",
-                  flex: 1,
-                  minWidth: "200px",
-                  fontSize: isMobile ? "0.9rem" : "1rem",
-                }}
-              >
-                اگر علاقه‌مند هستی با این مشاور کار کنی، درخواستت رو ثبت کن تا هماهنگی‌های لازم انجام بشه.
-              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: " #444",
+                    fontWeight: "600",
+                    textAlign: "right",
+                    flex: 1,
+                    minWidth: "200px",
+                    fontSize: isMobile ? "0.9rem" : "1rem",
+                  }}
+                >
+                  {postData.studentCounselorId && String(postData.studentCounselorId) !== String(id)
+                    ? "شما در حال حاضر با مشاور دیگری کار می‌کنید. برای درخواست این مشاور، ابتدا درخواست فعلی خود را لغو کنید."
+                    : isCancelMode
+                    ? "برای لغو درخواست مشاوره با این مشاور، روی دکمه لغو کلیک کنید."
+                    : "اگر علاقه‌مند هستید با این مشاور کار کنید، درخواست خود را ثبت کنید تا هماهنگی‌های لازم انجام شود."}
+                </Typography>
+                {postData.studentCounselorId && String(postData.studentCounselorId) !== String(id) && (
+                  <Typography
+                    component="span"
+                    onClick={handleNavigateToCounselor}
+                    sx={{
+                      color: "#1976d2",
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                      fontSize: isMobile ? "0.9rem" : "1rem",
+                    }}
+                  >
+                    مشاهده صفحه مشاور فعلی
+                  </Typography>
+                )}
+              </Box>
 
-              <ConfirmButton name="ارسال درخواست" type="button" onClick={handleOpenDialog} />
+              {(!postData.studentCounselorId || String(postData.studentCounselorId) === String(id)) && (
+                isCancelMode ? (
+                  <RejectButton
+                    name="لغو درخواست"
+                    type="button"
+                    onClick={handleOpenDialog}
+                    sx={{ backgroundColor: "#d32f2f" }}
+                  />
+                ) : (
+                  <ConfirmButton
+                    name="ارسال درخواست"
+                    type="button"
+                    onClick={handleOpenDialog}
+                  />
+                )
+              )}
             </Box>
           </Box>
 
           <Box
             sx={{
               width: isMobile ? "100%" : "230px",
-              backgroundColor: "#f4c417",
+              backgroundColor: " rgb(205, 218, 224) ",
               borderRadius: isMobile ? "12px 12px 0 0" : "0",
               display: "flex",
               flexDirection: isMobile ? "row" : "column",
@@ -469,7 +567,7 @@ const CounselorDisplay: React.FC = () => {
             pb: 1,
           }}
         >
-          تأیید درخواست
+          {isCancelMode ? "تأیید لغو درخواست" : "تأیید درخواست"}
         </DialogTitle>
         <DialogContent
           sx={{
@@ -485,7 +583,9 @@ const CounselorDisplay: React.FC = () => {
               textAlign: "center",
             }}
           >
-            آیا مطمئن هستید که می‌خواهید درخواست مشاوره با {postData.username || "مشاور"} را ثبت کنید؟
+            {isCancelMode
+              ? `آیا مطمئن هستید که می‌خواهید درخواست مشاوره با ${postData.username || "مشاور"} را لغو کنید؟`
+              : `آیا مطمئن هستید که می‌خواهید درخواست مشاوره با ${postData.username || "مشاور"} را ثبت کنید؟`}
           </DialogContentText>
         </DialogContent>
         <DialogActions
@@ -524,12 +624,13 @@ const CounselorDisplay: React.FC = () => {
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
-        //rtl={true}
+        rtl={true}
         pauseOnFocusLoss
         draggable
         pauseOnHover
       />
     </Box>
+  </>
   );
 };
 
