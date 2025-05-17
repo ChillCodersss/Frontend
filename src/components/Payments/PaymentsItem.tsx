@@ -28,7 +28,11 @@ const PaymentsItem: React.FC<PaymentsItemProps> = ({
     <TableRow sx={PITableRowStyles}>
       <TableCell sx={PITableCellStyles}>{`${amount} تومان`}</TableCell>
       <TableCell sx={PITableCellStyles}>
-        <Link onClick={viewProfile} underline="always">
+        <Link
+          onClick={viewProfile}
+          underline="always"
+          sx={{ cursor: "pointer" }}
+        >
           {payableTo}
         </Link>
       </TableCell>
