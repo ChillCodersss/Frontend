@@ -12,8 +12,6 @@ import {
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CloseIcon from "@mui/icons-material/Close";
 import EditIcon from "@mui/icons-material/Edit";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -57,12 +55,6 @@ const gradeLevelMap: { [key: string]: string } = {
   "3": "دوازدهم",
 };
 
-const reverseGradeLevelMap: { [key: string]: number } = {
-  دهم: 1,
-  یازدهم: 2,
-  دوازدهم: 3,
-};
-
 // Add utility function to convert numbers to Persian numerals
 const toPersianNumber = (num: string | number): string => {
   const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
@@ -104,12 +96,24 @@ const persianDays = [
   "جمعه",
 ];
 
-const PersianCalendar = ({ value, onChange, disabled, isEditMode }) => {
+interface PersianCalendarProps {
+  value: string;
+  onChange: (event: { target: { name: string; value: string } }) => void;
+  disabled: boolean;
+  isEditMode: boolean;
+}
+
+const PersianCalendar: React.FC<PersianCalendarProps> = ({
+  value,
+  onChange,
+  disabled,
+  isEditMode,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
 
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [selectedDate, setSelectedDate] = useState(value || "");
   const [currentMonth, setCurrentMonth] = useState(0);
   const [currentYear, setCurrentYear] = useState(1402);
@@ -117,14 +121,14 @@ const PersianCalendar = ({ value, onChange, disabled, isEditMode }) => {
   const [showMonthSelector, setShowMonthSelector] = useState(false);
 
   // Function to convert numbers to Persian
-  const toPersianNumber = (num) => {
+  const toPersianNumber = (num: string | number): string => {
     if (num === undefined || num === null) return "";
     const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
-    return num.toString().replace(/[0-9]/g, (w) => persianDigits[+w]);
+    return num.toString().replace(/[0-9]/g, (w: string) => persianDigits[+w]);
   };
 
   // Function to format date for display
-  const formatDateForDisplay = (dateStr) => {
+  const formatDateForDisplay = (dateStr: string): string => {
     if (!dateStr) return "";
     try {
       const parts = dateStr.split("/");
@@ -139,7 +143,7 @@ const PersianCalendar = ({ value, onChange, disabled, isEditMode }) => {
     }
   };
 
-  const handleClick = (event) => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     if (!disabled) {
       setAnchorEl(event.currentTarget);
     }
@@ -151,7 +155,7 @@ const PersianCalendar = ({ value, onChange, disabled, isEditMode }) => {
     setShowMonthSelector(false);
   };
 
-  const handleDateSelect = (day) => {
+  const handleDateSelect = (day: number) => {
     try {
       const newDate = `${currentYear}/${currentMonth + 1}/${day}`;
       setSelectedDate(newDate);
@@ -162,7 +166,7 @@ const PersianCalendar = ({ value, onChange, disabled, isEditMode }) => {
     }
   };
 
-  const handleYearSelect = (year) => {
+  const handleYearSelect = (year: number) => {
     try {
       setCurrentYear(year);
       setShowYearSelector(false);
@@ -171,7 +175,7 @@ const PersianCalendar = ({ value, onChange, disabled, isEditMode }) => {
     }
   };
 
-  const handleMonthSelect = (month) => {
+  const handleMonthSelect = (month: number) => {
     setCurrentMonth(month);
     setShowMonthSelector(false);
   };
@@ -823,6 +827,17 @@ const StudentProfile = () => {
     return () => clearTimeout(debounceTimer);
   }, [provinceInputValue]);
 
+  const handleCalendarChange = (event: {
+    target: { name: string; value: string };
+  }) => {
+    handleChange({
+      target: {
+        name: event.target.name,
+        value: event.target.value,
+      },
+    } as React.ChangeEvent<HTMLInputElement>);
+  };
+
   if (loading) {
     return (
       <Box sx={{ textAlign: "center", padding: "40px" }}>
@@ -931,8 +946,8 @@ const StudentProfile = () => {
               }}
             >
               <Box sx={{ position: "relative" }}>
-                <h1
-                  style={{
+                <Box
+                  sx={{
                     margin: isMobile ? "16px 0 0 0" : 0,
                     fontSize: isMobile ? "26px" : "32px",
                     fontWeight: 700,
@@ -955,7 +970,7 @@ const StudentProfile = () => {
                   }}
                 >
                   {isEditMode ? "تغییر پروفایل" : "پروفایل من"}
-                </h1>
+                </Box>
               </Box>
               <Box
                 sx={{
@@ -1533,7 +1548,7 @@ const StudentProfile = () => {
                   </Box>
                   <PersianCalendar
                     value={formData.birthDate}
-                    onChange={handleChange}
+                    onChange={handleCalendarChange}
                     disabled={!isEditMode}
                     isEditMode={isEditMode}
                   />
