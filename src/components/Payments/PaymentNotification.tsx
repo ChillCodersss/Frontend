@@ -52,7 +52,11 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     <TableRow sx={PITableRowStyles}>
       <TableCell sx={PITableCellStyles}>{`${amount} تومان`}</TableCell>
       <TableCell sx={PITableCellStyles}>
-        <Link onClick={viewProfile} underline="always">
+        <Link
+          onClick={viewProfile}
+          underline="always"
+          sx={{ cursor: "pointer" }}
+        >
           {payableTo}
         </Link>
       </TableCell>
@@ -65,8 +69,8 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
           backgroundColor="rgb(0, 140, 190)"
           fontSize={isMobile ? "0.9rem" : "1rem"}
           width={isMobile ? "90px" : "130px"}
-          height={"40px"}
-          borderRadius={{ xs: "0px", sm: "0px", md: "0px" }}
+          height={"32px"}
+          borderRadius={"8px"}
           onClick={handlePaymentClick}
         />
       </TableCell>
