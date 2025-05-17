@@ -9,6 +9,7 @@ import {
   Typography,
   Menu,
   MenuItem,
+
   Container,
   Avatar,
   Tooltip,
@@ -25,6 +26,8 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 // Styles
 import { headerNavLink, loginButton } from "./HeaderStyles";
+// Logo
+import logo from "@/assets/logo.png";
 
 interface HeaderProps {
   isWhiteMode?: boolean;
@@ -81,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
       icon: <ExitToAppIcon />,
       clickFunction: () => {
         removeToken();
-        navigate("/Landing");
+        navigate("/");
         window.location.reload();
       },
     },
@@ -303,8 +306,9 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
             }}
           >
             <img
-              src="./src/assets/logo.png"
+              src={logo}
               alt="Logo"
+
               style={{
                 width: "58px",
                 height: "58px",
@@ -373,7 +377,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
             variant="h6"
             noWrap
             component="a"
-            href="/Landing"
+            href="/"
             sx={{
               ml: 2,
               display: {
@@ -397,7 +401,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
             }}
           >
             <img
-              src="./src/assets/logo.png"
+              src={logo}
               alt="Logo"
               style={{
                 width: "58px",
@@ -406,8 +410,8 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
             />
           </Box>
         </Toolbar>
-      </Container>
-    </AppBar>
+        </Container>
+      </AppBar>
   );
 };
 
