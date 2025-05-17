@@ -14,7 +14,7 @@ function Footer() {
         {href: "./OurCounselor", text: "مشاوران ما"},
         {href: "./", text: "خدمات"},
         {href: "./recruitment", text: "استخدام"},
-        {href: "./", text: "درباره ما"},
+        {href: "./about-us", text: "درباره ما"},
     ];
 
     return (

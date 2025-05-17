@@ -19,6 +19,7 @@ import StudentList from "./pages/CounselorRequests";
 import Payments from "./pages/Payments/Payments";
 import ChangePassword from "./components/Header/ChangePassword";
 import StudentProfile from "./pages/StudentProfile";
+import AboutUs from "./pages/AboutUs/AboutUs";
 
 createRoot(document.getElementById("root")!).render(
   //<StrictMode>
@@ -46,6 +47,7 @@ createRoot(document.getElementById("root")!).render(
       <Route path="/dashboard" element={<StudentList></StudentList>} />
       <Route path="/StudentProfile" element={<StudentProfile />} />
       <Route path="/" element={<Landing></Landing>} />
+      <Route path="/about-us" element={<AboutUs></AboutUs>} />
     </Routes>
   </BrowserRouter>
   //</StrictMode>
