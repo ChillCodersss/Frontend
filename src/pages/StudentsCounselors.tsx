@@ -10,8 +10,6 @@ import {
   Paper,
   Typography,
   Pagination,
-  IconButton,
-  Button,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -21,11 +19,19 @@ import {
   useTheme,
   ToggleButtonGroup,
   ToggleButton,
+  Avatar,
+  IconButton,
+  TextField,
+  PaginationItem,
 } from "@mui/material";
-import { Cancel, AccessTime, Star, Close } from "@mui/icons-material";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import Header from "@/components/Header/Header";
 import SecondaryButton from "@/components/common/SecondaryButton";
+import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
+import AddIcon from "@mui/icons-material/Add";
+import StarIcon from "@mui/icons-material/Star";
+import InputBox from "@/components/common/inputbox";
+import { PaginationRenderItemParams } from "@mui/material";
 
 interface Counselor {
   id: number;
@@ -33,9 +39,16 @@ interface Counselor {
   lastName: string;
   startDate: string;
   endDate: string;
-  status: "active" | "completed" | "cancelled";
+  status:
+    | "active"
+    | "cancelled"
+    | "completed"
+    | "requested"
+    | "rejected"
+    | "pending_payment";
   remainingDays: number;
   rating: number | null;
+  profilePhoto: string;
 }
 
 // Mock data
@@ -47,8 +60,9 @@ const mockCounselors: Counselor[] = [
     startDate: "1402/10/01",
     endDate: "1402/12/29",
     status: "active",
-    remainingDays: 45,
+    remainingDays: 4,
     rating: null,
+    profilePhoto: "https://i.pravatar.cc/150?img=1",
   },
   {
     id: 2,
@@ -59,6 +73,7 @@ const mockCounselors: Counselor[] = [
     status: "completed",
     remainingDays: 0,
     rating: 4,
+    profilePhoto: "https://i.pravatar.cc/150?img=5",
   },
   {
     id: 3,
@@ -66,9 +81,10 @@ const mockCounselors: Counselor[] = [
     lastName: "کریمی",
     startDate: "1402/11/01",
     endDate: "1403/02/29",
-    status: "active",
-    remainingDays: 90,
+    status: "requested",
+    remainingDays: 0,
     rating: null,
+    profilePhoto: "https://i.pravatar.cc/150?img=3",
   },
   {
     id: 4,
@@ -79,8 +95,62 @@ const mockCounselors: Counselor[] = [
     status: "cancelled",
     remainingDays: 0,
     rating: null,
+    profilePhoto: "https://i.pravatar.cc/150?img=4",
+  },
+  {
+    id: 5,
+    firstName: "محمد",
+    lastName: "رضایی",
+    startDate: "1402/12/01",
+    endDate: "1403/03/01",
+    status: "rejected",
+    remainingDays: 0,
+    rating: null,
+    profilePhoto: "https://i.pravatar.cc/150?img=6",
+  },
+  {
+    id: 6,
+    firstName: "زهرا",
+    lastName: "کریمی",
+    startDate: "1402/12/15",
+    endDate: "1403/03/15",
+    status: "pending_payment",
+    remainingDays: 30,
+    rating: null,
+    profilePhoto: "https://i.pravatar.cc/150?img=7",
+  },
+  {
+    id: 7,
+    firstName: "امیر",
+    lastName: "محمدی",
+    startDate: "1402/11/20",
+    endDate: "1403/02/20",
+    status: "active",
+    remainingDays: 60,
+    rating: 5,
+    profilePhoto: "https://i.pravatar.cc/150?img=8",
+  },
+  {
+    id: 8,
+    firstName: "نازنین",
+    lastName: "احمدی",
+    startDate: "1402/10/10",
+    endDate: "1403/01/10",
+    status: "completed",
+    remainingDays: 0,
+    rating: 3,
+    profilePhoto: "https://i.pravatar.cc/150?img=9",
   },
 ];
+
+const toPersianNumber = (num: number): string => {
+  const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+  return num.toString().replace(/\d/g, (x) => persianDigits[parseInt(x)]);
+};
+
+const toPersianDate = (date: string): string => {
+  return date.replace(/\d/g, (x) => toPersianNumber(parseInt(x)));
+};
 
 const StudentsCounselors: React.FC = () => {
   const theme = useTheme();
@@ -101,6 +171,7 @@ const StudentsCounselors: React.FC = () => {
   const [selectedCounselorId, setSelectedCounselorId] = useState<number | null>(
     null
   );
+  const [comment, setComment] = useState<string>("");
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -146,16 +217,23 @@ const StudentsCounselors: React.FC = () => {
       )
     );
     setRatingDialogOpen(false);
+    setComment("");
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
-        return "#4caf50";
+        return "#4caf50"; // سبز
       case "completed":
-        return "#2196f3";
+        return "#2196f3"; // آبی
       case "cancelled":
-        return "#f44336";
+        return "#f44336"; // قرمز
+      case "requested":
+        return "#ff9800"; // نارنجی
+      case "rejected":
+        return "#9e9e9e"; // خاکستری
+      case "pending_payment":
+        return "#9c27b0"; // بنفش
       default:
         return "#757575";
     }
@@ -169,6 +247,12 @@ const StudentsCounselors: React.FC = () => {
         return "تکمیل شده";
       case "cancelled":
         return "لغو شده";
+      case "requested":
+        return "درخواست شده";
+      case "rejected":
+        return "رد درخواست";
+      case "pending_payment":
+        return "در انتظار پرداخت";
       default:
         return status;
     }
@@ -228,7 +312,7 @@ const StudentsCounselors: React.FC = () => {
     <Box
       sx={{
         direction: "rtl",
-        padding: isSmallScreen ? 1 : 3,
+        padding: isSmallScreen ? "8px" : "16px",
         maxWidth: 1200,
         margin: "auto",
         overflowX: "auto",
@@ -239,8 +323,8 @@ const StudentsCounselors: React.FC = () => {
         sx={{
           display: "flex",
           flexDirection: isSmallScreen ? "column" : "row",
-          gap: 2,
-          mb: 3,
+          gap: "8px",
+          mb: "12px",
           justifyContent: "center",
         }}
       >
@@ -248,7 +332,7 @@ const StudentsCounselors: React.FC = () => {
           <Typography
             variant="body1"
             sx={{
-              mb: 1,
+              mb: "4px",
               fontWeight: "medium",
               textAlign: isSmallScreen ? "center" : "right",
             }}
@@ -260,15 +344,15 @@ const StudentsCounselors: React.FC = () => {
             exclusive
             onChange={handleStatusFilterChange}
             sx={{
-              gap: "6px",
+              gap: "4px",
               flexWrap: isSmallScreen ? "wrap" : "nowrap",
               justifyContent: "center",
               "& .MuiToggleButton-root": {
                 border: "1px solid #057abe",
                 color: "#057abe",
                 borderRadius: "8px",
-                padding: isSmallScreen ? "6px 8px" : "8px 16px",
-                fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
+                padding: isSmallScreen ? "4px 6px" : "6px 12px",
+                fontSize: isSmallScreen ? "12px" : "14px",
                 "&.Mui-selected": {
                   backgroundColor: "#057abe",
                   color: "white",
@@ -283,12 +367,17 @@ const StudentsCounselors: React.FC = () => {
             <ToggleButton value="active">فعال</ToggleButton>
             <ToggleButton value="completed">تکمیل شده</ToggleButton>
             <ToggleButton value="cancelled">لغو شده</ToggleButton>
+            <ToggleButton value="requested">درخواست شده</ToggleButton>
+            <ToggleButton value="rejected">رد درخواست</ToggleButton>
+            <ToggleButton value="pending_payment">
+              در انتظار پرداخت
+            </ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Box>
 
       {counselors.length === 0 && (
-        <Typography sx={{ textAlign: "center", py: 4 }}>
+        <Typography sx={{ textAlign: "center", py: "32px" }}>
           مشاوری یافت نشد
         </Typography>
       )}
@@ -299,7 +388,7 @@ const StudentsCounselors: React.FC = () => {
             sx={{
               fontWeight: "bold",
               color: "#424242",
-              mb: 2,
+              mb: "16px",
               textAlign: "right",
             }}
           >
@@ -309,24 +398,23 @@ const StudentsCounselors: React.FC = () => {
             component={Paper}
             sx={{
               boxShadow: 3,
-              maxHeight: isSmallScreen ? "60vh" : "70vh",
+              maxHeight: isSmallScreen ? "50vh" : "60vh",
               overflowY: "auto",
               minWidth: isSmallScreen ? "100%" : "auto",
             }}
           >
             <Table stickyHeader size={isSmallScreen ? "small" : "medium"}>
               <TableHead>
-                <TableRow
-                  sx={{ backgroundColor: "grey.100", textAlign: "right" }}
-                >
+                <TableRow sx={{ backgroundColor: "grey.100" }}>
                   {!isSmallScreen && (
                     <>
                       <TableCell
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
-                          padding: "16px 8px",
-                          height: "64px",
+                          padding: "8px 16px",
+                          height: "48px",
+                          width: "20%",
                         }}
                       >
                         نام مشاور
@@ -335,8 +423,9 @@ const StudentsCounselors: React.FC = () => {
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
-                          padding: "16px 8px",
-                          height: "64px",
+                          padding: "8px 16px",
+                          height: "48px",
+                          width: "15%",
                         }}
                       >
                         تاریخ شروع
@@ -345,8 +434,9 @@ const StudentsCounselors: React.FC = () => {
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
-                          padding: "16px 8px",
-                          height: "64px",
+                          padding: "8px 16px",
+                          height: "48px",
+                          width: "15%",
                         }}
                       >
                         تاریخ پایان
@@ -355,8 +445,9 @@ const StudentsCounselors: React.FC = () => {
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
-                          padding: "16px 8px",
-                          height: "64px",
+                          padding: "8px 16px",
+                          height: "48px",
+                          width: "15%",
                         }}
                       >
                         وضعیت
@@ -365,8 +456,9 @@ const StudentsCounselors: React.FC = () => {
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
-                          padding: "16px 8px",
-                          height: "64px",
+                          padding: "8px 16px",
+                          height: "48px",
+                          width: "15%",
                         }}
                       >
                         روزهای باقیمانده
@@ -375,8 +467,9 @@ const StudentsCounselors: React.FC = () => {
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
-                          padding: "16px 8px",
-                          height: "64px",
+                          padding: "8px 16px",
+                          height: "48px",
+                          width: "10%",
                         }}
                       >
                         امتیاز
@@ -385,8 +478,10 @@ const StudentsCounselors: React.FC = () => {
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
-                          padding: "16px 8px",
-                          height: "64px",
+                          padding: "8px 16px",
+                          height: "48px",
+                          width: "15%",
+                          paddingLeft: "32px",
                         }}
                       >
                         عملیات
@@ -399,18 +494,18 @@ const StudentsCounselors: React.FC = () => {
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
-                          padding: "16px 8px",
-                          height: "64px",
+                          padding: "8px 16px",
+                          height: "48px",
+                          width: "70%",
                         }}
                       >
                         اطلاعات مشاور
                       </TableCell>
                       <TableCell
                         sx={{
-                          fontWeight: "bold",
-                          textAlign: "center",
-                          padding: "16px 8px",
-                          height: "64px",
+                          padding: "8px 16px",
+                          height: "48px",
+                          width: "30%",
                         }}
                       >
                         عملیات
@@ -430,35 +525,63 @@ const StudentsCounselors: React.FC = () => {
                         <TableCell
                           sx={{
                             textAlign: "center",
-                            padding: "16px 8px",
-                            height: "64px",
+                            padding: "8px 16px",
+                            height: "48px",
+                            width: "20%",
                           }}
                         >
-                          {`${counselor.firstName} ${counselor.lastName}`}
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              gap: "8px",
+                              width: "100%",
+                              "& .MuiAvatar-root": {
+                                flexShrink: 0,
+                              },
+                              "& .MuiTypography-root": {
+                                flexShrink: 0,
+                                minWidth: "80px",
+                              },
+                            }}
+                          >
+                            <Avatar
+                              src={counselor.profilePhoto}
+                              alt={`${counselor.firstName} ${counselor.lastName}`}
+                              sx={{ width: "32px", height: "32px" }}
+                            />
+                            <Typography>
+                              {`${counselor.firstName} ${counselor.lastName}`}
+                            </Typography>
+                          </Box>
                         </TableCell>
                         <TableCell
                           sx={{
                             textAlign: "center",
-                            padding: "16px 8px",
-                            height: "64px",
+                            padding: "8px 16px",
+                            height: "48px",
+                            width: "15%",
                           }}
                         >
-                          {counselor.startDate}
+                          {toPersianDate(counselor.startDate)}
                         </TableCell>
                         <TableCell
                           sx={{
                             textAlign: "center",
-                            padding: "16px 8px",
-                            height: "64px",
+                            padding: "8px 16px",
+                            height: "48px",
+                            width: "15%",
                           }}
                         >
-                          {counselor.endDate}
+                          {toPersianDate(counselor.endDate)}
                         </TableCell>
                         <TableCell
                           sx={{
                             textAlign: "center",
-                            padding: "16px 8px",
-                            height: "64px",
+                            padding: "8px 16px",
+                            height: "48px",
+                            width: "15%",
                           }}
                         >
                           <Typography
@@ -470,17 +593,19 @@ const StudentsCounselors: React.FC = () => {
                         <TableCell
                           sx={{
                             textAlign: "center",
-                            padding: "16px 8px",
-                            height: "64px",
+                            padding: "8px 16px",
+                            height: "48px",
+                            width: "15%",
                           }}
                         >
-                          {counselor.remainingDays}
+                          {toPersianNumber(counselor.remainingDays)}
                         </TableCell>
                         <TableCell
                           sx={{
                             textAlign: "center",
-                            padding: "16px 8px",
-                            height: "64px",
+                            padding: "8px 16px",
+                            height: "48px",
+                            width: "10%",
                           }}
                         >
                           {counselor.rating ? (
@@ -488,17 +613,70 @@ const StudentsCounselors: React.FC = () => {
                               value={counselor.rating}
                               readOnly
                               size="small"
+                              sx={{
+                                "& .MuiRating-label": {
+                                  fontFamily: "inherit",
+                                },
+                              }}
+                              getLabelText={(value) =>
+                                `${toPersianNumber(value)} ستاره`
+                              }
                             />
+                          ) : counselor.remainingDays < 5 &&
+                            counselor.status === "active" ? (
+                            <Box
+                              onClick={() => handleRate(counselor)}
+                              sx={{
+                                width: "32px",
+                                height: "32px",
+                                borderRadius: "50%",
+                                backgroundColor: "rgb(108, 73, 203)",
+                                color: "white",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                cursor: "pointer",
+                                margin: "0 auto",
+                                animation: "pulse 2s infinite",
+                                "@keyframes pulse": {
+                                  "0%": {
+                                    boxShadow:
+                                      "0 0 0 0 rgba(108, 73, 203, 0.4)",
+                                  },
+                                  "70%": {
+                                    boxShadow:
+                                      "0 0 0 10px rgba(108, 73, 203, 0)",
+                                  },
+                                  "100%": {
+                                    boxShadow: "0 0 0 0 rgba(108, 73, 203, 0)",
+                                  },
+                                },
+                                "&:hover": {
+                                  backgroundColor: "rgb(87, 57, 168)",
+                                  animation: "none",
+                                },
+                              }}
+                            >
+                              <StarIcon sx={{ fontSize: "20px" }} />
+                            </Box>
                           ) : (
                             "بدون امتیاز"
                           )}
                         </TableCell>
-                        <TableCell sx={{ padding: "16px 8px", height: "64px" }}>
+                        <TableCell
+                          sx={{
+                            textAlign: "center",
+                            padding: "8px 16px",
+                            height: "48px",
+                            width: "15%",
+                            paddingLeft: "32px",
+                          }}
+                        >
                           <Box
                             sx={{
                               display: "flex",
                               justifyContent: "center",
-                              gap: 1,
+                              gap: "8px",
                             }}
                           >
                             {counselor.status === "active" && (
@@ -506,114 +684,95 @@ const StudentsCounselors: React.FC = () => {
                                 <SecondaryButton
                                   name="تمدید"
                                   backgroundColor="rgb(5, 190, 30)"
-                                  width="100px"
-                                  height="32px"
-                                  fontSize="14px"
+                                  width="80px"
+                                  height="28px"
+                                  fontSize="12px"
                                   onClick={() =>
                                     handleExtendClick(counselor.id)
                                   }
-                                  borderRadius="12px"
+                                  borderRadius="8px"
                                 />
                                 <SecondaryButton
                                   name="لغو"
                                   backgroundColor="rgb(221, 84, 84)"
-                                  width="100px"
-                                  height="32px"
-                                  fontSize="14px"
+                                  width="80px"
+                                  height="28px"
+                                  fontSize="12px"
                                   onClick={() =>
                                     handleCancelClick(counselor.id)
                                   }
-                                  borderRadius="12px"
-                                />
-                                <SecondaryButton
-                                  name="امتیازدهی"
-                                  backgroundColor="rgb(5, 11, 190)"
-                                  width="100px"
-                                  height="32px"
-                                  fontSize="14px"
-                                  onClick={() => handleRate(counselor)}
-                                  borderRadius="12px"
+                                  borderRadius="8px"
                                 />
                               </>
                             )}
-                            {counselor.status === "completed" &&
-                              !counselor.rating && (
-                                <SecondaryButton
-                                  name="امتیازدهی"
-                                  backgroundColor="rgb(5, 11, 190)"
-                                  width="100px"
-                                  height="32px"
-                                  fontSize="14px"
-                                  onClick={() => handleRate(counselor)}
-                                  borderRadius="12px"
-                                />
-                              )}
+                            {counselor.status === "pending_payment" && (
+                              <SecondaryButton
+                                name="صفحه پرداخت"
+                                backgroundColor="rgb(5, 122, 190)"
+                                width="100px"
+                                height="28px"
+                                fontSize="12px"
+                                onClick={() => {
+                                  // Handle payment page navigation
+                                  console.log("Navigate to payment page");
+                                }}
+                                borderRadius="8px"
+                              />
+                            )}
                           </Box>
                         </TableCell>
                       </>
                     )}
                     {isSmallScreen && (
                       <>
-                        <TableCell sx={{ padding: "16px 8px", height: "64px" }}>
+                        <TableCell
+                          sx={{
+                            padding: "8px 16px",
+                            height: "48px",
+                            width: "70%",
+                          }}
+                        >
                           <Box
                             sx={{
                               display: "flex",
-                              flexDirection: "column",
-                              gap: 1,
+                              alignItems: "center",
+                              gap: "8px",
+                              width: "100%",
+                              "& .MuiAvatar-root": {
+                                flexShrink: 0,
+                              },
+                              "& .MuiTypography-root": {
+                                flexShrink: 0,
+                                minWidth: "80px",
+                              },
                             }}
                           >
+                            <Avatar
+                              src={counselor.profilePhoto}
+                              alt={`${counselor.firstName} ${counselor.lastName}`}
+                              sx={{ width: "32px", height: "32px" }}
+                            />
                             <Typography
                               variant="subtitle2"
                               sx={{ fontWeight: "bold" }}
                             >
                               {`${counselor.firstName} ${counselor.lastName}`}
                             </Typography>
-                            <Box
-                              sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}
-                            >
-                              <Typography variant="caption">
-                                <strong>تاریخ شروع:</strong>{" "}
-                                {counselor.startDate}
-                              </Typography>
-                              <Typography variant="caption">
-                                <strong>تاریخ پایان:</strong>{" "}
-                                {counselor.endDate}
-                              </Typography>
-                              <Typography variant="caption">
-                                <strong>وضعیت:</strong>{" "}
-                                <span
-                                  style={{
-                                    color: getStatusColor(counselor.status),
-                                  }}
-                                >
-                                  {getStatusText(counselor.status)}
-                                </span>
-                              </Typography>
-                              <Typography variant="caption">
-                                <strong>روزهای باقیمانده:</strong>{" "}
-                                {counselor.remainingDays}
-                              </Typography>
-                              <Typography variant="caption">
-                                <strong>امتیاز:</strong>{" "}
-                                {counselor.rating ? (
-                                  <Rating
-                                    value={counselor.rating}
-                                    readOnly
-                                    size="small"
-                                  />
-                                ) : (
-                                  "بدون امتیاز"
-                                )}
-                              </Typography>
-                            </Box>
                           </Box>
                         </TableCell>
-                        <TableCell sx={{ padding: "16px 8px", height: "64px" }}>
+                        <TableCell
+                          sx={{
+                            padding: "8px 16px",
+                            height: "48px",
+                            width: "30%",
+                          }}
+                        >
                           <Box
                             sx={{
                               display: "flex",
-                              justifyContent: "center",
-                              gap: 0.5,
+                              flexDirection: "column",
+                              gap: "4px",
+                              paddingLeft: "16px",
                             }}
                           >
                             {counselor.status === "active" && (
@@ -627,7 +786,7 @@ const StudentsCounselors: React.FC = () => {
                                   onClick={() =>
                                     handleExtendClick(counselor.id)
                                   }
-                                  borderRadius="12px"
+                                  borderRadius="8px"
                                 />
                                 <SecondaryButton
                                   name="لغو"
@@ -638,31 +797,24 @@ const StudentsCounselors: React.FC = () => {
                                   onClick={() =>
                                     handleCancelClick(counselor.id)
                                   }
-                                  borderRadius="12px"
-                                />
-                                <SecondaryButton
-                                  name="امتیازدهی"
-                                  backgroundColor="rgb(5, 11, 190)"
-                                  width="80px"
-                                  height="28px"
-                                  fontSize="12px"
-                                  onClick={() => handleRate(counselor)}
-                                  borderRadius="12px"
+                                  borderRadius="8px"
                                 />
                               </>
                             )}
-                            {counselor.status === "completed" &&
-                              !counselor.rating && (
-                                <SecondaryButton
-                                  name="امتیازدهی"
-                                  backgroundColor="rgb(5, 11, 190)"
-                                  width="80px"
-                                  height="28px"
-                                  fontSize="12px"
-                                  onClick={() => handleRate(counselor)}
-                                  borderRadius="12px"
-                                />
-                              )}
+                            {counselor.status === "pending_payment" && (
+                              <SecondaryButton
+                                name="صفحه پرداخت"
+                                backgroundColor="rgb(5, 122, 190)"
+                                width="100px"
+                                height="28px"
+                                fontSize="12px"
+                                onClick={() => {
+                                  // Handle payment page navigation
+                                  console.log("Navigate to payment page");
+                                }}
+                                borderRadius="8px"
+                              />
+                            )}
                           </Box>
                         </TableCell>
                       </>
@@ -673,7 +825,7 @@ const StudentsCounselors: React.FC = () => {
             </Table>
           </TableContainer>
 
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: "32px" }}>
             <Pagination
               count={totalPages}
               page={currentPage}
@@ -684,6 +836,7 @@ const StudentsCounselors: React.FC = () => {
               sx={{
                 "& .MuiPaginationItem-root": {
                   color: "#057abe",
+                  fontFamily: "inherit",
                   "&.Mui-selected": {
                     backgroundColor: "#057abe",
                     color: "white",
@@ -692,6 +845,17 @@ const StudentsCounselors: React.FC = () => {
                     transform: "rotate(180deg)",
                   },
                 },
+              }}
+              renderItem={(item: PaginationRenderItemParams) => {
+                if (item.type === "page") {
+                  return (
+                    <PaginationItem
+                      {...item}
+                      children={toPersianNumber(item.page || 0)}
+                    />
+                  );
+                }
+                return <PaginationItem {...item} />;
               }}
             />
           </Box>
@@ -725,23 +889,24 @@ const StudentsCounselors: React.FC = () => {
             امتیازدهی به مشاور
           </DialogTitle>
         </Box>
-        <DialogContent sx={{ padding: "24px" }}>
+        <DialogContent sx={{ padding: "16px" }}>
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: 3,
-              py: 2,
+              gap: "16px",
+              py: "8px",
             }}
           >
-            <Typography sx={{ fontSize: "1.1rem", color: "#424242" }}>
+            <Typography sx={{ fontSize: "17.6px", color: "#424242" }}>
               لطفاً به مشاور خود امتیاز دهید
             </Typography>
             <Rating
               value={selectedRating}
               onChange={(_, newValue) => setSelectedRating(newValue)}
               size="large"
+              precision={1}
               sx={{
                 "& .MuiRating-iconFilled": {
                   color: "#ffc107",
@@ -752,23 +917,55 @@ const StudentsCounselors: React.FC = () => {
                 "& .MuiRating-iconEmpty": {
                   color: "#e0e0e0",
                 },
-                "& .MuiRating-root": {
+                "& .MuiRating-label": {
+                  fontFamily: "inherit",
+                },
+                direction: "rtl",
+              }}
+              getLabelText={(value) => `${toPersianNumber(value)} ستاره`}
+            />
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              placeholder="نظر خود را بنویسید..."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              sx={{
+                mt: 3,
+                "& .MuiOutlinedInput-root": {
+                  backgroundColor: "white",
+                  borderRadius: { xs: "6px", sm: "6px", md: "8px" },
+                  transition: "border-color 0.3s ease",
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "rgb(204, 207, 209)",
+                    borderWidth: "2px",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#1976d2",
+                    borderWidth: "2.3px",
+                  },
+                },
+                "& .MuiOutlinedInput-input": {
+                  textAlign: "right",
                   direction: "rtl",
                 },
-                "& .MuiRating-decimal": {
-                  direction: "ltr",
+                "& .MuiInputBase-input::placeholder": {
+                  fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+                  textAlign: "right",
+                  direction: "rtl",
                 },
               }}
             />
           </Box>
         </DialogContent>
         <DialogActions
-          sx={{ padding: "16px 24px", borderTop: "1px solid #e0e0e0" }}
+          sx={{ padding: "12px 16px", borderTop: "1px solid #e0e0e0" }}
         >
           <Box
             sx={{
               display: "flex",
-              gap: 2,
+              gap: "8px",
               width: "100%",
               justifyContent: "flex-end",
             }}
@@ -776,19 +973,19 @@ const StudentsCounselors: React.FC = () => {
             <SecondaryButton
               name="انصراف"
               backgroundColor="rgb(221, 84, 84)"
-              width="100px"
-              height="32px"
-              fontSize="14px"
-              borderRadius="12px"
+              width="80px"
+              height="28px"
+              fontSize="12px"
+              borderRadius="8px"
               onClick={() => setRatingDialogOpen(false)}
             />
             <SecondaryButton
               name="ثبت امتیاز"
               backgroundColor="rgb(5, 122, 190)"
-              width="100px"
-              height="32px"
-              fontSize="14px"
-              borderRadius="12px"
+              width="80px"
+              height="28px"
+              fontSize="12px"
+              borderRadius="8px"
               onClick={handleRatingSubmit}
             />
           </Box>
@@ -824,7 +1021,7 @@ const StudentsCounselors: React.FC = () => {
         </Box>
         <DialogContent sx={{ padding: "24px" }}>
           <Typography
-            sx={{ fontSize: "1.1rem", color: "#424242", textAlign: "center" }}
+            sx={{ fontSize: "17.6px", color: "#424242", textAlign: "center" }}
           >
             {confirmAction === "extend"
               ? "آیا از تمدید مشاوره اطمینان دارید؟"
@@ -837,7 +1034,7 @@ const StudentsCounselors: React.FC = () => {
           <Box
             sx={{
               display: "flex",
-              gap: 2,
+              gap: "16px",
               width: "100%",
               justifyContent: "flex-end",
             }}
