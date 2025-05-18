@@ -23,8 +23,8 @@ jobs:
           script: |
             git pull
             docker build -t nginx .
-            docker start -d -p 80:80 --name nginx_container nginx
-            
+            docker run -d -p 80:80 --name nginx_container nginx
+
 
       # Step 1: Checkout the code
       # - name: Checkout code
