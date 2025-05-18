@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Table,
@@ -20,128 +20,69 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Avatar,
-  IconButton,
   TextField,
   PaginationItem,
 } from "@mui/material";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import Header from "@/components/Header/Header";
 import SecondaryButton from "@/components/common/SecondaryButton";
-import ThumbUpAltIcon from "@mui/icons-material/ThumbUpAlt";
-import AddIcon from "@mui/icons-material/Add";
 import StarIcon from "@mui/icons-material/Star";
-import InputBox from "@/components/common/inputbox";
 import { PaginationRenderItemParams } from "@mui/material";
+import axios from "axios";
+import { getToken } from "@/services/auth";
+import { useNavigate } from "react-router-dom";
 
 interface Counselor {
   id: number;
-  firstName: string;
-  lastName: string;
-  startDate: string;
-  endDate: string;
-  status:
-    | "active"
-    | "cancelled"
-    | "completed"
-    | "requested"
-    | "rejected"
-    | "pending_payment";
-  remainingDays: number;
-  rating: number | null;
-  profilePhoto: string;
+  counselorName: string;
+  counselorId: number;
+  requestStatus: number;
+  requestStatusTitle: string;
+  startDate: string | null;
+  endDate: string | null;
+  remainingDays: number | null;
+  rate: number;
+  picName: string;
+  picUrl: string;
 }
 
-// Mock data
-const mockCounselors: Counselor[] = [
-  {
-    id: 1,
-    firstName: "علی",
-    lastName: "محمدی",
-    startDate: "1402/10/01",
-    endDate: "1402/12/29",
-    status: "active",
-    remainingDays: 4,
-    rating: null,
-    profilePhoto: "https://i.pravatar.cc/150?img=1",
-  },
-  {
-    id: 2,
-    firstName: "مریم",
-    lastName: "احمدی",
-    startDate: "1402/09/15",
-    endDate: "1402/12/15",
-    status: "completed",
-    remainingDays: 0,
-    rating: 4,
-    profilePhoto: "https://i.pravatar.cc/150?img=5",
-  },
-  {
-    id: 3,
-    firstName: "رضا",
-    lastName: "کریمی",
-    startDate: "1402/11/01",
-    endDate: "1403/02/29",
-    status: "requested",
-    remainingDays: 0,
-    rating: null,
-    profilePhoto: "https://i.pravatar.cc/150?img=3",
-  },
-  {
-    id: 4,
-    firstName: "سارا",
-    lastName: "حسینی",
-    startDate: "1402/08/01",
-    endDate: "1402/11/30",
-    status: "cancelled",
-    remainingDays: 0,
-    rating: null,
-    profilePhoto: "https://i.pravatar.cc/150?img=4",
-  },
-  {
-    id: 5,
-    firstName: "محمد",
-    lastName: "رضایی",
-    startDate: "1402/12/01",
-    endDate: "1403/03/01",
-    status: "rejected",
-    remainingDays: 0,
-    rating: null,
-    profilePhoto: "https://i.pravatar.cc/150?img=6",
-  },
-  {
-    id: 6,
-    firstName: "زهرا",
-    lastName: "کریمی",
-    startDate: "1402/12/15",
-    endDate: "1403/03/15",
-    status: "pending_payment",
-    remainingDays: 30,
-    rating: null,
-    profilePhoto: "https://i.pravatar.cc/150?img=7",
-  },
-  {
-    id: 7,
-    firstName: "امیر",
-    lastName: "محمدی",
-    startDate: "1402/11/20",
-    endDate: "1403/02/20",
-    status: "active",
-    remainingDays: 60,
-    rating: 5,
-    profilePhoto: "https://i.pravatar.cc/150?img=8",
-  },
-  {
-    id: 8,
-    firstName: "نازنین",
-    lastName: "احمدی",
-    startDate: "1402/10/10",
-    endDate: "1403/01/10",
-    status: "completed",
-    remainingDays: 0,
-    rating: 3,
-    profilePhoto: "https://i.pravatar.cc/150?img=9",
-  },
-];
+interface ApiResponse {
+  value: {
+    items: Counselor[];
+    pageIndex: number;
+    pageSize: number;
+    totalPages: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+    totalCount: number;
+    filteredCount: number;
+  };
+  isSuccess: boolean;
+  isFailure: boolean;
+  message: string | null;
+  error: {
+    code: string;
+    message: string;
+  };
+}
+
+const statusMapping: Record<number, string> = {
+  1: "درخواست شده",
+  3: "در انتظار پرداخت",
+  4: "فعال",
+  5: "تکمیل شده",
+  6: "رد درخواست",
+  7: "لغو شده",
+};
+
+const statusColorMapping: Record<number, string> = {
+  1: "#ff9800", // نارنجی
+  3: "#9c27b0", // بنفش
+  4: "#4caf50", // سبز
+  5: "#2196f3", // آبی
+  6: "#9e9e9e", // خاکستری
+  7: "#f44336", // قرمز
+};
 
 const toPersianNumber = (num: number): string => {
   const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
@@ -154,16 +95,16 @@ const toPersianDate = (date: string): string => {
 
 const StudentsCounselors: React.FC = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [currentPage, setCurrentPage] = useState(1);
-  const [counselors, setCounselors] = useState<Counselor[]>(mockCounselors);
+  const [counselors, setCounselors] = useState<Counselor[]>([]);
   const [selectedCounselor, setSelectedCounselor] = useState<Counselor | null>(
     null
   );
   const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
   const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("همه");
-  const pageSize = isSmallScreen ? 2 : 4;
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<
     "extend" | "cancel" | null
@@ -172,94 +113,86 @@ const StudentsCounselors: React.FC = () => {
     null
   );
   const [comment, setComment] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    page: number
-  ) => {
-    setCurrentPage(page);
-  };
+  useEffect(() => {
+    fetchCounselors();
+  }, [statusFilter, currentPage]);
 
-  const handleCancel = (counselorId: number) => {
-    setCounselors(
-      counselors.map((counselor) =>
-        counselor.id === counselorId
-          ? { ...counselor, status: "cancelled" as const }
-          : counselor
-      )
-    );
-  };
+  const fetchCounselors = async () => {
+    try {
+      setLoading(true);
+      const token = getToken();
 
-  const handleExtension = (counselorId: number) => {
-    setCounselors(
-      counselors.map((counselor) =>
-        counselor.id === counselorId
-          ? { ...counselor, remainingDays: counselor.remainingDays + 30 }
-          : counselor
-      )
-    );
-  };
+      if (!token) {
+        navigate("/login");
+        return;
+      }
 
-  const handleRate = (counselor: Counselor) => {
-    setSelectedCounselor(counselor);
-    setSelectedRating(counselor.rating);
-    setRatingDialogOpen(true);
-  };
+      const pageSize = 5; // Fixed page size as per API
+      const url =
+        statusFilter === "همه"
+          ? `http://62.60.213.13:8080/api/RequestCounselor/MyCounselors?PageSize=${pageSize}&PageIndex=${currentPage}`
+          : `http://62.60.213.13:8080/api/RequestCounselor/MyCounselors?Status=${getStatusNumber(
+              statusFilter
+            )}&PageSize=${pageSize}&PageIndex=${currentPage}`;
 
-  const handleRatingSubmit = () => {
-    if (!selectedCounselor || !selectedRating) return;
+      const response = await axios.get<ApiResponse>(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    setCounselors(
-      counselors.map((counselor) =>
-        counselor.id === selectedCounselor.id
-          ? { ...counselor, rating: selectedRating }
-          : counselor
-      )
-    );
-    setRatingDialogOpen(false);
-    setComment("");
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "#4caf50"; // سبز
-      case "completed":
-        return "#2196f3"; // آبی
-      case "cancelled":
-        return "#f44336"; // قرمز
-      case "requested":
-        return "#ff9800"; // نارنجی
-      case "rejected":
-        return "#9e9e9e"; // خاکستری
-      case "pending_payment":
-        return "#9c27b0"; // بنفش
-      default:
-        return "#757575";
+      if (
+        response.data &&
+        response.data.value &&
+        Array.isArray(response.data.value.items)
+      ) {
+        setCounselors(response.data.value.items);
+        setTotalPages(response.data.value.totalPages || 1);
+        setTotalCount(response.data.value.totalCount || 0);
+      } else {
+        setCounselors([]);
+        setTotalPages(1);
+        setTotalCount(0);
+      }
+    } catch (error) {
+      console.error("Error fetching counselors:", error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        navigate("/login");
+      }
+      setCounselors([]);
+      setTotalPages(1);
+      setTotalCount(0);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "active":
-        return "فعال";
-      case "completed":
-        return "تکمیل شده";
-      case "cancelled":
-        return "لغو شده";
-      case "requested":
-        return "درخواست شده";
-      case "rejected":
-        return "رد درخواست";
-      case "pending_payment":
-        return "در انتظار پرداخت";
-      default:
-        return status;
-    }
+  const getStatusNumber = (statusText: string): number => {
+    const statusMap: { [key: string]: number } = {
+      "درخواست شده": 1,
+      "در انتظار پرداخت": 3,
+      فعال: 4,
+      "تکمیل شده": 5,
+      "رد درخواست": 6,
+      "لغو شده": 7,
+    };
+    return statusMap[statusText] || 0;
+  };
+
+  const getStatusText = (status: number): string => {
+    return statusMapping[status] || "نامشخص";
+  };
+
+  const getStatusColor = (status: number) => {
+    return statusColorMapping[status] || "#757575";
   };
 
   const handleStatusFilterChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     newFilter: string
   ) => {
     if (newFilter !== null) {
@@ -268,19 +201,124 @@ const StudentsCounselors: React.FC = () => {
     }
   };
 
-  // Filter counselors based on status
-  const filteredCounselors = counselors.filter((counselor) => {
-    if (statusFilter === "همه") return true;
-    return counselor.status === statusFilter;
-  });
+  const handlePageChange = (_: React.ChangeEvent<unknown>, page: number) => {
+    setCurrentPage(page);
+  };
 
-  // Calculate pagination for filtered results
-  const totalPages = Math.ceil(filteredCounselors.length / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedCounselors = filteredCounselors.slice(
-    startIndex,
-    startIndex + pageSize
-  );
+  const handleCancel = async (counselorId: number) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      await axios.put(
+        `http://62.60.213.13:8080/api/RequestCounselor/Cancel/${counselorId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCounselors(
+        counselors.map((counselor) =>
+          counselor.id === counselorId
+            ? { ...counselor, requestStatus: 7 }
+            : counselor
+        )
+      );
+    } catch (error) {
+      console.error("Error canceling counselor:", error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        navigate("/login");
+      }
+    }
+  };
+
+  const handleExtension = async (counselorId: number) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      await axios.put(
+        `http://62.60.213.13:8080/api/RequestCounselor/Extend/${counselorId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCounselors(
+        counselors.map((counselor) =>
+          counselor.id === counselorId
+            ? {
+                ...counselor,
+                remainingDays: (counselor.remainingDays || 0) + 30,
+              }
+            : counselor
+        )
+      );
+    } catch (error) {
+      console.error("Error extending counselor:", error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        navigate("/login");
+      }
+    }
+  };
+
+  const handleRate = async (counselor: Counselor) => {
+    setSelectedCounselor(counselor);
+    setSelectedRating(counselor.rate);
+    setRatingDialogOpen(true);
+  };
+
+  const handleRatingSubmit = async () => {
+    if (!selectedCounselor || !selectedRating) return;
+
+    try {
+      const token = getToken();
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      await axios.post(
+        `http://62.60.213.13:8080/api/RequestCounselor/Rate/${selectedCounselor.id}`,
+        {
+          rate: selectedRating,
+          comment: comment,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCounselors(
+        counselors.map((counselor) =>
+          counselor.id === selectedCounselor.id
+            ? { ...counselor, rate: selectedRating }
+            : counselor
+        )
+      );
+      setRatingDialogOpen(false);
+      setComment("");
+    } catch (error) {
+      console.error("Error submitting rating:", error);
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        navigate("/login");
+      }
+    }
+  };
 
   const handleConfirmAction = () => {
     if (!selectedCounselorId) return;
@@ -363,25 +401,40 @@ const StudentsCounselors: React.FC = () => {
               },
             }}
           >
-            <ToggleButton value="همه">همه</ToggleButton>
-            <ToggleButton value="active">فعال</ToggleButton>
-            <ToggleButton value="completed">تکمیل شده</ToggleButton>
-            <ToggleButton value="cancelled">لغو شده</ToggleButton>
-            <ToggleButton value="requested">درخواست شده</ToggleButton>
-            <ToggleButton value="rejected">رد درخواست</ToggleButton>
-            <ToggleButton value="pending_payment">
+            <ToggleButton key="all" value="همه">
+              همه
+            </ToggleButton>
+            <ToggleButton key="requested" value="درخواست شده">
+              درخواست شده
+            </ToggleButton>
+            <ToggleButton key="pending" value="در انتظار پرداخت">
               در انتظار پرداخت
+            </ToggleButton>
+            <ToggleButton key="active" value="فعال">
+              فعال
+            </ToggleButton>
+            <ToggleButton key="completed" value="تکمیل شده">
+              تکمیل شده
+            </ToggleButton>
+            <ToggleButton key="rejected" value="رد درخواست">
+              رد درخواست
+            </ToggleButton>
+            <ToggleButton key="cancelled" value="لغو شده">
+              لغو شده
             </ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Box>
 
-      {counselors.length === 0 && (
+      {loading ? (
+        <Typography sx={{ textAlign: "center", py: "32px" }}>
+          در حال بارگذاری...
+        </Typography>
+      ) : counselors.length === 0 ? (
         <Typography sx={{ textAlign: "center", py: "32px" }}>
           مشاوری یافت نشد
         </Typography>
-      )}
-      {counselors.length > 0 && (
+      ) : (
         <>
           <Typography
             variant="h6"
@@ -409,6 +462,7 @@ const StudentsCounselors: React.FC = () => {
                   {!isSmallScreen && (
                     <>
                       <TableCell
+                        key="name"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
@@ -420,6 +474,7 @@ const StudentsCounselors: React.FC = () => {
                         نام مشاور
                       </TableCell>
                       <TableCell
+                        key="startDate"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
@@ -431,6 +486,7 @@ const StudentsCounselors: React.FC = () => {
                         تاریخ شروع
                       </TableCell>
                       <TableCell
+                        key="endDate"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
@@ -442,6 +498,7 @@ const StudentsCounselors: React.FC = () => {
                         تاریخ پایان
                       </TableCell>
                       <TableCell
+                        key="status"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
@@ -453,6 +510,7 @@ const StudentsCounselors: React.FC = () => {
                         وضعیت
                       </TableCell>
                       <TableCell
+                        key="remainingDays"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
@@ -464,6 +522,7 @@ const StudentsCounselors: React.FC = () => {
                         روزهای باقیمانده
                       </TableCell>
                       <TableCell
+                        key="rating"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
@@ -475,6 +534,7 @@ const StudentsCounselors: React.FC = () => {
                         امتیاز
                       </TableCell>
                       <TableCell
+                        key="actions"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
@@ -491,6 +551,7 @@ const StudentsCounselors: React.FC = () => {
                   {isSmallScreen && (
                     <>
                       <TableCell
+                        key="mobile-info"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
@@ -502,6 +563,7 @@ const StudentsCounselors: React.FC = () => {
                         اطلاعات مشاور
                       </TableCell>
                       <TableCell
+                        key="mobile-actions"
                         sx={{
                           padding: "8px 16px",
                           height: "48px",
@@ -515,14 +577,15 @@ const StudentsCounselors: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedCounselors.map((counselor) => (
+                {counselors.map((counselor) => (
                   <TableRow
-                    key={counselor.id}
+                    key={`counselor-${counselor.id}`}
                     sx={{ "&:hover": { bgcolor: "grey.50" } }}
                   >
                     {!isSmallScreen && (
                       <>
                         <TableCell
+                          key={`name-${counselor.id}`}
                           sx={{
                             textAlign: "center",
                             padding: "8px 16px",
@@ -547,16 +610,15 @@ const StudentsCounselors: React.FC = () => {
                             }}
                           >
                             <Avatar
-                              src={counselor.profilePhoto}
-                              alt={`${counselor.firstName} ${counselor.lastName}`}
+                              src={counselor.picUrl}
+                              alt={counselor.counselorName}
                               sx={{ width: "32px", height: "32px" }}
                             />
-                            <Typography>
-                              {`${counselor.firstName} ${counselor.lastName}`}
-                            </Typography>
+                            <Typography>{counselor.counselorName}</Typography>
                           </Box>
                         </TableCell>
                         <TableCell
+                          key={`startDate-${counselor.id}`}
                           sx={{
                             textAlign: "center",
                             padding: "8px 16px",
@@ -564,9 +626,12 @@ const StudentsCounselors: React.FC = () => {
                             width: "15%",
                           }}
                         >
-                          {toPersianDate(counselor.startDate)}
+                          {counselor.startDate
+                            ? toPersianDate(counselor.startDate)
+                            : "-"}
                         </TableCell>
                         <TableCell
+                          key={`endDate-${counselor.id}`}
                           sx={{
                             textAlign: "center",
                             padding: "8px 16px",
@@ -574,9 +639,12 @@ const StudentsCounselors: React.FC = () => {
                             width: "15%",
                           }}
                         >
-                          {toPersianDate(counselor.endDate)}
+                          {counselor.endDate
+                            ? toPersianDate(counselor.endDate)
+                            : "-"}
                         </TableCell>
                         <TableCell
+                          key={`status-${counselor.id}`}
                           sx={{
                             textAlign: "center",
                             padding: "8px 16px",
@@ -585,12 +653,15 @@ const StudentsCounselors: React.FC = () => {
                           }}
                         >
                           <Typography
-                            sx={{ color: getStatusColor(counselor.status) }}
+                            sx={{
+                              color: getStatusColor(counselor.requestStatus),
+                            }}
                           >
-                            {getStatusText(counselor.status)}
+                            {getStatusText(counselor.requestStatus)}
                           </Typography>
                         </TableCell>
                         <TableCell
+                          key={`remainingDays-${counselor.id}`}
                           sx={{
                             textAlign: "center",
                             padding: "8px 16px",
@@ -598,9 +669,12 @@ const StudentsCounselors: React.FC = () => {
                             width: "15%",
                           }}
                         >
-                          {toPersianNumber(counselor.remainingDays)}
+                          {counselor.remainingDays
+                            ? toPersianNumber(counselor.remainingDays)
+                            : "-"}
                         </TableCell>
                         <TableCell
+                          key={`rating-${counselor.id}`}
                           sx={{
                             textAlign: "center",
                             padding: "8px 16px",
@@ -608,9 +682,9 @@ const StudentsCounselors: React.FC = () => {
                             width: "10%",
                           }}
                         >
-                          {counselor.rating ? (
+                          {counselor.rate > 0 ? (
                             <Rating
-                              value={counselor.rating}
+                              value={counselor.rate}
                               readOnly
                               size="small"
                               sx={{
@@ -622,8 +696,9 @@ const StudentsCounselors: React.FC = () => {
                                 `${toPersianNumber(value)} ستاره`
                               }
                             />
-                          ) : counselor.remainingDays < 5 &&
-                            counselor.status === "active" ? (
+                          ) : counselor.remainingDays !== null &&
+                            counselor.remainingDays < 5 &&
+                            counselor.requestStatus === 4 ? (
                             <Box
                               onClick={() => handleRate(counselor)}
                               sx={{
@@ -664,6 +739,7 @@ const StudentsCounselors: React.FC = () => {
                           )}
                         </TableCell>
                         <TableCell
+                          key={`actions-${counselor.id}`}
                           sx={{
                             textAlign: "center",
                             padding: "8px 16px",
@@ -679,9 +755,10 @@ const StudentsCounselors: React.FC = () => {
                               gap: "8px",
                             }}
                           >
-                            {counselor.status === "active" && (
+                            {counselor.requestStatus === 4 && (
                               <>
                                 <SecondaryButton
+                                  key={`extend-${counselor.id}`}
                                   name="تمدید"
                                   backgroundColor="rgb(5, 190, 30)"
                                   width="80px"
@@ -693,6 +770,7 @@ const StudentsCounselors: React.FC = () => {
                                   borderRadius="8px"
                                 />
                                 <SecondaryButton
+                                  key={`cancel-${counselor.id}`}
                                   name="لغو"
                                   backgroundColor="rgb(221, 84, 84)"
                                   width="80px"
@@ -705,8 +783,9 @@ const StudentsCounselors: React.FC = () => {
                                 />
                               </>
                             )}
-                            {counselor.status === "pending_payment" && (
+                            {counselor.requestStatus === 3 && (
                               <SecondaryButton
+                                key={`payment-${counselor.id}`}
                                 name="صفحه پرداخت"
                                 backgroundColor="rgb(5, 122, 190)"
                                 width="100px"
@@ -726,6 +805,7 @@ const StudentsCounselors: React.FC = () => {
                     {isSmallScreen && (
                       <>
                         <TableCell
+                          key={`mobile-info-${counselor.id}`}
                           sx={{
                             padding: "8px 16px",
                             height: "48px",
@@ -748,19 +828,20 @@ const StudentsCounselors: React.FC = () => {
                             }}
                           >
                             <Avatar
-                              src={counselor.profilePhoto}
-                              alt={`${counselor.firstName} ${counselor.lastName}`}
+                              src={counselor.picUrl}
+                              alt={counselor.counselorName}
                               sx={{ width: "32px", height: "32px" }}
                             />
                             <Typography
                               variant="subtitle2"
                               sx={{ fontWeight: "bold" }}
                             >
-                              {`${counselor.firstName} ${counselor.lastName}`}
+                              {counselor.counselorName}
                             </Typography>
                           </Box>
                         </TableCell>
                         <TableCell
+                          key={`mobile-actions-${counselor.id}`}
                           sx={{
                             padding: "8px 16px",
                             height: "48px",
@@ -775,9 +856,10 @@ const StudentsCounselors: React.FC = () => {
                               paddingLeft: "16px",
                             }}
                           >
-                            {counselor.status === "active" && (
+                            {counselor.requestStatus === 4 && (
                               <>
                                 <SecondaryButton
+                                  key={`mobile-extend-${counselor.id}`}
                                   name="تمدید"
                                   backgroundColor="rgb(5, 190, 30)"
                                   width="80px"
@@ -789,6 +871,7 @@ const StudentsCounselors: React.FC = () => {
                                   borderRadius="8px"
                                 />
                                 <SecondaryButton
+                                  key={`mobile-cancel-${counselor.id}`}
                                   name="لغو"
                                   backgroundColor="rgb(221, 84, 84)"
                                   width="80px"
@@ -801,8 +884,9 @@ const StudentsCounselors: React.FC = () => {
                                 />
                               </>
                             )}
-                            {counselor.status === "pending_payment" && (
+                            {counselor.requestStatus === 3 && (
                               <SecondaryButton
+                                key={`mobile-payment-${counselor.id}`}
                                 name="صفحه پرداخت"
                                 backgroundColor="rgb(5, 122, 190)"
                                 width="100px"
@@ -850,12 +934,15 @@ const StudentsCounselors: React.FC = () => {
                 if (item.type === "page") {
                   return (
                     <PaginationItem
+                      key={`page-${item.page}`}
                       {...item}
                       children={toPersianNumber(item.page || 0)}
                     />
                   );
                 }
-                return <PaginationItem {...item} />;
+                return (
+                  <PaginationItem key={`pagination-${item.type}`} {...item} />
+                );
               }}
             />
           </Box>
