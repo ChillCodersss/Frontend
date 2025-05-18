@@ -115,7 +115,6 @@ const StudentsCounselors: React.FC = () => {
   const [comment, setComment] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     fetchCounselors();
@@ -150,13 +149,20 @@ const StudentsCounselors: React.FC = () => {
         response.data.value &&
         Array.isArray(response.data.value.items)
       ) {
-        setCounselors(response.data.value.items);
+        const sortedCounselors =
+          statusFilter === "همه"
+            ? [...response.data.value.items].sort((a, b) => {
+                // Put active counselors (status 4) first
+                if (a.requestStatus === 4 && b.requestStatus !== 4) return -1;
+                if (a.requestStatus !== 4 && b.requestStatus === 4) return 1;
+                return 0;
+              })
+            : response.data.value.items;
+        setCounselors(sortedCounselors);
         setTotalPages(response.data.value.totalPages || 1);
-        setTotalCount(response.data.value.totalCount || 0);
       } else {
         setCounselors([]);
         setTotalPages(1);
-        setTotalCount(0);
       }
     } catch (error) {
       console.error("Error fetching counselors:", error);
@@ -165,7 +171,6 @@ const StudentsCounselors: React.FC = () => {
       }
       setCounselors([]);
       setTotalPages(1);
-      setTotalCount(0);
     } finally {
       setLoading(false);
     }
@@ -382,7 +387,7 @@ const StudentsCounselors: React.FC = () => {
             exclusive
             onChange={handleStatusFilterChange}
             sx={{
-              gap: "4px",
+              gap: "8px",
               flexWrap: isSmallScreen ? "wrap" : "nowrap",
               justifyContent: "center",
               "& .MuiToggleButton-root": {
@@ -404,14 +409,14 @@ const StudentsCounselors: React.FC = () => {
             <ToggleButton key="all" value="همه">
               همه
             </ToggleButton>
+            <ToggleButton key="active" value="فعال">
+              فعال
+            </ToggleButton>
             <ToggleButton key="requested" value="درخواست شده">
               درخواست شده
             </ToggleButton>
             <ToggleButton key="pending" value="در انتظار پرداخت">
               در انتظار پرداخت
-            </ToggleButton>
-            <ToggleButton key="active" value="فعال">
-              فعال
             </ToggleButton>
             <ToggleButton key="completed" value="تکمیل شده">
               تکمیل شده
