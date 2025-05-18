@@ -21,6 +21,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            docker stop nginx_container
+            docker remove nginx_container
             git pull
             docker build -t nginx .
             docker run -d -p 80:80 --name nginx_container nginx
