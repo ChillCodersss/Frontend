@@ -226,8 +226,8 @@ const StudentsCounselors: React.FC = () => {
       }
 
       await axios.put(
-        `http://62.60.213.13:8080/api/RequestCounselor/Cancel/${counselorId}`,
-        {},
+        `http://62.60.213.13:8080/api/RequestCounselor/Cancel`,
+        { id: counselorId },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -640,21 +640,25 @@ const StudentsCounselors: React.FC = () => {
                               justifyContent: "center",
                               gap: "8px",
                               width: "100%",
-                              "& .MuiAvatar-root": {
-                                flexShrink: 0,
-                              },
-                              "& .MuiTypography-root": {
-                                flexShrink: 0,
-                                minWidth: "80px",
+                              cursor: "pointer",
+                              "&:hover .counselor-name": {
+                                color: "#1976d2",
                               },
                             }}
+                            onClick={() =>
+                              navigate(
+                                `/OurCounselor/CounselorPage/${counselor.counselorId}`
+                              )
+                            }
                           >
                             <Avatar
                               src={counselor.picUrl}
                               alt={counselor.counselorName}
                               sx={{ width: "32px", height: "32px" }}
                             />
-                            <Typography>{counselor.counselorName}</Typography>
+                            <Typography className="counselor-name">
+                              {counselor.counselorName}
+                            </Typography>
                           </Box>
                         </TableCell>
                         <TableCell
