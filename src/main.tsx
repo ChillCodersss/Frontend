@@ -45,6 +45,7 @@ createRoot(document.getElementById("root")!).render(
       <Route path="/Payments" element={<Payments />} />
       <Route path="/dashboard" element={<StudentList></StudentList>} />
       <Route path="/StudentProfile" element={<StudentProfile />} />
+      <Route path="/" element={<Landing></Landing>} />
     </Routes>
   </BrowserRouter>
   //</StrictMode>
