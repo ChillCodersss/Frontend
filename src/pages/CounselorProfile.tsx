@@ -9,7 +9,7 @@ import {
   Autocomplete,
   useMediaQuery,
   useTheme,
-  Button,
+  // Button,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -31,7 +31,7 @@ const CounselorProfile = () => {
   const [provinceInputValue, setProvinceInputValue] = useState("");
   const [loadingProvinces, setLoadingProvinces] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [counselorId, setCounselorId] = useState<number | null>(null);
   const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
 
@@ -54,7 +54,7 @@ const CounselorProfile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
-      setError(null);
+      // setError(null);
 
       const token = getToken();
       if (!token) {
@@ -569,14 +569,14 @@ const CounselorProfile = () => {
                     </Box>
                     <Autocomplete
                       value={formData.province}
-                      onChange={(event, newValue) => {
+                      onChange={(_, newValue) => {
                         setFormData((prev) => ({
                           ...prev,
                           province: newValue || "",
                         }));
                       }}
                       inputValue={provinceInputValue}
-                      onInputChange={(event, newInputValue) => {
+                      onInputChange={(_, newInputValue) => {
                         setProvinceInputValue(newInputValue);
                       }}
                       options={provinceOptions}

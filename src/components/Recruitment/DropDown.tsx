@@ -32,11 +32,11 @@ function DropDown({ label, palceholder, value, inputValue, options, optionsLoadi
             </Box>
             <Autocomplete
                 value={value}
-                onChange={(event, newValue) => {
+                onChange={(_, newValue) => {
                     changeHandler(newValue);
                 }}
                 inputValue={inputValue}
-                onInputChange={(event, newInputValue) => {
+                onInputChange={(_, newInputValue) => {
                     inputHandler(newInputValue);
                 }}
                 options={options}
