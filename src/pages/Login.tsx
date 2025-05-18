@@ -8,7 +8,8 @@ import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Email from "@mui/icons-material/Email";
-import base from "@/services/client"
+import logo from "@/assets/logo.jpg";
+import loginimg from "@/assets/login.png";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Login.css";
@@ -102,7 +103,7 @@ const Login: React.FC = () => {
       }, 2000);
 
       setFormData({ email: "", password: "" });
-    } catch (error) {
+    } catch {
       toast.error("خطا در ارتباط با سرور", {
         position: "bottom-right",
         autoClose: 5000,
@@ -191,7 +192,7 @@ const Login: React.FC = () => {
                 }}
               >
                 <img
-                  src="./src/assets/logo.jpg"
+                  src={logo}
                   alt="Logo"
                   style={{
                     width: "120px",
@@ -322,7 +323,7 @@ const Login: React.FC = () => {
               }}
             >
               <img
-                src="./src/assets/login.png"
+                src={loginimg}
                 alt="Side Image"
                 style={{ width: "100%", height: "100%" }}
               />

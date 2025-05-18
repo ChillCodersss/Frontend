@@ -14,7 +14,7 @@ import CounselorDisplay from "./pages/CounselorDisplay";
 // import Sidebar from "./components/Sidebar/Sidebar";
 import Landing from "./pages/Landing/Landing";
 import ScrollToTop from "./components/ScrollToTop";
-import StudentDisplayPopup from "./components/StudentDisplay/StudentDisplay";
+// import StudentDisplayPopup from "./components/StudentDisplay/StudentDisplay";
 import StudentList from "./pages/CounselorRequests";
 import Payments from "./pages/Payments/Payments";
 import ChangePassword from "./components/Header/ChangePassword";
@@ -56,9 +56,6 @@ createRoot(document.getElementById("root")!).render(
         <Route path="chat-counselor" element={<div>Chat with Counselor</div>} />
         <Route path="payments" element={<Payments />}/>
       </Route>
-        path="/OurCounselor/CounselorPage/:id"
-        element={<CounselorDisplay />}
-      />
     </Routes>
   </BrowserRouter>
 );
