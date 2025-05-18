@@ -20,18 +20,17 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  IconButton,
   useMediaQuery,
   useTheme,
   Tabs,
   Tab,
 } from '@mui/material';
-import { CheckCircle, Cancel } from '@mui/icons-material';
 import axios from 'axios';
 import { getToken } from "@/services/auth";
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Header from '@/components/Header/Header';
 import { Navigate } from 'react-router-dom';
+import StudentDisplayPopup from '@/components/StudentDisplay/StudentDisplay';
 
 interface Student {
   id: number;
@@ -43,7 +42,8 @@ interface Student {
   schoolName: string | null;
   aboutMe: string | null;
   province: string | null;
-  picName: string | null;
+  studentId: number;
+  remainingDays: number | null;
   picUrl: string | null;
   requestStatus: number;
   createDate: string | null;
@@ -154,17 +154,12 @@ const useStudents = (
       };
 
       if (statusFilter === 'فعال') {
-        params.Status = 1;
-      } else if (statusFilter === 'رد شده') {
-        params.Status = 6;
-      } else if (statusFilter === 'لغو شده') {
-        params.Status = 7;
-      } else if (statusFilter === 'تایید شده') {
-        params.Status = 3;
+        params.Status = 4;
+      } else if (statusFilter === 'گذشته') {
+        params.Status = 5;
       }
-
       const response = await axios.get<ApiResponse>(
-        'http://62.60.213.13/api/RequestCounselor/GetList',
+        'http://62.60.213.13/api/RequestCounselor/MyStudents',
         {
           params,
           headers: { Authorization: `Bearer ${token}` },
@@ -209,21 +204,16 @@ const useStudents = (
   return { value, loading, error, imageUrls, setImageUrls, fetchImage, fetchStudents };
 };
 
-const StudentList: React.FC = () => {
+const Students: React.FC = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const [currentPage, setCurrentPage] = useState(1);
   const [majorFilter, setMajorFilter] = useState<string>('همه');
   const [gradeFilter, setGradeFilter] = useState<string>('همه');
-  const [statusFilter, setStatusFilter] = useState<string>('همه');
+  const [statusFilter, setStatusFilter] = useState<string>('فعال');
   const [selectedAboutMe, setSelectedAboutMe] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(true);
-  const [confirmDialog, setConfirmDialog] = useState<{
-    open: boolean;
-    action: 'approve' | 'reject' | null;
-    studentId: number | null;
-  }>({ open: false, action: null, studentId: null });
   const pageSize = isSmallScreen ? 4 : 4;
 
   useEffect(() => {
@@ -232,7 +222,7 @@ const StudentList: React.FC = () => {
     setTokenLoading(false);
   }, []);
 
-  const { value, loading, error, imageUrls, setImageUrls, fetchImage, fetchStudents } = useStudents(
+  const { value, loading, error, imageUrls, setImageUrls, fetchImage } = useStudents(
     currentPage,
     pageSize,
     majorFilter,
@@ -273,12 +263,12 @@ const StudentList: React.FC = () => {
     };
   }, [imageUrls, fetchImage, setImageUrls]);
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
+  const handlePageChange = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
   }, []);
 
   const handleMajorFilterChange = useCallback(
-    (event: React.MouseEvent<HTMLElement>, newFilter: string) => {
+    (_: React.MouseEvent<HTMLElement>, newFilter: string) => {
       if (newFilter !== null) {
         setMajorFilter(newFilter);
         setCurrentPage(1);
@@ -288,7 +278,7 @@ const StudentList: React.FC = () => {
   );
 
   const handleGradeFilterChange = useCallback(
-    (event: React.MouseEvent<HTMLElement>, newFilter: string) => {
+    (_: React.MouseEvent<HTMLElement>, newFilter: string) => {
       if (newFilter !== null) {
         setGradeFilter(newFilter);
         setCurrentPage(1);
@@ -298,7 +288,7 @@ const StudentList: React.FC = () => {
   );
 
   const handleStatusFilterChange = useCallback(
-    (event: React.SyntheticEvent, newFilter: string) => {
+    (_: React.SyntheticEvent, newFilter: string) => {
       if (newFilter !== null) {
         setStatusFilter(newFilter);
         setCurrentPage(1);
@@ -307,84 +297,16 @@ const StudentList: React.FC = () => {
     []
   );
 
-  const handleShowMore = useCallback((aboutMe: string | null) => {
-    setSelectedAboutMe(aboutMe || 'ندارد');
-  }, []);
-
   const handleCloseAboutMeDialog = useCallback(() => {
     setSelectedAboutMe(null);
   }, []);
 
-  const handleOpenConfirmDialog = useCallback((action: 'approve' | 'reject', studentId: number) => {
-    setConfirmDialog({ open: true, action, studentId });
-  }, []);
-
-  const handleCloseConfirmDialog = useCallback(() => {
-    setConfirmDialog({ open: false, action: null, studentId: null });
-  }, []);
-
-  const handleConfirmAction = useCallback(async () => {
-    if (!token || !confirmDialog.studentId || !confirmDialog.action) return;
-
-    try {
-      if (confirmDialog.action === 'approve') {
-        const formData = new FormData();
-        formData.append('Id', confirmDialog.studentId.toString());
-
-        const response = await axios.post(
-          'http://62.60.213.13/api/RequestCounselor/Approve',
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          console.log(`Approved student with ID: ${confirmDialog.studentId}`);
-          await fetchStudents(); // Refresh the student list
-        } else {
-          console.error('Failed to approve student:', response.data);
-        }
-      } else if (confirmDialog.action === 'reject') {
-        const response = await axios.post(
-          'http://62.60.213.13/api/RequestCounselor/Reject',
-          { id: confirmDialog.studentId },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        if (response.status === 200) {
-          console.log(`Rejected student with ID: ${confirmDialog.studentId}`);
-          await fetchStudents();
-        } else {
-          console.error('Failed to reject student:', response.data);
-        }
-      }
-    } catch (error) {
-      console.error(`Error ${confirmDialog.action}ing student:`, error);
-    } finally {
-      handleCloseConfirmDialog();
-    }
-  }, [token, confirmDialog, handleCloseConfirmDialog, fetchStudents]);
-
   const filteredItems = useMemo(() => value?.items || [], [value]);
-
-  const truncateText = (text: string | null, maxLength: number) => {
-    if (!text || text === 'ندارد') return 'ندارد';
-    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
-  };
 
   if (tokenLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-        <CircularProgress />
+        <CircularProgress size={24} />
       </Box>
     );
   }
@@ -420,11 +342,8 @@ const StudentList: React.FC = () => {
             },
           }}
         >
-          <Tab label="همه" value="همه" />
           <Tab label="فعال" value="فعال" />
-          <Tab label="رد شده" value="رد شده" />
-          <Tab label="تایید شده" value="تایید شده" />
-          <Tab label="لغو شده" value="لغو شده" />
+          <Tab label="گذشته" value="گذشته" />
         </Tabs>
       </Box>
 
@@ -536,7 +455,7 @@ const StudentList: React.FC = () => {
                 maxHeight: isSmallScreen ? '60vh' : '70vh', 
                 overflowY: 'auto', 
                 marginTop: isSmallScreen ? '20px' : '50px',
-                minWidth: isSmallScreen ? '100%' : 'auto'
+                minWidth: isSmallScreen ? '100%' : ' '
               }}
             >
               <Table stickyHeader size={isSmallScreen ? 'small' : 'medium'}>
@@ -547,11 +466,7 @@ const StudentList: React.FC = () => {
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>نام</TableCell>
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>رشته</TableCell>
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>پایه تحصیلی</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>معدل</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>مدرسه</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>استان</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>تاریخ ایجاد</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "right", padding: '8px' }}>درباره من</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>روز باقی مانده</TableCell>
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>عملیات</TableCell>
                       </>
                     )}
@@ -568,8 +483,8 @@ const StudentList: React.FC = () => {
                     <TableRow key={student.id} sx={{ '&:hover': { bgcolor: 'grey.50' } }}>
                       {!isSmallScreen && (
                         <>
-                          <TableCell sx={{ padding: '8px' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+                          <TableCell sx={{ padding: '8px', textAlign: 'center' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
                               <Box
                                 data-pic-url={student.picUrl}
                                 ref={(el: HTMLDivElement) => {
@@ -580,66 +495,24 @@ const StudentList: React.FC = () => {
                                   <Avatar
                                     src={imageUrls[student.picUrl]}
                                     alt={`${student.firstName} ${student.lastName}`}
-                                    sx={{ width: 60, height: 60, margin: 0 }}
+                                    sx={{ width: 60, height: 60 }}
                                   />
                                 ) : (
-                                  <Avatar sx={{ width: 60, height: 60, bgcolor: 'grey.300', margin: 0 }}>
+                                  <Avatar sx={{ width: 60, height: 60, bgcolor: 'grey.300' }}>
                                     {student.firstName.charAt(0)}
                                   </Avatar>
                                 )}
                               </Box>
-                              <Typography sx={{ marginRight: 1, fontWeight: 'bold' }}>
+                              <Typography sx={{ fontWeight: 'bold' }}>
                                 {`${student.firstName} ${student.lastName}`}
                               </Typography>
                             </Box>
                           </TableCell>
                           <TableCell sx={{ textAlign: "center", padding: '8px' }}>{student.majorTitle || 'ندارد'}</TableCell>
                           <TableCell sx={{ textAlign: "center", padding: '8px' }}>{student.gradeLevel || 'ندارد'}</TableCell>
-                          <TableCell sx={{ textAlign: "center", padding: '8px' }}>{student.lastGradeGPA}</TableCell>
-                          <TableCell sx={{ textAlign: "center", padding: '8px' }}>{student.schoolName || 'ندارد'}</TableCell>
-                          <TableCell sx={{ textAlign: "center", padding: '8px' }}>{student.province || 'ندارد'}</TableCell>
-                          <TableCell sx={{ textAlign: "center", padding: '8px' }}>{student.createDate || 'ندارد'}</TableCell>
+                          <TableCell sx={{ textAlign: "center", padding: '8px' }}>{student.remainingDays || 'ندارد'}</TableCell>
                           <TableCell sx={{ padding: '8px' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Typography>
-                                {truncateText(student.aboutMe, 20)}
-                              </Typography>
-                              {student.aboutMe && student.aboutMe.length > 20 && (
-                                <Button
-                                  size="small"
-                                  onClick={() => handleShowMore(student.aboutMe)}
-                                  sx={{ color: '#057abe' }}
-                                >
-                                  نمایش بیشتر
-                                </Button>
-                              )}
-                            </Box>
-                          </TableCell>
-                          <TableCell sx={{ padding: '8px' }}>
-                            {student.requestStatus === 1 ? (
-                              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                                <IconButton
-                                  onClick={() => handleOpenConfirmDialog('approve', student.id)}
-                                  sx={{ color: 'green' }}
-                                >
-                                  <CheckCircle />
-                                </IconButton>
-                                <IconButton
-                                  onClick={() => handleOpenConfirmDialog('reject', student.id)}
-                                  sx={{ color: 'red' }}
-                                >
-                                  <Cancel />
-                                </IconButton>
-                              </Box>
-                            ) : student.requestStatus === 6 ? (
-                              <Typography sx={{ color: 'red', textAlign: 'center' }}>رد شده</Typography>
-                            ) : student.requestStatus === 3 ? (
-                              <Typography sx={{ color: 'green', textAlign: 'center' }}>تایید شده</Typography>
-                            ) : student.requestStatus === 7 ? (
-                              <Typography sx={{ color: 'orange', textAlign: 'center' }}>لغو شده</Typography>
-                            ) : (
-                              <Typography sx={{ textAlign: 'center' }}>-</Typography>
-                            )}
+                            <StudentDisplayPopup studentId={student.studentId.toString()} />
                           </TableCell>
                         </>
                       )}
@@ -678,60 +551,13 @@ const StudentList: React.FC = () => {
                                   <strong>پایه:</strong> {student.gradeLevel || 'ندارد'}
                                 </Typography>
                                 <Typography variant="caption">
-                                  <strong>معدل:</strong> {student.lastGradeGPA}
-                                </Typography>
-                                <Typography variant="caption">
-                                  <strong>استان:</strong> {student.province}
-                                </Typography>
-                                <Typography variant="caption">
-                                  <strong>مدرسه:</strong> {student.schoolName}
-                                </Typography>
-                                <Typography variant="caption">
-                                  <strong>تاریخ ایجاد:</strong> {student.createDate || 'ندارد'}
+                                  <strong>روز باقی مانده:</strong> {student.remainingDays || 'ندارد'}
                                 </Typography>
                               </Box>
-                              <Typography variant="caption" sx={{ display: 'flex', gap: 1 }}>
-                                <strong>درباره من:</strong> 
-                                {truncateText(student.aboutMe, 15)}
-                                {student.aboutMe && student.aboutMe.length > 15 && (
-                                  <Button
-                                    size="small"
-                                    onClick={() => handleShowMore(student.aboutMe)}
-                                    sx={{ color: '#057abe', padding: 0, minWidth: 'auto' }}
-                                  >
-                                    بیشتر
-                                  </Button>
-                                )}
-                              </Typography>
                             </Box>
                           </TableCell>
                           <TableCell sx={{ padding: '4px' }}>
-                            {student.requestStatus === 1 ? (
-                              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 0.5 }}>
-                                <IconButton
-                                  size="small"
-                                  onClick={() => handleOpenConfirmDialog('approve', student.id)}
-                                  sx={{ color: 'green' }}
-                                >
-                                  <CheckCircle fontSize="small" />
-                                </IconButton>
-                                <IconButton
-                                  size="small"
-                                  onClick={() => handleOpenConfirmDialog('reject', student.id)}
-                                  sx={{ color: 'red' }}
-                                >
-                                  <Cancel fontSize="small" />
-                                </IconButton>
-                              </Box>
-                            ) : student.requestStatus === 6 ? (
-                              <Typography variant="caption" sx={{ color: 'red', textAlign: 'center' }}>رد شده</Typography>
-                            ) : student.requestStatus === 3 ? (
-                              <Typography variant="caption" sx={{ color: 'green', textAlign: 'center' }}>تایید شده</Typography>
-                            ) : student.requestStatus === 7 ? (
-                              <Typography variant="caption" sx={{ color: 'orange', textAlign: 'center' }}>لغو شده</Typography>
-                            ) : (
-                              <Typography variant="caption" sx={{ textAlign: 'center' }}>-</Typography>
-                            )}
+                            <StudentDisplayPopup studentId={student.studentId.toString()} />
                           </TableCell>
                         </>
                       )}
@@ -766,53 +592,6 @@ const StudentList: React.FC = () => {
           </Box>
         </>
       )}
-
-      <Dialog
-        open={!!selectedAboutMe}
-        onClose={handleCloseAboutMeDialog}
-        dir="rtl"
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle sx={{ fontWeight: 'bold' }}>
-          درباره من
-        </DialogTitle>
-        <DialogContent>
-          <Typography>{selectedAboutMe}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAboutMeDialog} color="primary">
-            بستن
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog
-        open={confirmDialog.open}
-        onClose={handleCloseConfirmDialog}
-        dir="rtl"
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle sx={{ fontWeight: 'bold' }}>
-          {confirmDialog.action === 'approve' ? 'تأیید درخواست' : 'رد درخواست'}
-        </DialogTitle>
-        <DialogContent>
-          <Typography>
-            {confirmDialog.action === 'approve'
-              ? 'آیا از تأیید درخواست اطمینان دارید؟'
-              : 'آیا از رد درخواست اطمینان دارید؟'}
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseConfirmDialog} color="primary">
-            لغو
-          </Button>
-          <Button onClick={handleConfirmAction} color="primary" autoFocus>
-            تأیید
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 
@@ -824,4 +603,4 @@ const StudentList: React.FC = () => {
   );
 };
 
-export default StudentList;
+export default Students;

@@ -23,6 +23,7 @@ import {
   Logout as LogoutIcon,
   School as SchoolIcon,
   Person as PersonIcon,
+  AttachMoney as AttachMoneyIcon 
 } from "@mui/icons-material";
 import { getUserInfo, removeToken } from "@/services/auth";
 
@@ -46,19 +47,16 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 
   // Define sidebar items for each role
   const counselorSidebarItems: SidebarItem[] = [
-    { label: "داشبورد", icon: <DashboardIcon />, path: "/dashboard" },
-    { label: "دانشجویان", icon: <PeopleIcon />, path: "/students" },
-    { label: "چت با دانشجو", icon: <MessageIcon />, path: "/chat-student" },
-    { label: "فایل‌های مشاوره", icon: <FolderIcon />, path: "/counseling-files" },
-    { label: "آمار مشاوره", icon: <BarChartIcon />, path: "/counseling-stats" },
+    { label: "درخواست های من", icon: <DashboardIcon />, path: "/dashboard/counselorrequests" },
+    { label: "دانش آموزان من", icon: <PeopleIcon />, path: "/dashboard/students" },
+    { label: "چت های من ", icon: <MessageIcon />, path: "/dashboard/chat-student" },
+    { label: "پرداختی ها", icon: <AttachMoneyIcon />, path: "/dashboard/incoms" },
   ];
 
   const studentSidebarItems: SidebarItem[] = [
-    { label: "داشبورد", icon: <DashboardIcon />, path: "/dashboard" },
-    { label: "مشاوران", icon: <PersonIcon />, path: "/counselors" },
-    { label: "چت با مشاور", icon: <MessageIcon />, path: "/chat-counselor" },
-    { label: "منابع آموزشی", icon: <SchoolIcon />, path: "/educational-resources" },
-    { label: "پیشرفت تحصیلی", icon: <BarChartIcon />, path: "/academic-progress" },
+    { label: "مشاوران من", icon: <PersonIcon />, path: "/dashboard/studentscounselors" },
+    { label: "چت با مشاور", icon: <MessageIcon />, path: "/dashboard/chat-counselor" },
+    { label: "پرداختی ها", icon: <AttachMoneyIcon />, path: "/dashboard/payments " },
   ];
 
   // Fetch user role on mount
@@ -66,12 +64,10 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     const info = getUserInfo();
     if (info) {
       setRole(info.role);
-      // Set initial active item based on current path
       setActiveItem(window.location.pathname);
     }
   }, []);
 
-  // Determine which sidebar items to display based on role
   const sidebarItems = role === "Counselor" ? counselorSidebarItems : role === "Student" ? studentSidebarItems : [];
 
   const handleDrawerToggle = () => {
@@ -229,7 +225,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
               if (isMobile && open) {
                 setOpen(false);
               }
-              navigate("/Landing");
+              navigate("/");
             }}
           >
             <Box

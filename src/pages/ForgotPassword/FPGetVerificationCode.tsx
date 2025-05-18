@@ -35,7 +35,7 @@ const FPGetVerificationCode = () => {
     }
     try {
       const response = await fetch(
-        "http://localhost:8080/api/Auth/VerifyCode",
+        "http://62.60.213.13/api/Auth/VerifyCode",
         {
           method: "POST",
           headers: {
@@ -192,7 +192,7 @@ const FPGetVerificationCode = () => {
                     onClick={async (event) => {
                       event.preventDefault();
                       const response = await fetch(
-                        "http://localhost:8080/api/Auth/ForgotPassword",
+                        "http://62.60.213.13/api/Auth/ForgotPassword",
                         {
                           method: "POST",
                           headers: {

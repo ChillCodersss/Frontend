@@ -8,6 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Email from "@mui/icons-material/Email";
+import base from "@/services/client"
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Login.css";
@@ -58,7 +59,6 @@ const Login: React.FC = () => {
       const data = await response.json();
 
       if (!response.ok || data.IsFailure) {
-        // نمایش ارورهای ولیدیشن (اگر وجود داشته باشن)
         if (Array.isArray(data.errors)) {
           data.errors.forEach((err: { message: string }) => {
             toast.error(err.message, {
@@ -67,11 +67,8 @@ const Login: React.FC = () => {
               rtl: true,
             });
           });
-        }
-
-        // اگر errors نبود، ولی فیلد Error وجود داشت
-        else if (data.message) {
-          const messageFromServer = data.message.split("|")[0]; // فقط پیام اول
+        } else if (data.message) {
+          const messageFromServer = data.message.split("|")[0];
           toast.error(messageFromServer, {
             position: "bottom-right",
             autoClose: 5000,
@@ -84,27 +81,24 @@ const Login: React.FC = () => {
       }
 
       if (data.value?.accessToken) {
-        // Store tokens and user data using your auth service
-
         storeToken(data.value.accessToken);
-
         storeUserInfo({
           id: data.value.id,
-
           userName: data.value.userName,
-
           role: data.value.role,
         });
       }
-      // موفقیت
+
       toast.success(data?.message || "با موفقیت وارد شدید", {
         position: "bottom-right",
         autoClose: 5000,
         rtl: true,
       });
 
+      // Navigate to role-specific dashboard route
+      const redirectPath = data.value.role === "Counselor" ? "/dashboard/counselorrequests" : "/dashboard/studentscounselors";
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate(redirectPath);
       }, 2000);
 
       setFormData({ email: "", password: "" });
@@ -230,7 +224,6 @@ const Login: React.FC = () => {
                     <Email sx={{ marginLeft: "-2px", marginTop: "2px" }} />
                   </InputAdornment>
                 }
-
               />
 
               <InputBox
@@ -319,7 +312,7 @@ const Login: React.FC = () => {
               sx={{
                 width: "450px",
                 height: "500px",
-                backgroundColor: " #BFD9D9",
+                backgroundColor: "#BFD9D9",
                 borderLeft: {
                   xs: "none",
                   sm: "3px solid #BFD9D9",

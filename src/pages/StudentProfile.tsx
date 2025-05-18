@@ -5,6 +5,7 @@ import {
   Avatar,
   TextField,
   Autocomplete,
+  CircularProgress,
   useMediaQuery,
   useTheme,
   Popover,
@@ -825,8 +826,8 @@ const StudentProfile = () => {
 
   if (loading) {
     return (
-      <Box sx={{ textAlign: "center", padding: "40px" }}>
-        Loading profile...
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 35 }}>
+        <CircularProgress />
       </Box>
     );
   }

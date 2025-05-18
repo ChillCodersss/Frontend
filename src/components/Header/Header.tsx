@@ -55,8 +55,15 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
     {
       label: "داشبورد",
       icon: <DashboardIcon />,
+
       clickFunction: () => {
-        navigate("/dashboard");
+        const info = getUserInfo();
+        if (!info) return;
+        if (info.role === "Counselor") {
+          navigate("/dashboard/counselorrequests");
+        } else if (info.role === "Student") {
+          navigate("/dashboard/studentscounselors");
+        }
       },
     },
     {
@@ -174,7 +181,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
 
   return (
     <AppBar
-      position="static"
+      position="sticky"
       sx={{
         backgroundColor: isWhiteMode ? "#ffffff" : "#057abe",
         color: isWhiteMode ? "#057abe" : "#ffffff",

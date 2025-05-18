@@ -5,6 +5,7 @@ import {
   Toolbar,
   Avatar,
   TextField,
+  CircularProgress,
   Autocomplete,
   useMediaQuery,
   useTheme,
@@ -302,8 +303,8 @@ const CounselorProfile = () => {
 
   if (loading) {
     return (
-      <Box sx={{ textAlign: "center", padding: "40px" }}>
-        Loading profile...
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 35 }}>
+        <CircularProgress />
       </Box>
     );
   }

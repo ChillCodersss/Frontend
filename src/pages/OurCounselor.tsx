@@ -547,6 +547,7 @@ const OurCounselor = () => {
             showFirstButton={false}
             showLastButton={false}
             sx={{
+              marginBottom: "40px",
               "& .MuiPaginationItem-root": {
                 color: "rgb(8, 57, 136)",
                 "&.Mui-selected": {
