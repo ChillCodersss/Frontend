@@ -11,6 +11,11 @@ import {
   Pagination,
   useMediaQuery,
   useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import PaymentsItem, {
@@ -39,13 +44,23 @@ const Payments = () => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [moreDetails, setMoreDetails] = useState<string | null>(null);
 
   const handlePageChange = useCallback(
-    (event: React.ChangeEvent<unknown>, page: number) => {
+    (_: React.ChangeEvent<unknown>, page: number) => {
       setCurrentPage(page);
     },
     []
   );
+
+  const showMoreDetails = useCallback((aboutMe: string | null) => {
+    setMoreDetails(aboutMe || "...");
+  }, []);
+
+  const CloseMoreDetails = useCallback(() => {
+    setMoreDetails(null);
+  }, []);
+
   const fetchPayments = async () => {
     try {
       const token = getToken();
@@ -95,63 +110,93 @@ const Payments = () => {
       />
       <Header />
       <Sidebar>
-        {loading ? (
-          <Typography sx={PTextStyle}>در حال بارگزاری</Typography>
-        ) : (
-          <Box>
-            <Box sx={PMainBoxStyle}>
-              {payments.length === 0 ? (
-                <Typography sx={PTextStyle}>شما پرداختی ندارید</Typography>
-              ) : (
-                <Box sx={PTableBoxStyle}>
-                  <TableContainer sx={PITableContainerStyle}>
-                    <Table>
-                      <TableHead>
-                        <TableRow sx={PTableHeadRowStyle}>
-                          <TableCell sx={PTableHeadCellStyle}>مبلغ</TableCell>
-                          <TableCell sx={PTableHeadCellStyle}>مشاور</TableCell>
-                          <TableCell sx={PTableHeadCellStyle}>
-                            طول دوره
-                          </TableCell>
-                          <TableCell sx={PTableHeadCellStyle}>تاریخ</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {payments
-                          .filter((payment) => !payment.isPaid)
-                          .map((payment) => (
-                            <NotificationItem
-                              key={payment.id}
-                              {...payment}
-                              onPaymentSuccess={fetchPayments}
-                            />
-                          ))}
-                        {payments
-                          .filter((payment) => payment.isPaid)
-                          .map((payment) => (
-                            <PaymentsItem key={payment.id} {...payment} />
-                          ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                  <Box
-                    sx={{ display: "flex", justifyContent: "center", mt: 2 }}
-                  >
-                    <Pagination
-                      count={totalPages}
-                      page={currentPage}
-                      onChange={handlePageChange}
-                      color="primary"
-                      dir="rtl"
-                      size={isSmallScreen ? "small" : "medium"}
-                      sx={PPaginationStyle}
-                    />
+        <Box>
+          {loading ? (
+            <Typography sx={PTextStyle}>در حال بارگزاری</Typography>
+          ) : (
+            <Box>
+              <Box sx={PMainBoxStyle}>
+                {payments.length === 0 ? (
+                  <Typography sx={PTextStyle}>شما پرداختی ندارید</Typography>
+                ) : (
+                  <Box sx={PTableBoxStyle}>
+                    <TableContainer sx={PITableContainerStyle}>
+                      <Table>
+                        <TableHead>
+                          <TableRow sx={PTableHeadRowStyle}>
+                            <TableCell sx={PTableHeadCellStyle}>مبلغ</TableCell>
+                            <TableCell sx={PTableHeadCellStyle}>
+                              مشاور
+                            </TableCell>
+                            <TableCell sx={PTableHeadCellStyle}>
+                              طول دوره
+                            </TableCell>
+                            <TableCell sx={PTableHeadCellStyle}>
+                              تاریخ
+                            </TableCell>
+                            <TableCell sx={PTableHeadCellStyle}>
+                              عملیات
+                            </TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {payments
+                            .filter((payment) => !payment.isPaid)
+                            .map((payment) => (
+                              <NotificationItem
+                                key={payment.id}
+                                {...payment}
+                                operation={fetchPayments}
+                              />
+                            ))}
+                          {payments
+                            .filter((payment) => payment.isPaid)
+                            .map((payment) => (
+                              <PaymentsItem
+                                key={payment.id}
+                                {...payment}
+                                operation={showMoreDetails}
+                              />
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    <Box
+                      sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+                    >
+                      <Pagination
+                        count={totalPages}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                        color="primary"
+                        dir="rtl"
+                        size={isSmallScreen ? "small" : "medium"}
+                        sx={PPaginationStyle}
+                      />
+                    </Box>
                   </Box>
-                </Box>
-              )}
+                )}
+              </Box>
             </Box>
-          </Box>
-        )}
+          )}
+          <Dialog
+            open={!!moreDetails}
+            onClose={CloseMoreDetails}
+            dir="rtl"
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogTitle sx={{ fontWeight: "bold" }}>جزییات</DialogTitle>
+            <DialogContent>
+              <Typography>{moreDetails}</Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={CloseMoreDetails} color="primary">
+                بستن
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
       </Sidebar>
     </>
   );

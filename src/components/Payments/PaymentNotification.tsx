@@ -15,7 +15,7 @@ import { PaymentsItemProps } from "./PaymentsItem";
 import { toast } from "react-toastify";
 
 interface NotificationItemProps extends PaymentsItemProps {
-  onPaymentSuccess: () => void;
+  operation: () => void;
 }
 
 export const NotificationItem: React.FC<NotificationItemProps> = ({
@@ -24,7 +24,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   payableTo,
   counselingDuration,
   counselorId,
-  onPaymentSuccess,
+  operation,
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       const data = await payingPayments(token, id);
       if (data.isSuccess) {
         toast.success(data.message);
-        onPaymentSuccess();
+        operation();
       } else if (data.isFailure) {
         toast.error(data.message);
       }
@@ -63,6 +63,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       <TableCell
         sx={PITableCellStyles}
       >{`${counselingDuration} ماهه`}</TableCell>
+      <TableCell sx={PITableCellStyles}>---</TableCell>
       <TableCell>
         <SecondaryButton
           name="پرداخت"
