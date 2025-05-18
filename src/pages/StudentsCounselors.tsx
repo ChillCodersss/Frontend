@@ -137,7 +137,7 @@ const StudentsCounselors: React.FC = () => {
         return;
       }
 
-      const pageSize = 5; // Fixed page size as per API
+      const pageSize = 5; 
       const url =
         statusFilter === "همه"
           ? `http://62.60.213.13:8080/api/RequestCounselor/MyCounselors?PageSize=${pageSize}&PageIndex=${currentPage}`
@@ -367,7 +367,7 @@ const StudentsCounselors: React.FC = () => {
     <Box
       sx={{
         direction: "rtl",
-        padding: isSmallScreen ? "8px" : "16px",
+        padding: isSmallScreen ? "8px" : "16px 16px 0px 16px",
         maxWidth: 1200,
         margin: "auto",
         overflowX: "auto",
