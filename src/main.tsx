@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+// import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
@@ -11,7 +11,7 @@ import FPGetNewPassword from "./pages/ForgotPassword/FPGetNewPassword";
 import CounselorProfile from "./pages/CounselorProfile";
 import OurCounselor from "./pages/OurCounselor";
 import CounselorDisplay from "./pages/CounselorDisplay";
-import Sidebar from "./components/Sidebar/Sidebar";
+// import Sidebar from "./components/Sidebar/Sidebar";
 import Landing from "./pages/Landing/Landing";
 import ScrollToTop from "./components/ScrollToTop";
 import StudentDisplayPopup from "./components/StudentDisplay/StudentDisplay";
@@ -45,6 +45,7 @@ createRoot(document.getElementById("root")!).render(
       <Route path="/Payments" element={<Payments />} />
       <Route path="/dashboard" element={<StudentList></StudentList>} />
       <Route path="/StudentProfile" element={<StudentProfile />} />
+      <Route path="/" element={<Landing></Landing>} />
     </Routes>
   </BrowserRouter>
   //</StrictMode>
