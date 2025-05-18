@@ -23,7 +23,7 @@ jobs:
           script: |
             docker stop nginx_container
             docker remove nginx_container
-            pwd
+            cd /opt/Frontend/
             git pull
             docker build -t nginx .
             docker run -d -p 80:80 --name nginx_container nginx
