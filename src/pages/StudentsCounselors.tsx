@@ -22,6 +22,7 @@ import {
   Avatar,
   TextField,
   PaginationItem,
+  IconButton,
 } from "@mui/material";
 import Sidebar from "@/components/Sidebar/Sidebar";
 import Header from "@/components/Header/Header";
@@ -31,6 +32,9 @@ import { PaginationRenderItemParams } from "@mui/material";
 import axios from "axios";
 import { getToken } from "@/services/auth";
 import { useNavigate } from "react-router-dom";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 interface Counselor {
   id: number;
@@ -115,6 +119,9 @@ const StudentsCounselors: React.FC = () => {
   const [comment, setComment] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedCounselorDetails, setSelectedCounselorDetails] =
+    useState<Counselor | null>(null);
 
   useEffect(() => {
     fetchCounselors();
@@ -351,6 +358,11 @@ const StudentsCounselors: React.FC = () => {
     setConfirmDialogOpen(true);
   };
 
+  const handleShowDetails = (counselor: Counselor) => {
+    setSelectedCounselorDetails(counselor);
+    setDetailsDialogOpen(true);
+  };
+
   const content = (
     <Box
       sx={{
@@ -368,6 +380,7 @@ const StudentsCounselors: React.FC = () => {
           flexDirection: isSmallScreen ? "column" : "row",
           gap: "8px",
           mb: "12px",
+          mt: isSmallScreen ? "16px" : 0,
           justifyContent: "center",
         }}
       >
@@ -463,7 +476,7 @@ const StudentsCounselors: React.FC = () => {
           >
             <Table stickyHeader size={isSmallScreen ? "small" : "medium"}>
               <TableHead>
-                <TableRow sx={{ backgroundColor: "grey.100" }}>
+                <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
                   {!isSmallScreen && (
                     <>
                       <TableCell
@@ -474,6 +487,7 @@ const StudentsCounselors: React.FC = () => {
                           padding: "8px 16px",
                           height: "48px",
                           width: "20%",
+                          backgroundColor: "#f5f5f5",
                         }}
                       >
                         نام مشاور
@@ -486,6 +500,7 @@ const StudentsCounselors: React.FC = () => {
                           padding: "8px 16px",
                           height: "48px",
                           width: "15%",
+                          backgroundColor: "#f5f5f5",
                         }}
                       >
                         تاریخ شروع
@@ -498,6 +513,7 @@ const StudentsCounselors: React.FC = () => {
                           padding: "8px 16px",
                           height: "48px",
                           width: "15%",
+                          backgroundColor: "#f5f5f5",
                         }}
                       >
                         تاریخ پایان
@@ -510,6 +526,7 @@ const StudentsCounselors: React.FC = () => {
                           padding: "8px 16px",
                           height: "48px",
                           width: "15%",
+                          backgroundColor: "#f5f5f5",
                         }}
                       >
                         وضعیت
@@ -522,6 +539,7 @@ const StudentsCounselors: React.FC = () => {
                           padding: "8px 16px",
                           height: "48px",
                           width: "15%",
+                          backgroundColor: "#f5f5f5",
                         }}
                       >
                         روزهای باقیمانده
@@ -534,6 +552,7 @@ const StudentsCounselors: React.FC = () => {
                           padding: "8px 16px",
                           height: "48px",
                           width: "10%",
+                          backgroundColor: "#f5f5f5",
                         }}
                       >
                         امتیاز
@@ -547,6 +566,7 @@ const StudentsCounselors: React.FC = () => {
                           height: "48px",
                           width: "15%",
                           paddingLeft: "32px",
+                          backgroundColor: "#f5f5f5",
                         }}
                       >
                         عملیات
@@ -556,23 +576,38 @@ const StudentsCounselors: React.FC = () => {
                   {isSmallScreen && (
                     <>
                       <TableCell
-                        key="mobile-info"
+                        key="mobile-name"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
                           padding: "8px 16px",
                           height: "48px",
-                          width: "70%",
+                          width: "50%",
+                          backgroundColor: "#f5f5f5",
                         }}
                       >
-                        اطلاعات مشاور
+                        نام مشاور
+                      </TableCell>
+                      <TableCell
+                        key="mobile-details"
+                        sx={{
+                          textAlign: "center",
+                          padding: "8px 16px",
+                          height: "48px",
+                          width: "25%",
+                          backgroundColor: "#f5f5f5",
+                        }}
+                      >
+                        جزئیات
                       </TableCell>
                       <TableCell
                         key="mobile-actions"
                         sx={{
+                          textAlign: "center",
                           padding: "8px 16px",
                           height: "48px",
-                          width: "30%",
+                          width: "25%",
+                          backgroundColor: "#f5f5f5",
                         }}
                       >
                         عملیات
@@ -810,11 +845,11 @@ const StudentsCounselors: React.FC = () => {
                     {isSmallScreen && (
                       <>
                         <TableCell
-                          key={`mobile-info-${counselor.id}`}
+                          key={`mobile-name-${counselor.id}`}
                           sx={{
                             padding: "8px 16px",
                             height: "48px",
-                            width: "70%",
+                            width: "50%",
                           }}
                         >
                           <Box
@@ -823,13 +858,6 @@ const StudentsCounselors: React.FC = () => {
                               alignItems: "center",
                               gap: "8px",
                               width: "100%",
-                              "& .MuiAvatar-root": {
-                                flexShrink: 0,
-                              },
-                              "& .MuiTypography-root": {
-                                flexShrink: 0,
-                                minWidth: "80px",
-                              },
                             }}
                           >
                             <Avatar
@@ -846,11 +874,38 @@ const StudentsCounselors: React.FC = () => {
                           </Box>
                         </TableCell>
                         <TableCell
+                          key={`mobile-details-${counselor.id}`}
+                          sx={{
+                            padding: "8px 16px",
+                            height: "48px",
+                            width: "25%",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <VisibilityIcon
+                              sx={{
+                                color: "#057abe",
+                                cursor: "pointer",
+                                "&:hover": {
+                                  color: "#035a8f",
+                                },
+                              }}
+                              onClick={() => handleShowDetails(counselor)}
+                            />
+                          </Box>
+                        </TableCell>
+                        <TableCell
                           key={`mobile-actions-${counselor.id}`}
                           sx={{
                             padding: "8px 16px",
                             height: "48px",
-                            width: "30%",
+                            width: "25%",
                           }}
                         >
                           <Box
@@ -858,7 +913,7 @@ const StudentsCounselors: React.FC = () => {
                               display: "flex",
                               flexDirection: "column",
                               gap: "4px",
-                              paddingLeft: "16px",
+                              alignItems: "center",
                             }}
                           >
                             {counselor.requestStatus === 4 && (
@@ -914,43 +969,99 @@ const StudentsCounselors: React.FC = () => {
             </Table>
           </TableContainer>
 
-          <Box sx={{ display: "flex", justifyContent: "center", mt: "32px" }}>
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-              dir="rtl"
-              size={isSmallScreen ? "small" : "medium"}
+          {isSmallScreen ? (
+            <Box
               sx={{
-                "& .MuiPaginationItem-root": {
-                  color: "#057abe",
-                  fontFamily: "inherit",
-                  "&.Mui-selected": {
-                    backgroundColor: "#057abe",
-                    color: "white",
-                  },
-                  "&.MuiPaginationItem-previousNext": {
-                    transform: "rotate(180deg)",
-                  },
-                },
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "16px 0",
+                width: "100%",
               }}
-              renderItem={(item: PaginationRenderItemParams) => {
-                if (item.type === "page") {
-                  return (
-                    <PaginationItem
-                      key={`page-${item.page}`}
-                      {...item}
-                      children={toPersianNumber(item.page || 0)}
-                    />
-                  );
+            >
+              <IconButton
+                onClick={() =>
+                  handlePageChange(
+                    {} as React.ChangeEvent<unknown>,
+                    Math.max(1, currentPage - 1)
+                  )
                 }
-                return (
-                  <PaginationItem key={`pagination-${item.type}`} {...item} />
-                );
-              }}
-            />
-          </Box>
+                disabled={currentPage === 1}
+                sx={{
+                  backgroundColor: "rgb(5, 122, 190)",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "rgb(4, 98, 152)",
+                  },
+                  "&:disabled": {
+                    backgroundColor: "#e0e0e0",
+                    color: "#9e9e9e",
+                  },
+                }}
+              >
+                <ArrowForwardIosIcon />
+              </IconButton>
+              <IconButton
+                onClick={() =>
+                  handlePageChange(
+                    {} as React.ChangeEvent<unknown>,
+                    Math.min(totalPages, currentPage + 1)
+                  )
+                }
+                disabled={currentPage === totalPages}
+                sx={{
+                  backgroundColor: "rgb(5, 122, 190)",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "rgb(4, 98, 152)",
+                  },
+                  "&:disabled": {
+                    backgroundColor: "#e0e0e0",
+                    color: "#9e9e9e",
+                  },
+                }}
+              >
+                <ArrowBackIosNewIcon />
+              </IconButton>
+            </Box>
+          ) : (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: "32px" }}>
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                dir="rtl"
+                size="medium"
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    color: "#057abe",
+                    fontFamily: "inherit",
+                    "&.Mui-selected": {
+                      backgroundColor: "#057abe",
+                      color: "white",
+                    },
+                    "&.MuiPaginationItem-previousNext": {
+                      transform: "rotate(180deg)",
+                    },
+                  },
+                }}
+                renderItem={(item: PaginationRenderItemParams) => {
+                  if (item.type === "page") {
+                    return (
+                      <PaginationItem
+                        key={`page-${item.page}`}
+                        {...item}
+                        children={toPersianNumber(item.page || 0)}
+                      />
+                    );
+                  }
+                  return (
+                    <PaginationItem key={`pagination-${item.type}`} {...item} />
+                  );
+                }}
+              />
+            </Box>
+          )}
         </>
       )}
 
@@ -1155,10 +1266,174 @@ const StudentsCounselors: React.FC = () => {
     </Box>
   );
 
+  const renderDetailsDialog = () => (
+    <Dialog
+      open={detailsDialogOpen}
+      onClose={() => setDetailsDialogOpen(false)}
+      dir="rtl"
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: "16px",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+        },
+      }}
+    >
+      <Box sx={{ position: "relative" }}>
+        <DialogTitle
+          sx={{
+            fontWeight: "bold",
+            padding: "20px 24px",
+            borderBottom: "1px solid #e0e0e0",
+            backgroundColor: "#f8f9fa",
+            borderRadius: "16px 16px 0 0",
+          }}
+        >
+          جزئیات مشاور
+        </DialogTitle>
+      </Box>
+      <DialogContent sx={{ padding: "24px" }}>
+        {selectedCounselorDetails && (
+          <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <Avatar
+                src={selectedCounselorDetails.picUrl}
+                alt={selectedCounselorDetails.counselorName}
+                sx={{ width: "64px", height: "64px" }}
+              />
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                {selectedCounselorDetails.counselorName}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography sx={{ color: "#666" }}>وضعیت:</Typography>
+                <Typography
+                  sx={{
+                    color: getStatusColor(
+                      selectedCounselorDetails.requestStatus
+                    ),
+                  }}
+                >
+                  {getStatusText(selectedCounselorDetails.requestStatus)}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography sx={{ color: "#666" }}>تاریخ شروع:</Typography>
+                <Typography>
+                  {selectedCounselorDetails.startDate
+                    ? toPersianDate(selectedCounselorDetails.startDate)
+                    : "-"}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography sx={{ color: "#666" }}>تاریخ پایان:</Typography>
+                <Typography>
+                  {selectedCounselorDetails.endDate
+                    ? toPersianDate(selectedCounselorDetails.endDate)
+                    : "-"}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography sx={{ color: "#666" }}>
+                  روزهای باقیمانده:
+                </Typography>
+                <Typography>
+                  {selectedCounselorDetails.remainingDays
+                    ? toPersianNumber(selectedCounselorDetails.remainingDays)
+                    : "-"}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography sx={{ color: "#666" }}>امتیاز:</Typography>
+                {selectedCounselorDetails.rate > 0 ? (
+                  <Rating
+                    value={selectedCounselorDetails.rate}
+                    readOnly
+                    size="small"
+                    sx={{
+                      "& .MuiRating-label": {
+                        fontFamily: "inherit",
+                      },
+                    }}
+                    getLabelText={(value) => `${toPersianNumber(value)} ستاره`}
+                  />
+                ) : (
+                  <Typography>بدون امتیاز</Typography>
+                )}
+              </Box>
+            </Box>
+          </Box>
+        )}
+      </DialogContent>
+      <DialogActions
+        sx={{ padding: "16px 24px", borderTop: "1px solid #e0e0e0" }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            gap: "16px",
+            width: "100%",
+            justifyContent: "flex-end",
+          }}
+        >
+          <SecondaryButton
+            name="بستن"
+            backgroundColor="rgb(221, 84, 84)"
+            width="100px"
+            height="32px"
+            fontSize="14px"
+            borderRadius="12px"
+            onClick={() => setDetailsDialogOpen(false)}
+          />
+        </Box>
+      </DialogActions>
+    </Dialog>
+  );
+
   return (
     <>
       <Header />
-      <Sidebar>{content}</Sidebar>
+      <Sidebar>
+        {content}
+        {renderDetailsDialog()}
+      </Sidebar>
     </>
   );
 };
