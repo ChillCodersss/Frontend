@@ -22,7 +22,7 @@ import PaymentsItem, {
   PaymentsItemProps,
 } from "../../components/Payments/PaymentsItem";
 import { useEffect, useState, useCallback } from "react";
-import { PaymentsHistory } from "@/services/payments";
+import { PaymentsHistory, cancelRequestCounselor } from "@/services/payments";
 import { getToken } from "@/services/auth";
 import Header from "@/components/Header/Header";
 import Sidebar from "@/components/Sidebar/Sidebar";
@@ -36,6 +36,7 @@ import {
   PTextStyle,
 } from "./PaymentsStyle";
 import { NotificationItem } from "@/components/Payments/PaymentNotification";
+import { toast } from "react-toastify";
 
 const Payments = () => {
   const theme = useTheme();
@@ -45,6 +46,7 @@ const Payments = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [moreDetails, setMoreDetails] = useState<string | null>(null);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const handlePageChange = useCallback(
     (_: React.ChangeEvent<unknown>, page: number) => {
@@ -57,7 +59,7 @@ const Payments = () => {
     setMoreDetails(aboutMe || "...");
   }, []);
 
-  const CloseMoreDetails = useCallback(() => {
+  const closeMoreDetails = useCallback(() => {
     setMoreDetails(null);
   }, []);
 
@@ -84,6 +86,35 @@ const Payments = () => {
   useEffect(() => {
     fetchPayments();
   }, []);
+
+  const handleCancelClick = () => {
+    setCancelDialogOpen(true);
+  };
+
+  const handleCancelConfirm = async () => {
+    try {
+      const token = getToken();
+      if (!token) {
+        return;
+      }
+      const data = await cancelRequestCounselor(token);
+      if (data.isSuccess) {
+        toast.success("درخواست با موفقیت لغو شد.");
+        fetchPayments();
+      } else {
+        toast.error("خطا در لغو درخواست.");
+      }
+    } catch (error) {
+      toast.error("خطا در ارتباط با سرور");
+      console.error("خطا در ارتباط با سرور", error);
+    } finally {
+      setCancelDialogOpen(false);
+    }
+  };
+
+  const handleCancelClose = () => {
+    setCancelDialogOpen(false);
+  };
 
   return (
     <>
@@ -147,6 +178,7 @@ const Payments = () => {
                                 key={payment.id}
                                 {...payment}
                                 operation={fetchPayments}
+                                onCancelClick={handleCancelClick}
                               />
                             ))}
                           {payments
@@ -181,7 +213,7 @@ const Payments = () => {
           )}
           <Dialog
             open={!!moreDetails}
-            onClose={CloseMoreDetails}
+            onClose={closeMoreDetails}
             dir="rtl"
             maxWidth="sm"
             fullWidth
@@ -191,8 +223,40 @@ const Payments = () => {
               <Typography>{moreDetails}</Typography>
             </DialogContent>
             <DialogActions>
-              <Button onClick={CloseMoreDetails} color="primary">
+              <Button onClick={closeMoreDetails} color="primary">
                 بستن
+              </Button>
+            </DialogActions>
+          </Dialog>
+          <Dialog
+            open={cancelDialogOpen}
+            onClose={handleCancelClose}
+            dir="rtl"
+            maxWidth="xs"
+            fullWidth
+          >
+            <DialogTitle sx={{ fontWeight: "bold" }}>
+              لغو درخواست مشاوره{" "}
+            </DialogTitle>
+            <DialogContent>
+              <Typography>
+                آیا مطمئن هستید که می‌خواهید این پرداخت را لغو کنید؟
+              </Typography>
+            </DialogContent>
+            <DialogActions sx={{ gap: "10px" }}>
+              <Button
+                onClick={handleCancelClose}
+                color="primary"
+                variant="contained"
+              >
+                خیر
+              </Button>
+              <Button
+                onClick={handleCancelConfirm}
+                color="error"
+                variant="outlined"
+              >
+                بله، لغو کن
               </Button>
             </DialogActions>
           </Dialog>
