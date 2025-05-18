@@ -14,6 +14,7 @@ import background_logo from '../assets/background_logo.jpg';
 import { Box, useMediaQuery, Zoom } from "@mui/material";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router";
+import Header from "@/components/Header/Header";
 
 
 const Recruitment: React.FC = () => {
@@ -369,6 +370,7 @@ const Recruitment: React.FC = () => {
                 draggable
                 pauseOnHover
             />
+            <Header isWhiteMode={true}/>
             {/* محتوای اصلی */}
             <div className="rec-header">
                 <h1 className="rec-header-text1">{ rec_header_text1 }</h1>
