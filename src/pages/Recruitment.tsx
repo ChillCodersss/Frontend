@@ -117,7 +117,7 @@ const Recruitment: React.FC = () => {
             setProvinceLoading(true);
             try {
                 const response = await fetch(
-                    `http://localhost:8080/api/Provinces/Dropdown?Text=${encodeURIComponent(provinceInputValue)}`
+                    `http://62.60.213.13/api/Provinces/Dropdown?Text=${encodeURIComponent(provinceInputValue)}`
                 );
                 const data = await response.json();
                 if (data.isSuccess) {
@@ -164,7 +164,7 @@ const Recruitment: React.FC = () => {
         newFormData.append("StudentCardPic", StudentCardPic ? StudentCardPic : "");
 
         try {
-            const response = await fetch("http://localhost:8080/api/CounselorRecruitments/Create", {
+            const response = await fetch("http://62.60.213.13/api/CounselorRecruitments/Create", {
                 method: "POST",
                 body: newFormData,
             });
