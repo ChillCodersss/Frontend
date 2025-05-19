@@ -552,13 +552,13 @@ const StudentList: React.FC = () => {
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>استان</TableCell>
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>تاریخ ایجاد</TableCell>
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "right", padding: '8px' }}>درباره من</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>عملیات</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>وضعیت</TableCell>
                       </>
                     )}
                     {isSmallScreen && (
                       <>
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '4px' }}>اطلاعات دانش‌آموز</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '4px' }}>عملیات</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '4px' }}>وضعیت</TableCell>
                       </>
                     )}
                   </TableRow>
