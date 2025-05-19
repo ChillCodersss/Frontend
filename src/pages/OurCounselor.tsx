@@ -22,9 +22,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import sampp from "../assets/DefaultPerson.png";
-import Header from "@/components/Header/Header";
 import ourCounselorPoster from "../assets/ourcounselor_poster.png";
-import Footer from "@/components/Landing/Footer";
 
 interface Counselor {
   id: number;
@@ -181,7 +179,6 @@ const OurCounselor = () => {
 
   useEffect(() => {
     const fetchImages = async () => {
-      const newImageUrls: Record<string, string> = {};
       for (const counselor of counselors) {
         if (counselor.picUrl) {
           await fetchImage(counselor.picUrl);
@@ -238,7 +235,6 @@ const OurCounselor = () => {
 
   return (
     <>
-      <Header isWhiteMode={true} />
       <Box sx={{ minHeight: "100vh", direction: "rtl" }}>
         {/* Top Poster */}
         <Box
@@ -700,7 +696,6 @@ const OurCounselor = () => {
           </Box>
         )}
       </Box>
-      <Footer />
     </>
   );
 };
