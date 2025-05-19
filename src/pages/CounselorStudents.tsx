@@ -15,11 +15,6 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Avatar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
   useMediaQuery,
   useTheme,
   Tabs,
@@ -211,7 +206,7 @@ const Students: React.FC = () => {
   const [majorFilter, setMajorFilter] = useState<string>('همه');
   const [gradeFilter, setGradeFilter] = useState<string>('همه');
   const [statusFilter, setStatusFilter] = useState<string>('فعال');
-  const [selectedAboutMe, setSelectedAboutMe] = useState<string | null>(null);
+  // const [selectedAboutMe, setSelectedAboutMe] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(true);
   const pageSize = isSmallScreen ? 4 : 4;
@@ -297,9 +292,9 @@ const Students: React.FC = () => {
     []
   );
 
-  const handleCloseAboutMeDialog = useCallback(() => {
-    setSelectedAboutMe(null);
-  }, []);
+  // const handleCloseAboutMeDialog = useCallback(() => {
+  //   setSelectedAboutMe(null);
+  // }, []);
 
   const filteredItems = useMemo(() => value?.items || [], [value]);
 
