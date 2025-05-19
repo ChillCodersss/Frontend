@@ -137,7 +137,7 @@ const StudentsCounselors: React.FC = () => {
         return;
       }
 
-      const pageSize = 5; 
+      const pageSize = 5;
       const url =
         statusFilter === "همه"
           ? `http://62.60.213.13:8080/api/RequestCounselor/MyCounselors?PageSize=${pageSize}&PageIndex=${currentPage}`
@@ -225,9 +225,9 @@ const StudentsCounselors: React.FC = () => {
         return;
       }
 
-      await axios.put(
+      await axios.post(
         `http://62.60.213.13:8080/api/RequestCounselor/Cancel`,
-        { id: counselorId },
+        {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -654,7 +654,7 @@ const StudentsCounselors: React.FC = () => {
                             <Avatar
                               src={counselor.picUrl}
                               alt={counselor.counselorName}
-                              sx={{ width: "32px", height: "32px" }}
+                              sx={{ width: "48px", height: "48px" }}
                             />
                             <Typography className="counselor-name">
                               {counselor.counselorName}
@@ -835,10 +835,7 @@ const StudentsCounselors: React.FC = () => {
                                 width="100px"
                                 height="28px"
                                 fontSize="12px"
-                                onClick={() => {
-                                  // Handle payment page navigation
-                                  console.log("Navigate to payment page");
-                                }}
+                                onClick={() => navigate("/dashboard/payments")}
                                 borderRadius="8px"
                               />
                             )}
@@ -867,7 +864,7 @@ const StudentsCounselors: React.FC = () => {
                             <Avatar
                               src={counselor.picUrl}
                               alt={counselor.counselorName}
-                              sx={{ width: "32px", height: "32px" }}
+                              sx={{ width: "48px", height: "48px" }}
                             />
                             <Typography
                               variant="subtitle2"
@@ -956,10 +953,7 @@ const StudentsCounselors: React.FC = () => {
                                 width="100px"
                                 height="28px"
                                 fontSize="12px"
-                                onClick={() => {
-                                  // Handle payment page navigation
-                                  console.log("Navigate to payment page");
-                                }}
+                                onClick={() => navigate("/dashboard/payments")}
                                 borderRadius="8px"
                               />
                             )}
@@ -1304,7 +1298,7 @@ const StudentsCounselors: React.FC = () => {
               <Avatar
                 src={selectedCounselorDetails.picUrl}
                 alt={selectedCounselorDetails.counselorName}
-                sx={{ width: "64px", height: "64px" }}
+                sx={{ width: "96px", height: "96px" }}
               />
               <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                 {selectedCounselorDetails.counselorName}
