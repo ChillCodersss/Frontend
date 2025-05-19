@@ -36,15 +36,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         <Tab label="لغو شده" value="لغو شده" />
       </Tabs>
       <Box sx={styles.filterSection}>
-        <Box>
-          <Typography
-            variant="body1"
-            sx={{
-              mb: 1,
-              fontWeight: 'bold',
-              textAlign: isSmallScreen ? 'center' : 'right',
-            }}
-          >
+        <Box sx={{ marginLeft: isSmallScreen ? 1 : 5 }}>
+          <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', textAlign: 'right' }}>
             رشته
           </Typography>
           <ToggleButtonGroup
@@ -59,15 +52,8 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             <ToggleButton value="انسانی">انسانی</ToggleButton>
           </ToggleButtonGroup>
         </Box>
-        <Box>
-          <Typography
-            variant="body1"
-            sx={{
-              mb: 1,
-              fontWeight: 'bold',
-              textAlign: isSmallScreen ? 'center' : 'right',
-            }}
-          >
+        <Box sx={{ marginLeft: isSmallScreen ? 1 : 2 }}>
+          <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', textAlign: 'right' }}>
             پایه
           </Typography>
           <ToggleButtonGroup

@@ -16,9 +16,10 @@ export const styles: Record<string, SxProps<Theme>> = {
   tabs: {
     borderBottom: 1,
     borderColor: 'divider',
-    mb: 1.8,
+    mb: 2.5,
     '& .MuiTab-root': {
-      fontSize: (theme) => (theme.breakpoints.down('sm') ? '0.75rem' : '0.875rem'),
+      fontSize: (theme) => (theme.breakpoints.down('sm') ? '0.875rem' : '1rem'),
+      padding: (theme) => (theme.breakpoints.down('sm') ? '8px 12px' : '12px 24px'),
       color: '#057abe',
       '&.Mui-selected': { color: '#057abe', fontWeight: 'bold' },
     },
@@ -26,10 +27,11 @@ export const styles: Record<string, SxProps<Theme>> = {
   },
   filterSection: {
     display: 'flex',
-    flexDirection: (theme) => (theme.breakpoints.down('sm') ? 'column' : 'row'),
-    gap: (theme) => (theme.breakpoints.down('sm') ? 2 : 8),
+    flexDirection: 'row',
+    gap: 1,
     mb: 3,
     justifyContent: 'center',
+    flexWrap: 'wrap',
   },
   toggleButtonGroup: {
     gap: '6px',
@@ -39,8 +41,8 @@ export const styles: Record<string, SxProps<Theme>> = {
       border: '1px solid #057abe',
       color: '#057abe',
       borderRadius: '8px',
-      padding: (theme) => (theme.breakpoints.down('sm') ? '6px 8px' : '8px 16px'),
-      fontSize: (theme) => (theme.breakpoints.down('sm') ? '0.75rem' : '0.875rem'),
+      padding: '8px 16px',
+      fontSize: '0.875rem',
       '&.Mui-selected': { backgroundColor: '#057abe', color: 'white' },
       '&:hover': { backgroundColor: 'rgb(177, 188, 205)' },
     },
@@ -60,8 +62,9 @@ export const styles: Record<string, SxProps<Theme>> = {
     '&:hover': { bgcolor: 'grey.50' },
   },
   tableCell: {
-    padding: (theme) => (theme.breakpoints.down('sm') ? '4px' : '8px'),
+    padding: (theme) => (theme.breakpoints.down('sm') ? '8px' : '8px'),
     textAlign: 'center',
+    verticalAlign: 'middle',
   },
   pagination: {
     display: 'flex',
@@ -73,14 +76,23 @@ export const styles: Record<string, SxProps<Theme>> = {
       '&.MuiPaginationItem-previousNext': { transform: 'rotate(180deg)' },
     },
   },
-//   aboutMeDialog: {
-//     dir: 'rtl',
-//     maxWidth: 'sm',
-//     fullWidth: true,
-//   },
-//   confirmDialog: {
-//     dir: 'rtl',
-//     maxWidth: 'xs',
-//     fullWidth: true,
-//   },
+  aboutMeDialog: {
+    dir: 'rtl',
+    maxWidth: 'sm',
+    fullWidth: true,
+  },
+  confirmDialog: {
+    dir: 'rtl',
+    maxWidth: 'xs',
+    fullWidth: true,
+  },
+  studentDetailsDialog: {
+    dir: 'rtl',
+    maxWidth: 'xs',
+    fullWidth: true,
+    '& .MuiDialog-paper': {
+      padding: 2,
+      borderRadius: 2,
+    },
+  },
 };

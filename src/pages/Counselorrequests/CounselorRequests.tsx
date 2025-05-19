@@ -3,8 +3,6 @@ import { Box, CircularProgress, useMediaQuery, useTheme } from '@mui/material';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { getToken } from "@/services/auth";
-import Header from '@/components/Header/Header';
-import Sidebar from '@/components/Sidebar/Sidebar';
 import { Student, Value, ApiResponse, RequestParams, ConfirmDialogState } from './types';
 import { styles } from './styles';
 import FilterSection from './FilterSection';
@@ -307,8 +305,6 @@ const CounselorRequests: React.FC = () => {
 
   return (
     <>
-      <Header />
-      <Sidebar>
         <Box sx={styles.container}>
           <FilterSection
             statusFilter={statusFilter}
@@ -345,7 +341,6 @@ const CounselorRequests: React.FC = () => {
             handleConfirm={handleConfirmAction}
           />
         </Box>
-      </Sidebar>
     </>
   );
 };

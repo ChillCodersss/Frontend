@@ -7,9 +7,7 @@ import { useNavigate } from "react-router";
 // import Marquee from "@/components/Landing/Marquee";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import CounselorSwiper from "@/components/Landing/Swiper.tsx";
-import Footer from "@/components/Landing/Footer";
 import RoadMap from "@/components/Landing/RoadMap";
-import Header from "@/components/Header/Header";
 import Logo from "@/assets/landing_banner_logo.png";
 import './Landing.css';
 
@@ -150,7 +148,6 @@ const Landing: React.FC = () => {
             >
                 Header
             </header> */}
-            <Header isWhiteMode={true}/>
             <main>
                 <section className="l-banner">
                     <div className="l-banner-bg">
@@ -338,7 +335,6 @@ const Landing: React.FC = () => {
                     </Box>
                 </section>
             </main>
-            <Footer/>
         </div>
     )
 }

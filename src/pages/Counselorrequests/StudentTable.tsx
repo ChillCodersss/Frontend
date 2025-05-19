@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Box,
   Table,
@@ -18,6 +18,8 @@ import {
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import { Value, Student } from './types';
 import { styles } from './styles';
+import StudentDetailsDialog from './StudentDetailDialog';
+import defaultProfilePic from '@/assets/DefaultPerson.png';
 
 interface StudentTableProps {
   value: Value | null;
@@ -41,10 +43,26 @@ const StudentTable: React.FC<StudentTableProps> = ({
   isSmallScreen,
 }) => {
   const filteredItems = useMemo(() => value?.items || [], [value]);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
   const truncateText = (text: string | null, maxLength: number) => {
     if (!text || text === 'ندارد') return 'ندارد';
     return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+  };
+
+  const handleImageError = (picUrl: string | null) => {
+    if (picUrl) {
+      setFailedImages((prev) => new Set(prev).add(picUrl));
+    }
+  };
+
+  const handleOpenDetailsDialog = (student: Student) => {
+    setSelectedStudent(student);
+  };
+
+  const handleCloseDetailsDialog = () => {
+    setSelectedStudent(null);
   };
 
   return (
@@ -55,19 +73,19 @@ const StudentTable: React.FC<StudentTableProps> = ({
         </Box>
       )}
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 3, width: '100%' }}>
           {error}
         </Alert>
       )}
       {!loading && !error && !value && (
-        <Typography sx={{ textAlign: 'center', py: 4 }}>
+        <Typography sx={{ textAlign: 'center', py: 4, width: '100%' }}>
           داده‌ای یافت نشد
         </Typography>
       )}
       {!loading && !error && value && (
         <>
           {filteredItems.length === 0 ? (
-            <Typography sx={{ textAlign: 'center', py: 2 }}>
+            <Typography sx={{ textAlign: 'center', py: 2, width: '100%' }}>
               دانش‌آموزی یافت نشد
             </Typography>
           ) : (
@@ -92,10 +110,9 @@ const StudentTable: React.FC<StudentTableProps> = ({
                     )}
                     {isSmallScreen && (
                       <>
-                        <TableCell sx={{ fontWeight: 'bold', ...styles.tableCell }}>
-                          اطلاعات دانش‌آموز
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', ...styles.tableCell }}>وضعیت</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', ...styles.tableCell, width: '40%' }}>دانش‌آموز</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', ...styles.tableCell, width: '30%' }}>جزئیات</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', ...styles.tableCell, width: '30%' }}>وضعیت</TableCell>
                       </>
                     )}
                   </TableRow>
@@ -106,21 +123,28 @@ const StudentTable: React.FC<StudentTableProps> = ({
                       {!isSmallScreen && (
                         <>
                           <TableCell sx={styles.tableCell}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0 , paddingRight: '30px' }}>
                               <Box
                                 data-pic-url={student.picUrl}
                                 ref={(el: HTMLDivElement) => {
                                   if (el && student.picUrl) imageElements.current.set(student.picUrl, el);
                                 }}
                               >
-                                {student.picUrl && imageUrls[student.picUrl] ? (
+                                {student.picUrl && imageUrls[student.picUrl] && !failedImages.has(student.picUrl) ? (
                                   <Avatar
                                     src={imageUrls[student.picUrl]}
                                     alt={`${student.firstName} ${student.lastName}`}
                                     sx={{ width: 60, height: 60, margin: 0 }}
+                                    imgProps={{
+                                      onError: () => handleImageError(student.picUrl),
+                                    }}
                                   />
                                 ) : (
-                                  <Avatar sx={{ width: 60, height: 60, bgcolor: 'grey.300', margin: 0 }}>
+                                  <Avatar
+                                    src={defaultProfilePic}
+                                    alt={`${student.firstName} ${student.lastName}`}
+                                    sx={{ width: 60, height: 60, bgcolor: 'grey.300', margin: 0 }}
+                                  >
                                     {student.firstName.charAt(0)}
                                   </Avatar>
                                 )}
@@ -181,64 +205,45 @@ const StudentTable: React.FC<StudentTableProps> = ({
                       {isSmallScreen && (
                         <>
                           <TableCell sx={styles.tableCell}>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                <Box
-                                  data-pic-url={student.picUrl}
-                                  ref={(el: HTMLDivElement) => {
-                                    if (el && student.picUrl) imageElements.current.set(student.picUrl, el);
-                                  }}
-                                >
-                                  {student.picUrl && imageUrls[student.picUrl] ? (
-                                    <Avatar
-                                      src={imageUrls[student.picUrl]}
-                                      alt={`${student.firstName} ${student.lastName}`}
-                                      sx={{ width: 40, height: 40 }}
-                                    />
-                                  ) : (
-                                    <Avatar sx={{ width: 40, height: 40, bgcolor: 'grey.300' }}>
-                                      {student.firstName.charAt(0)}
-                                    </Avatar>
-                                  )}
-                                </Box>
-                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                                  {`${student.firstName} ${student.lastName}`}
-                                </Typography>
-                              </Box>
-                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                                <Typography variant="caption">
-                                  <strong>رشته:</strong> {student.majorTitle || 'ندارد'}
-                                </Typography>
-                                <Typography variant="caption">
-                                  <strong>پایه:</strong> {student.gradeLevel || 'ندارد'}
-                                </Typography>
-                                <Typography variant="caption">
-                                  <strong>معدل:</strong> {student.lastGradeGPA}
-                                </Typography>
-                                <Typography variant="caption">
-                                  <strong>استان:</strong> {student.province || 'ندارد'}
-                                </Typography>
-                                <Typography variant="caption">
-                                  <strong>مدرسه:</strong> {student.schoolName || 'ندارد'}
-                                </Typography>
-                                <Typography variant="caption">
-                                  <strong>تاریخ ایجاد:</strong> {student.createDate || 'ندارد'}
-                                </Typography>
-                              </Box>
-                              <Typography variant="caption" sx={{ display: 'flex', gap: 1 }}>
-                                <strong>درباره من:</strong>
-                                {truncateText(student.aboutMe, 15)}
-                                {student.aboutMe && student.aboutMe.length > 15 && (
-                                  <Button
-                                    size="small"
-                                    onClick={() => handleShowMore(student.aboutMe)}
-                                    sx={{ color: '#057abe', padding: 0, minWidth: 'auto' }}
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'flex-end' }}>
+                              <Box
+                                data-pic-url={student.picUrl}
+                                ref={(el: HTMLDivElement) => {
+                                  if (el && student.picUrl) imageElements.current.set(student.picUrl, el);
+                                }}
+                              >
+                                {student.picUrl && imageUrls[student.picUrl] && !failedImages.has(student.picUrl) ? (
+                                  <Avatar
+                                    src={imageUrls[student.picUrl]}
+                                    alt={`${student.firstName} ${student.lastName}`}
+                                    sx={{ width: 32, height: 32 }}
+                                    imgProps={{
+                                      onError: () => handleImageError(student.picUrl),
+                                    }}
+                                  />
+                                ) : (
+                                  <Avatar
+                                    src={defaultProfilePic}
+                                    alt={`${student.firstName} ${student.lastName}`}
+                                    sx={{ width: 32, height: 32, bgcolor: 'grey.300' }}
                                   >
-                                    بیشتر
-                                  </Button>
+                                    {student.firstName.charAt(0)}
+                                  </Avatar>
                                 )}
+                              </Box>
+                              <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
+                                {`${student.firstName} ${student.lastName}`}
                               </Typography>
                             </Box>
+                          </TableCell>
+                          <TableCell sx={styles.tableCell}>
+                            <Button
+                              size="small"
+                              onClick={() => handleOpenDetailsDialog(student)}
+                              sx={{ color: '#057abe', fontSize: '0.7rem', padding: '4px 8px' }}
+                            >
+                              جزئیات
+                            </Button>
                           </TableCell>
                           <TableCell sx={styles.tableCell}>
                             {student.requestStatus === 1 ? (
@@ -260,15 +265,15 @@ const StudentTable: React.FC<StudentTableProps> = ({
                               </Box>
                             ) : student.requestStatus === 6 ? (
                               <Typography variant="caption" sx={{ color: 'red', textAlign: 'center' }}>
-                                رد شده
+                                رد
                               </Typography>
                             ) : student.requestStatus === 3 ? (
                               <Typography variant="caption" sx={{ color: 'green', textAlign: 'center' }}>
-                                تایید شده
+                                تایید
                               </Typography>
                             ) : student.requestStatus === 7 ? (
                               <Typography variant="caption" sx={{ color: 'orange', textAlign: 'center' }}>
-                                لغو شده
+                                لغو
                               </Typography>
                             ) : (
                               <Typography variant="caption" sx={{ textAlign: 'center' }}>-</Typography>
@@ -281,6 +286,14 @@ const StudentTable: React.FC<StudentTableProps> = ({
                 </TableBody>
               </Table>
             </TableContainer>
+          )}
+          {isSmallScreen && (
+            <StudentDetailsDialog
+              open={!!selectedStudent}
+              student={selectedStudent}
+              handleClose={handleCloseDetailsDialog}
+              handleShowMore={handleShowMore}
+            />
           )}
         </>
       )}
