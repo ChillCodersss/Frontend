@@ -30,7 +30,7 @@ const FPGetEmail = () => {
     }
     try {
       const response = await fetch(
-        "http://localhost:8080/api/Auth/ForgotPassword",
+        "http://62.60.213.13/api/Auth/ForgotPassword",
         {
           method: "POST",
           headers: {

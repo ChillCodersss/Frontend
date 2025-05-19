@@ -63,7 +63,7 @@ const FPGetNewPassword = () => {
     }
     try {
       const response = await fetch(
-        "http://localhost:8080/api/Auth/ChangeForgotPassword",
+        "http://62.60.213.13/api/Auth/ChangeForgotPassword",
         {
           method: "POST",
           headers: {

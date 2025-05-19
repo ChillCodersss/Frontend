@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -14,12 +14,15 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import ConfirmButton from "@/components/common/ConfirmButton";
+import RejectButton from "@/components/common/RejectButton";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ToastContainer, toast } from "react-toastify";
-import { getToken } from "@/services/auth"; 
+import { getToken } from "@/services/auth";
+import { getUserInfo } from "@/services/auth"; // Import getUserInfo
 import "react-toastify/dist/ReactToastify.css";
-import "./toast.css"; // Adjust path if different (e.g., src/styles/toast.css)
+import "./toast.css";
+import Header from "@/components/Header/Header";
 
 interface PostData {
   username: string;
@@ -32,6 +35,7 @@ interface PostData {
   profilePic: string;
   workExperience: string;
   rate: string;
+  studentCounselorId: string | null;
 }
 
 interface ApiResponse {
@@ -46,7 +50,8 @@ interface ApiResponse {
 }
 
 const CounselorDisplay: React.FC = () => {
-  const { id } = useParams<{ id?: string }>(); // Optional id for TypeScript
+  const { id } = useParams<{ id?: string }>();
+  const navigate = useNavigate();
   const [postData, setPostData] = useState<PostData>({
     username: "",
     province: "",
@@ -58,23 +63,49 @@ const CounselorDisplay: React.FC = () => {
     profilePic: "/src/assets/DefaultPerson.png",
     workExperience: "نامشخص",
     rate: "",
+    studentCounselorId: null,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const hasFetched = useRef(false);
+  const [isCancelMode, setIsCancelMode] = useState(false);
   const isMobile = useMediaQuery("(max-width:600px)");
+  const [userRole, setUserRole] = useState<string | null>(null); // State to store user role
+
+  // Fetch user role on component mount
+  useEffect(() => {
+    const userInfo = getUserInfo();
+    if (userInfo) {
+      setUserRole(userInfo.role);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchPostData = async () => {
-      if (hasFetched.current || !id) return;
-      hasFetched.current = true;
-      
+      if (!id) return;
+
       setIsLoading(true);
+      // Reset postData to initial state to avoid stale data
+      setPostData({
+        username: "",
+        province: "",
+        entranceExamYear: "",
+        uniMajor: "",
+        uniName: "",
+        hsMajorTitle: "",
+        content: "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
+        profilePic: "/src/assets/DefaultPerson.png",
+        workExperience: "نامشخص",
+        rate: "",
+        studentCounselorId: null,
+      });
+
       try {
+        const token = getToken();
         const response = await fetch(`http://62.60.213.13/api/Counselor/GetById?Id=${id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -116,13 +147,16 @@ const CounselorDisplay: React.FC = () => {
           uniMajor: userData.uniMajor || "نامشخص",
           uniName: userData.uniName || "",
           hsMajorTitle: userData.hsMajorTitle || "نامشخص",
-          content:
-            userData.aboutMe ||
-            "مشاور کنکور بودن کار دلیه. من تو تک تک ثانیه های سال کنکور در کنارتونم و به عنوان کسی که اختلاف سنی زیادی باهاتون نداره کاملا دغدغه هاتون رو درک میکنم. ...",
+          content: userData.aboutMe || "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
           profilePic: profilePicUrl,
           workExperience: userData.workExperience || "3 سال",
-          rate: userData.rate,
+          rate: userData.rate || "",
+          studentCounselorId: userData.studentCounselorId ? String(userData.studentCounselorId) : null,
         });
+
+        const normalizedId = String(id);
+        const normalizedStudentCounselorId = userData.studentCounselorId ? String(userData.studentCounselorId) : null;
+        setIsCancelMode(normalizedId === normalizedStudentCounselorId);
       } catch (error: any) {
         console.error("Error fetching counselor data:", error);
         toast.error("خطا در بارگذاری اطلاعات مشاور", {
@@ -140,7 +174,7 @@ const CounselorDisplay: React.FC = () => {
     };
 
     fetchPostData();
-  }, [id]);
+  }, [id]); // Re-run effect when id changes
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -160,48 +194,85 @@ const CounselorDisplay: React.FC = () => {
       return;
     }
 
-    // Convert id from string to integer
-    const convertedId = parseInt(id, 10);
-    if (isNaN(convertedId)) {
-      toast.error("شناسه مشاور باید یک عدد معتبر باشد", {
-        position: "bottom-right",
-        autoClose: 5000,
-        rtl: true,
-      });
-      return;
-    }
-
     try {
-      const formData = new FormData();
-      formData.append("id", convertedId.toString());
       const token = getToken();
-      const response = await fetch("http://62.60.213.13/api/RequestCounselor/Create", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },        body: formData, 
-      });
 
-      const data: ApiResponse = await response.json();
-
-      if (!response.ok || data.isFailure) {
-        console.error("API error:", {
-          message: data.message,
-          errorCode: data.error?.code,
-          errorMessage: data.error?.message,
+      if (isCancelMode) {
+        const response = await fetch("http://62.60.213.13/api/RequestCounselor/Cancel", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "text/plain",
+          },
+          body: JSON.stringify({}),
         });
-        throw new Error(data.message || "خطا در ارسال درخواست مشاوره");
-      }
 
-      toast.success(data.message || "درخواست مشاوره با موفقیت ثبت شد!", {
-        position: "bottom-right",
-        autoClose: 5000,
-        rtl: true,
-      });
+        const data: ApiResponse = await response.json();
+
+        if (!response.ok || data.isFailure) {
+          throw new Error(data.message || "خطا در لغو درخواست مشاوره");
+        }
+
+        toast.success(data.message || "درخواست مشاوره با موفقیت لغو شد!", {
+          position: "bottom-right",
+          autoClose: 5000,
+          rtl: true,
+        });
+        setIsCancelMode(false);
+        setPostData(prev => ({ ...prev, studentCounselorId: null }));
+      } else {
+        const convertedId = parseInt(id, 10);
+        if (isNaN(convertedId)) {
+          toast.error("شناسه مشاور باید یک عدد معتبر باشد", {
+            position: "bottom-right",
+            autoClose: 5000,
+            rtl: true,
+          });
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("id", convertedId.toString());
+
+        const response = await fetch("http://62.60.213.13/api/RequestCounselor/Create", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+
+        const data: ApiResponse = await response.json();
+
+        if (!response.ok || data.isFailure) {
+          throw new Error(data.message || "خطا در ارسال درخواست مشاوره");
+        }
+
+        toast.success(data.message || "درخواست مشاوره با موفقیت ثبت شد!", {
+          position: "bottom-right",
+          autoClose: 5000,
+          rtl: true,
+        });
+        setIsCancelMode(true);
+        setPostData(prev => ({ ...prev, studentCounselorId: id }));
+      }
       setOpenDialog(false);
     } catch (error: any) {
-      console.error("Error submitting request:", error);
-      toast.error(error.message || "خطا در ثبت درخواست. لطفاً دوباره تلاش کنید.", {
+      console.error("Error handling request:", error);
+      toast.error(error.message || "خطا در ثبت/لغو درخواست. لطفاً دوباره تلاش کنید.", {
+        position: "bottom-right",
+        autoClose: 5000,
+        rtl: true,
+      });
+    }
+  };
+
+  const handleNavigateToCounselor = () => {
+    if (postData.studentCounselorId) {
+      navigate(`/OurCounselor/CounselorPage/${postData.studentCounselorId}`);
+    } else {
+      toast.error("شناسه مشاور فعلی در دسترس نیست", {
         position: "bottom-right",
         autoClose: 5000,
         rtl: true,
@@ -215,319 +286,363 @@ const CounselorDisplay: React.FC = () => {
   };
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        minHeight: "100vh",
-        width: "100%",
-        padding: isMobile ? "10px" : "20px",
-        boxSizing: "border-box",
-        backgroundColor: "#f5f5f5",
-        direction: "rtl",
-      }}
-    >
-      {isLoading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: isMobile ? "column-reverse" : "row",
-            boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-            borderRadius: "12px",
-            backgroundColor: "white",
-            maxWidth: "1300px",
-            width: "100%",
-            margin: "0 auto",
-            overflow: "hidden",
-          }}
-        >
+    <>
+      <Header />
+      <Box
+        sx={{
+          position: "relative",
+          minHeight: "100vh",
+          width: "100%",
+          padding: isMobile ? "10px" : "20px",
+          boxSizing: "border-box",
+          backgroundColor: "#f5f5f5",
+          direction: "rtl",
+        }}
+      >
+        {isLoading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+            <CircularProgress />
+          </Box>
+        ) : (
           <Box
             sx={{
-              flex: 1,
-              padding: isMobile ? "15px" : "30px",
-              minWidth: "200px",
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
+              flexDirection: isMobile ? "column-reverse" : "row",
+              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+              borderRadius: "12px",
+              backgroundColor: "white",
+              maxWidth: "1300px",
+              width: "100%",
+              margin: "0 auto",
+              overflow: "hidden",
+              mt: 2,
             }}
           >
-            <Box>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
-                <Typography
-                  variant={isMobile ? "h5" : "h4"}
-                  sx={{ ...typographyStyles, textAlign: "right" }}
-                >
-                  {postData.username || "نامشخص"}
-                </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                  <StarIcon sx={{ color: "#FFD700", paddingBottom: "5px" }} />
+            <Box
+              sx={{
+                flex: 1,
+                padding: isMobile ? "15px" : "30px",
+                minWidth: "200px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <Box>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1 }}>
+                  <Typography
+                    variant={isMobile ? "h5" : "h4"}
+                    sx={{ ...typographyStyles, textAlign: "right" }}
+                  >
+                    {postData.username || "نامشخص"}
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    <StarIcon sx={{ color: "#FFD700", paddingBottom: "5px" }} />
+                    <Typography
+                      variant={isMobile ? "subtitle1" : "body1"}
+                      sx={{ ...typographyStyles, textAlign: "left" }}
+                    >
+                      {postData.rate || "نامشخص"}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                  <Typography
+                    variant={isMobile ? "subtitle1" : "h6"}
+                    sx={{ ...typographyStyles, textAlign: "right" }}
+                  >
+                    رشته {postData.hsMajorTitle}
+                  </Typography>
                   <Typography
                     variant={isMobile ? "subtitle1" : "body1"}
                     sx={{ ...typographyStyles, textAlign: "left" }}
                   >
-                    {postData.rate}
+                    تجربه کار: {postData.workExperience}
+                  </Typography>
+                </Box>
+
+                <Box>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      lineHeight: 1.7,
+                      marginBottom: "20px",
+                      fontSize: isMobile ? "0.9rem" : "1rem",
+                    }}
+                  >
+                    {postData.content}
                   </Typography>
                 </Box>
               </Box>
 
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                <Typography
-                  variant={isMobile ? "subtitle1" : "h6"}
-                  sx={{ ...typographyStyles, textAlign: "right" }}
-                >
-                  رشته {postData.hsMajorTitle}
-                </Typography>
-                <Typography
-                  variant={isMobile ? "subtitle1" : "body1"}
-                  sx={{ ...typographyStyles, textAlign: "left" }}
-                >
-                  تجربه کار: {postData.workExperience}
-                </Typography>
-              </Box>
-
-              <Box>
-                <Typography
-                  variant="body1"
+              {/* Conditionally render the button box only if user is not a counselor */}
+              {userRole !== "Counselor" && (
+                <Box
                   sx={{
-                    lineHeight: 1.7,
-                    marginBottom: "20px",
-                    fontSize: isMobile ? "0.9rem" : "1rem",
+                    border: "1px solid #ddd",
+                    borderRadius: "12px",
+                    padding: isMobile ? "15px" : "20px",
+                    backgroundColor: "#fdfaf4",
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "16px",
+                    mt: 3,
                   }}
                 >
-                  {postData.content}
-                </Typography>
-              </Box>
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: "#444",
+                        fontWeight: "600",
+                        textAlign: "right",
+                        flex: 1,
+                        minWidth: "200px",
+                        fontSize: isMobile ? "0.9rem" : "1rem",
+                      }}
+                    >
+                      {postData.studentCounselorId && String(postData.studentCounselorId) !== String(id)
+                        ? "شما در حال حاضر با مشاور دیگری کار می‌کنید. برای درخواست این مشاور، ابتدا درخواست فعلی خود را لغو کنید."
+                        : isCancelMode
+                        ? "برای لغو درخواست مشاوره با این مشاور، روی دکمه لغو کلیک کنید."
+                        : "اگر علاقه‌مند هستید با این مشاور کار کنید، درخواست خود را ثبت کنید تا هماهنگی‌های لازم انجام شود."}
+                    </Typography>
+                    {postData.studentCounselorId && String(postData.studentCounselorId) !== String(id) && (
+                      <Typography
+                        component="span"
+                        onClick={handleNavigateToCounselor}
+                        sx={{
+                          color: "#1976d2",
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                          fontSize: isMobile ? "0.9rem" : "1rem",
+                        }}
+                      >
+                        مشاهده صفحه مشاور فعلی
+                      </Typography>
+                    )}
+                  </Box>
+
+                  {(!postData.studentCounselorId || String(postData.studentCounselorId) === String(id)) && (
+                    isCancelMode ? (
+                      <RejectButton
+                        name="لغو درخواست"
+                        type="button"
+                        onClick={handleOpenDialog}
+                        sx={{ backgroundColor: "#d32f2f" }}
+                      />
+                    ) : (
+                      <ConfirmButton
+                        name="ارسال درخواست"
+                        type="button"
+                        onClick={handleOpenDialog}
+                      />
+                    )
+                  )}
+                </Box>
+              )}
             </Box>
 
             <Box
               sx={{
-                border: "1px solid #ddd",
-                borderRadius: "12px",
+                width: isMobile ? "100%" : "230px",
+                backgroundColor: "rgb(205, 218, 224)",
+                borderRadius: isMobile ? "12px 12px 0 0" : "0",
+                display: "flex",
+                flexDirection: isMobile ? "row" : "column",
+                justifyContent: isMobile ? "space-between" : "flex-start",
+                alignItems: isMobile ? "flex-start" : "flex-start",
                 padding: isMobile ? "15px" : "20px",
-                backgroundColor: "#fdfaf4",
-                display: "flex",
-                flexDirection: isMobile ? "column" : "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "16px",
-                mt: 3,
+                gap: isMobile ? "10px" : "15px",
               }}
             >
-              <Typography
-                variant="body1"
-                sx={{
-                  color: "#444",
-                  fontWeight: "600",
-                  textAlign: "right",
-                  flex: 1,
-                  minWidth: "200px",
-                  fontSize: isMobile ? "0.9rem" : "1rem",
+              <img
+                src={postData.profilePic}
+                alt="Profile"
+                onError={(e) => {
+                  e.currentTarget.src = "/src/assets/DefaultPerson.png";
                 }}
-              >
-                اگر علاقه‌مند هستی با این مشاور کار کنی، درخواستت رو ثبت کن تا هماهنگی‌های لازم انجام بشه.
-              </Typography>
-
-              <ConfirmButton name="ارسال درخواست" type="button" onClick={handleOpenDialog} />
-            </Box>
-          </Box>
-
-          <Box
-            sx={{
-              width: isMobile ? "100%" : "230px",
-              backgroundColor: "#f4c417",
-              borderRadius: isMobile ? "12px 12px 0 0" : "0",
-              display: "flex",
-              flexDirection: isMobile ? "row" : "column",
-              justifyContent: isMobile ? "space-between" : "flex-start",
-              alignItems: isMobile ? "flex-start" : "flex-start",
-              padding: isMobile ? "15px" : "20px",
-              gap: isMobile ? "10px" : "15px",
-            }}
-          >
-            <img
-              src={postData.profilePic}
-              alt="Profile"
-              onError={(e) => {
-                e.currentTarget.src = "/src/assets/DefaultPerson.png";
-              }}
-              style={{
-                width: isMobile ? "120px" : "220px",
-                height: isMobile ? "120px" : "220px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                marginLeft: isMobile ? "auto" : "0",
-                alignSelf: "center",
-                marginBottom: isMobile ? "0" : "16px",
-              }}
-            />
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-                flex: isMobile ? 1 : "unset",
-              }}
-            >
+                style={{
+                  width: isMobile ? "120px" : "220px",
+                  height: isMobile ? "120px" : "220px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  marginLeft: isMobile ? "auto" : "0",
+                  alignSelf: "center",
+                  marginBottom: isMobile ? "0" : "16px",
+                }}
+              />
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  minWidth: isMobile ? "140px" : "auto",
+                  flexDirection: "column",
+                  gap: "10px",
+                  flex: isMobile ? 1 : "unset",
                 }}
               >
-                <LocationOnIcon sx={{ color: "#555" }} />
-                <Typography
-                  variant="body1"
-                  sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    minWidth: isMobile ? "140px" : "auto",
+                  }}
                 >
-                  {postData.province || "نامشخص"}
-                </Typography>
-              </Box>
+                  <LocationOnIcon sx={{ color: "#555" }} />
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                  >
+                    {postData.province || "نامشخص"}
+                  </Typography>
+                </Box>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  minWidth: isMobile ? "140px" : "auto",
-                }}
-              >
-                <EventIcon sx={{ color: "#555" }} />
-                <Typography
-                  variant="body1"
-                  sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    minWidth: isMobile ? "140px" : "auto",
+                  }}
                 >
-                  کنکور {postData.entranceExamYear || "نامشخص"}
-                </Typography>
-              </Box>
+                  <EventIcon sx={{ color: "#555" }} />
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                  >
+                    کنکور {postData.entranceExamYear || "نامشخص"}
+                  </Typography>
+                </Box>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  minWidth: isMobile ? "140px" : "auto",
-                }}
-              >
-                <DomainIcon sx={{ color: "#555" }} />
-                <Typography
-                  variant="body1"
-                  sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    minWidth: isMobile ? "140px" : "auto",
+                  }}
                 >
-                  {postData.uniName || "نامشخص"}
-                </Typography>
-              </Box>
+                  <DomainIcon sx={{ color: "#555" }} />
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                  >
+                    {postData.uniName || "نامشخص"}
+                  </Typography>
+                </Box>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  minWidth: isMobile ? "140px" : "auto",
-                }}
-              >
-                <SchoolIcon sx={{ color: "#555" }} />
-                <Typography
-                  variant="body1"
-                  sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    minWidth: isMobile ? "140px" : "auto",
+                  }}
                 >
-                  {postData.uniMajor || "نامشخص"}
-                </Typography>
+                  <SchoolIcon sx={{ color: "#555" }} />
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                  >
+                    {postData.uniMajor || "نامشخص"}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           </Box>
-        </Box>
-      )}
+        )}
 
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        sx={{
-          "& .MuiDialog-paper": {
-            backgroundColor: "#fff",
-            borderRadius: "16px",
-            boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)",
-            padding: "16px",
-            maxWidth: isMobile ? "90%" : "400px",
-            width: "100%",
-          },
-          direction: "rtl",
-        }}
-      >
-        <DialogTitle
+        <Dialog
+          open={openDialog}
+          onClose={handleCloseDialog}
           sx={{
-            fontSize: isMobile ? "1.2rem" : "1.5rem",
-            fontWeight: "bold",
-            textAlign: "center",
-            color: "#333",
-            pb: 1,
+            "& .MuiDialog-paper": {
+              backgroundColor: "#fff",
+              borderRadius: "16px",
+              boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)",
+              padding: "16px",
+              maxWidth: isMobile ? "90%" : "400px",
+              width: "100%",
+            },
+            direction: "rtl",
           }}
         >
-          تأیید درخواست
-        </DialogTitle>
-        <DialogContent
-          sx={{
-            px: isMobile ? 2 : 4,
-            py: 2,
-          }}
-        >
-          <DialogContentText
+          <DialogTitle
             sx={{
-              color: "#555",
-              fontSize: isMobile ? "0.9rem" : "1rem",
-              lineHeight: 1.6,
+              fontSize: isMobile ? "1.2rem" : "1.5rem",
+              fontWeight: "bold",
               textAlign: "center",
+              color: "#333",
+              pb: 1,
             }}
           >
-            آیا مطمئن هستید که می‌خواهید درخواست مشاوره با {postData.username || "مشاور"} را ثبت کنید؟
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            px: isMobile ? 2 : 4,
-            pb: 2,
-            gap: 2,
-          }}
-        >
-          <SecondaryButton
-            name="انصراف"
-            backgroundColor="#d32f2f"
-            onClick={handleCloseDialog}
-            width={isMobile ? "100px" : "120px"}
-            height="40px"
-            fontSize={isMobile ? "14px" : "16px"}
-            borderRadius="8px"
-          />
-          <SecondaryButton
-            name="تأیید"
-            backgroundColor="#1976d2"
-            onClick={handleConfirm}
-            width={isMobile ? "100px" : "120px"}
-            height="40px"
-            fontSize={isMobile ? "14px" : "16px"}
-            borderRadius="8px"
-          />
-        </DialogActions>
-      </Dialog>
+            {isCancelMode ? "تأیید لغو درخواست" : "تأیید درخواست"}
+          </DialogTitle>
+          <DialogContent
+            sx={{
+              px: isMobile ? 2 : 4,
+              py: 2,
+            }}
+          >
+            <DialogContentText
+              sx={{
+                color: "#555",
+                fontSize: isMobile ? "0.9rem" : "1rem",
+                lineHeight: 1.6,
+                textAlign: "center",
+              }}
+            >
+              {isCancelMode
+                ? `آیا مطمئن هستید که می‌خواهید درخواست مشاوره با ${postData.username || "مشاور"} را لغو کنید؟`
+                : `آیا مطمئن هستید که می‌خواهید درخواست مشاوره با ${postData.username || "مشاور"} را ثبت کنید؟`}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              px: isMobile ? 2 : 4,
+              pb: 2,
+              gap: 2,
+            }}
+          >
+            <SecondaryButton
+              name="انصراف"
+              backgroundColor="#d32f2f"
+              onClick={handleCloseDialog}
+              width={isMobile ? "100px" : "120px"}
+              height="40px"
+              fontSize={isMobile ? "14px" : "16px"}
+              borderRadius="8px"
+            />
+            <SecondaryButton
+              name="تأیید"
+              backgroundColor="#1976d2"
+              onClick={handleConfirm}
+              width={isMobile ? "100px" : "120px"}
+              height="40px"
+              fontSize={isMobile ? "14px" : "16px"}
+              borderRadius="8px"
+            />
+          </DialogActions>
+        </Dialog>
 
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        //rtl={true}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-    </Box>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={true}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </Box>
+    </>
   );
 };
 

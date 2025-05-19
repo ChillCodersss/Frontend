@@ -10,30 +10,19 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { getToken } from "@/services/auth";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import SecondaryButton from "../common/SecondaryButton";
 
 type ConfirmButtonProps = {
   name: string;
   onClick: () => void;
 };
 
-const ConfirmButton: React.FC<ConfirmButtonProps> = ({ name, onClick }) => (
-  <Button
-    variant="contained"
-    onClick={onClick}
-    sx={{
-      backgroundColor: "#1976d2",
-      color: "white",
-      fontWeight: "bold",
-      borderRadius: "8px",
-      padding: "8px 16px",
-      "&:hover": { backgroundColor: "#1565c0" },
-    }}
-  >
-    {name}
-  </Button>
-);
 
-const StudentDisplayPopup = () => {
+interface Props {
+  studentId: string;
+}
+
+const StudentDisplayPopup: React.FC<Props> = ({ studentId }) => {
   const [studentData, setStudentData] = useState({
     firstName: "",
     lastName: "",
@@ -53,7 +42,6 @@ const StudentDisplayPopup = () => {
   const [openPopup, setOpenPopup] = useState(false);
   const hasFetched = useRef(false);
   const isMobile = useMediaQuery("(max-width:600px)");
-  const studentId = "10002"; // Static ID
 
   useEffect(() => {
     const fetchStudentData = async () => {
@@ -153,7 +141,7 @@ const StudentDisplayPopup = () => {
     if (openPopup) {
       fetchStudentData();
     }
-  }, [openPopup]);
+  }, [openPopup, studentId]);
 
   const handleOpenPopup = () => {
     setOpenPopup(true);
@@ -170,7 +158,16 @@ const StudentDisplayPopup = () => {
 
   return (
     <Box sx={{ padding: "20px", textAlign: "center" }}>
-      <ConfirmButton name="نمایش اطلاعات دانش‌آموز" onClick={handleOpenPopup} />
+      <SecondaryButton
+                    name="نمایش اطلاعات"
+                    variant="contained"
+                    backgroundColor="#3f51b5"
+                    onClick={handleOpenPopup}
+                    fontSize={isMobile ? "0.9rem" : "1rem"}
+                    width={isMobile ? "100%" : "150px"}
+                    height={"40px"}
+                    borderRadius="20px"
+                  />
       <Dialog
         open={openPopup}
         onClose={handleClosePopup}
@@ -216,47 +213,46 @@ const StudentDisplayPopup = () => {
                 overflowX: "hidden",
               }}
             >
-<Box
-  sx={{
-    width: isMobile ? "100%" : "230px",
-    backgroundColor: "#1976d2",
-    borderRadius: isMobile ? "12px 12px 0 0" : "0px 0 0 0px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: isMobile ? "15px 20px" : "20px",
-    gap: "10px",
-    flexShrink: 0,
-    boxSizing: "border-box",
-    position: "relative", // required for absolute positioning
-  }}
->
-  <IconButton
-    onClick={handleClosePopup}
-    sx={{
-      position: "absolute",
-      top: 4,
-      right: 4,
-      color: "white",
-      zIndex: 1,
-    }}
-  >
-    <CloseIcon />
-  </IconButton>
-
-  <img
-    src={studentData.picUrl}
-    alt="Profile"
-    onError={(e) => {
-      e.currentTarget.src = "/src/assets/DefaultPerson.png";
-    }}
-    style={{
-      width: isMobile ? "120px" : "180px",
-      height: isMobile ? "120px" : "180px",
-      borderRadius: "50%",
-      objectFit: "cover",
-    }}
-  />
+              <Box
+                sx={{
+                  width: isMobile ? "100%" : "230px",
+                  backgroundColor: "#1976d2",
+                  borderRadius: isMobile ? "12px 12px 0 0" : "0px 0 0 0px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  padding: isMobile ? "15px 20px" : "20px",
+                  gap: "10px",
+                  flexShrink: 0,
+                  boxSizing: "border-box",
+                  position: "relative",
+                }}
+              >
+                <IconButton
+                  onClick={handleClosePopup}
+                  sx={{
+                    position: "absolute",
+                    top: 4,
+                    right: 4,
+                    color: "white",
+                    zIndex: 1,
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <img
+                  src={studentData.picUrl}
+                  alt="Profile"
+                  onError={(e) => {
+                    e.currentTarget.src = "/src/assets/DefaultPerson.png";
+                  }}
+                  style={{
+                    width: isMobile ? "120px" : "180px",
+                    height: isMobile ? "120px" : "180px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
                 <Box
                   sx={{
                     width: "100%",
@@ -270,6 +266,7 @@ const StudentDisplayPopup = () => {
                       ...typographyStyles,
                       wordBreak: "break-word",
                       fontSize: "25px",
+                      color: "white"
                     }}
                   >
                     {studentData.firstName} {studentData.lastName}
@@ -280,14 +277,13 @@ const StudentDisplayPopup = () => {
                       ...typographyStyles,
                       wordBreak: "break-word",
                       marginTop: "10px",
+                      color: "white"
                     }}
                   >
-                    رشته: {studentData.majorTitle}
+                    رشته {studentData.majorTitle}
                   </Typography>
                 </Box>
               </Box>
-
-              {/* Details Section (Scrollable) */}
               <Box
                 sx={{
                   flex: 1,

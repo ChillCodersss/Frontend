@@ -2,7 +2,7 @@
 import { Button, ButtonProps } from "@mui/material";
 import Box from "@mui/material/Box";
 
-interface ConfirmButtonProps extends ButtonProps {
+interface RejectButtonProps extends ButtonProps {
   name: string;
   width?: string | number;
   height?: string | number;
@@ -26,7 +26,7 @@ const theme = createTheme({
   },
 });
 
-function ConfirmButton({ name, width = "240px", height = "40px", sx , ...props }: ConfirmButtonProps) {
+function RejectButton({ name, width = "240px", height = "40px", sx , ...props }: RejectButtonProps) {
   return (
     <>
     <ThemeProvider theme={theme}>
@@ -45,9 +45,9 @@ function ConfirmButton({ name, width = "240px", height = "40px", sx , ...props }
           borderRadius: "30px",
           border: 0,
           fontWeight: 500,
-          boxShadow: "0px 0px 14px -7px rgb(25, 57, 240)",
+          boxShadow: "0px 0px 14px -7px rgb(240, 25, 25)",
           backgroundImage:
-            "linear-gradient(45deg,rgb(47, 50, 255) 0%,rgb(25, 154, 240) 51%,rgb(1, 7, 98) 100%)",
+            "linear-gradient(45deg,rgb(212, 16, 16) 0%,rgb(230, 86, 86) 51%,rgb(98, 6, 1) 100%)",
           cursor: "pointer",
           userSelect: "none",
           WebkitUserSelect: "none",
@@ -72,4 +72,4 @@ function ConfirmButton({ name, width = "240px", height = "40px", sx , ...props }
   );
 }
 
-export default ConfirmButton;
+export default RejectButton;

@@ -4,11 +4,11 @@ import {
   useMediaQuery,
   Typography,
   TextField,
-  Button,
+  // Button,
   ToggleButtonGroup,
   ToggleButton,
   Avatar,
-  Rating,
+  // Rating,
   Pagination,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -57,7 +57,7 @@ interface ApiResponse {
 const OurCounselor = () => {
   const isMobile = useMediaQuery("(max-width:600px)");
   const isTablet = useMediaQuery("(min-width:601px) and (max-width:960px)");
-  const isDesktop = useMediaQuery("(min-width:961px)");
+  // const isDesktop = useMediaQuery("(min-width:961px)");
   const [filter, setFilter] = React.useState("همه");
   const [searchText, setSearchText] = useState("");
   const [counselors, setCounselors] = useState<Counselor[]>([]);
@@ -170,7 +170,7 @@ const OurCounselor = () => {
   }, [currentPage, filter, searchText]);
 
   const handleFilterChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     newFilter: string
   ) => {
     if (newFilter !== null) {
@@ -179,13 +179,13 @@ const OurCounselor = () => {
     }
   };
 
-  const handleSearch = () => {
-    setCurrentPage(1);
-    fetchCounselors();
-  };
+  // const handleSearch = () => {
+  //   setCurrentPage(1);
+  //   fetchCounselors();
+  // };
 
   const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
+    _: React.ChangeEvent<unknown>,
     value: number
   ) => {
     setCurrentPage(value);
@@ -547,6 +547,7 @@ const OurCounselor = () => {
             showFirstButton={false}
             showLastButton={false}
             sx={{
+              marginBottom: "40px",
               "& .MuiPaginationItem-root": {
                 color: "rgb(8, 57, 136)",
                 "&.Mui-selected": {
