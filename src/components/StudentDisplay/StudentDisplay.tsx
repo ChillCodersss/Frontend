@@ -5,17 +5,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { getToken } from "@/services/auth";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import SecondaryButton from "../common/SecondaryButton";
-
-type ConfirmButtonProps = {
-  name: string;
-  onClick: () => void;
-};
 
 
 interface Props {

@@ -15,13 +15,10 @@ import {
 import {
   Menu as MenuIcon,
   Close as CloseIcon,
-  Dashboard as DashboardIcon,
+  Email as EmailIcon,
   People as PeopleIcon,
   Message as MessageIcon,
-  Folder as FolderIcon,
-  BarChart as BarChartIcon,
   Logout as LogoutIcon,
-  School as SchoolIcon,
   Person as PersonIcon,
   AttachMoney as AttachMoneyIcon 
 } from "@mui/icons-material";
@@ -47,7 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 
   // Define sidebar items for each role
   const counselorSidebarItems: SidebarItem[] = [
-    { label: "درخواست های من", icon: <DashboardIcon />, path: "/dashboard/counselorrequests" },
+    { label: "درخواست های من", icon: <EmailIcon  />, path: "/dashboard/counselorrequests" },
     { label: "دانش آموزان من", icon: <PeopleIcon />, path: "/dashboard/students" },
     { label: "چت های من ", icon: <MessageIcon />, path: "/dashboard/chat-student" },
     { label: "پرداختی ها", icon: <AttachMoneyIcon />, path: "/dashboard/incoms" },

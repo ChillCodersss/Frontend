@@ -15,11 +15,6 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Avatar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
   useMediaQuery,
   useTheme,
   Tabs,
@@ -27,8 +22,6 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { getToken } from "@/services/auth";
-import Sidebar from '@/components/Sidebar/Sidebar';
-import Header from '@/components/Header/Header';
 import { Navigate } from 'react-router-dom';
 import StudentDisplayPopup from '@/components/StudentDisplay/StudentDisplay';
 
@@ -211,7 +204,7 @@ const Students: React.FC = () => {
   const [majorFilter, setMajorFilter] = useState<string>('همه');
   const [gradeFilter, setGradeFilter] = useState<string>('همه');
   const [statusFilter, setStatusFilter] = useState<string>('فعال');
-  const [selectedAboutMe, setSelectedAboutMe] = useState<string | null>(null);
+  // const [selectedAboutMe, setSelectedAboutMe] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(true);
   const pageSize = isSmallScreen ? 4 : 4;
@@ -297,9 +290,9 @@ const Students: React.FC = () => {
     []
   );
 
-  const handleCloseAboutMeDialog = useCallback(() => {
-    setSelectedAboutMe(null);
-  }, []);
+  // const handleCloseAboutMeDialog = useCallback(() => {
+  //   setSelectedAboutMe(null);
+  // }, []);
 
   const filteredItems = useMemo(() => value?.items || [], [value]);
 
@@ -315,7 +308,7 @@ const Students: React.FC = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const content = (
+  return (
     <Box sx={{ 
       direction: 'rtl', 
       padding: 1, 
@@ -463,7 +456,7 @@ const Students: React.FC = () => {
                   <TableRow sx={{ backgroundColor: 'grey.100', textAlign: "right" }}>
                     {!isSmallScreen && (
                       <>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>نام</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', textAlign: "right", padding: '8px' , paddingRight: "120px" }}>نام</TableCell>
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>رشته</TableCell>
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>پایه تحصیلی</TableCell>
                         <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>روز باقی مانده</TableCell>
@@ -484,7 +477,7 @@ const Students: React.FC = () => {
                       {!isSmallScreen && (
                         <>
                           <TableCell sx={{ padding: '8px', textAlign: 'center' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'right', gap: 1 , paddingRight: "50px" }}>
                               <Box
                                 data-pic-url={student.picUrl}
                                 ref={(el: HTMLDivElement) => {
@@ -595,12 +588,6 @@ const Students: React.FC = () => {
     </Box>
   );
 
-  return (
-    <>
-      <Header />
-      <Sidebar>{content}</Sidebar>
-    </>
-  );
 };
 
 export default Students;

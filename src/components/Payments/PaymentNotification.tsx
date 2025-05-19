@@ -1,23 +1,50 @@
-import { Box, Typography } from "@mui/material";
-import ConfirmButton from "../common/ConfirmButton";
+import React from "react";
+import { useNavigate } from "react-router";
 import {
-  NotificationBoxStyle,
-  NotificationTextStyle,
-} from "./PaymentNotificationStyle";
+  TableRow,
+  TableCell,
+  Link,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
+import SecondaryButton from "../common/SecondaryButton";
+import {
+  PITableCellStyles,
+  PITableRowStyles,
+  PITableOperationCellStyles,
+} from "./PaymentsItemStyle";
 import { payingPayments } from "@/services/payments";
 import { getToken } from "@/services/auth";
 import { PaymentsItemProps } from "./PaymentsItem";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
-export const NotificationBox = (payment: PaymentsItemProps) => {
-  const text: string = `با پرداخت ${payment.amount} تومان دوره ${payment.counselingDuration}
-    ماهه با ${payment.payableTo} را نهایی کنید.`;
+interface NotificationItemProps extends PaymentsItemProps {
+  operation: () => void;
+  onCancelClick: () => void;
+}
+
+export const NotificationItem: React.FC<NotificationItemProps> = ({
+  id,
+  amount,
+  payableTo,
+  counselingDuration,
+  counselorId,
+  operation,
+  onCancelClick,
+}) => {
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const viewProfile = () => {
+    navigate(`/OurCounselor/CounselorPage/${counselorId}`);
+  };
   const handlePaymentClick = async () => {
     try {
       const token = getToken() || "";
-      const data = await payingPayments(token, payment.id);
+      const data = await payingPayments(token, id);
       if (data.isSuccess) {
         toast.success(data.message);
+        operation();
       } else if (data.isFailure) {
         toast.error(data.message);
       }
@@ -28,36 +55,41 @@ export const NotificationBox = (payment: PaymentsItemProps) => {
   };
 
   return (
-    <>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={true}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        toastStyle={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "right",
-          width: "220px",
-          padding: "5px 10px",
-          gap: "2px",
-          fontSize: "0.9rem",
-          textAlign: "right",
-        }}
-      />
-      <Box sx={NotificationBoxStyle}>
-        <Typography sx={NotificationTextStyle}>{text}</Typography>
-        <ConfirmButton
+    <TableRow sx={PITableRowStyles}>
+      <TableCell sx={PITableCellStyles}>{`${amount} تومان`}</TableCell>
+      <TableCell sx={PITableCellStyles}>
+        <Link
+          onClick={viewProfile}
+          underline="always"
+          sx={{ cursor: "pointer" }}
+        >
+          {payableTo}
+        </Link>
+      </TableCell>
+      <TableCell
+        sx={PITableCellStyles}
+      >{`${counselingDuration} ماهه`}</TableCell>
+      <TableCell sx={PITableCellStyles}>---</TableCell>
+      <TableCell sx={PITableOperationCellStyles}>
+        <SecondaryButton
           name="پرداخت"
-          width={"150px"}
+          backgroundColor="rgb(0, 140, 190)"
+          fontSize={isMobile ? "0.9rem" : "1rem"}
+          width={isMobile ? "90px" : "150px"}
+          height={"32px"}
+          borderRadius={"8px"}
           onClick={handlePaymentClick}
         />
-      </Box>
-    </>
+        <SecondaryButton
+          name="لغو"
+          backgroundColor="#d32f2f"
+          fontSize={isMobile ? "0.9rem" : "1rem"}
+          width={isMobile ? "90px" : "150px"}
+          height={"32px"}
+          borderRadius={"8px"}
+          onClick={() => onCancelClick()}
+        />
+      </TableCell>
+    </TableRow>
   );
 };
