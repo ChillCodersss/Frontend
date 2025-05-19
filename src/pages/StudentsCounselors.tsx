@@ -14,7 +14,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Rating,
   useMediaQuery,
   useTheme,
   ToggleButtonGroup,
@@ -725,27 +724,39 @@ const StudentsCounselors: React.FC = () => {
                           }}
                         >
                           {counselor.rate > 0 ? (
-                            <Rating
-                              value={counselor.rate}
-                              readOnly
-                              size="small"
+                            <Box
                               sx={{
-                                "& .MuiRating-label": {
-                                  fontFamily: "inherit",
-                                },
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px",
                               }}
-                              getLabelText={(value) =>
-                                `${toPersianNumber(value)} ستاره`
-                              }
-                            />
+                            >
+                              <Box sx={{ display: "flex", gap: "2px" }}>
+                                {[...Array(5)].map((_, index) => (
+                                  <StarIcon
+                                    key={index}
+                                    sx={{
+                                      color:
+                                        index < counselor.rate
+                                          ? " #ffc107"
+                                          : " #e0e0e0",
+                                      fontSize: "24px",
+                                    }}
+                                  />
+                                ))}
+                              </Box>
+                              <Typography sx={{ color: "#666" }}>
+                                {toPersianNumber(counselor.rate)} از 5
+                              </Typography>
+                            </Box>
                           ) : counselor.remainingDays !== null &&
                             counselor.remainingDays < 5 &&
                             counselor.requestStatus === 4 ? (
                             <Box
                               onClick={() => handleRate(counselor)}
                               sx={{
-                                width: "32px",
-                                height: "32px",
+                                width: isSmallScreen ? "28px" : "32px",
+                                height: isSmallScreen ? "28px" : "32px",
                                 borderRadius: "50%",
                                 backgroundColor: "rgb(108, 73, 203)",
                                 color: "white",
@@ -771,13 +782,29 @@ const StudentsCounselors: React.FC = () => {
                                 "&:hover": {
                                   backgroundColor: "rgb(87, 57, 168)",
                                   animation: "none",
+                                  transform: "scale(1.1)",
+                                  transition: "all 0.3s ease",
+                                },
+                                "&:active": {
+                                  transform: "scale(0.95)",
                                 },
                               }}
                             >
-                              <StarIcon sx={{ fontSize: "20px" }} />
+                              <StarIcon
+                                sx={{
+                                  fontSize: isSmallScreen ? "16px" : "20px",
+                                }}
+                              />
                             </Box>
                           ) : (
-                            "بدون امتیاز"
+                            <Typography
+                              sx={{
+                                fontSize: isSmallScreen ? "11px" : "14px",
+                                color: "#666",
+                              }}
+                            >
+                              بدون امتیاز
+                            </Typography>
                           )}
                         </TableCell>
                         <TableCell
@@ -1115,28 +1142,34 @@ const StudentsCounselors: React.FC = () => {
             <Typography sx={{ fontSize: "17.6px", color: "#424242" }}>
               لطفاً به مشاور خود امتیاز دهید
             </Typography>
-            <Rating
-              value={selectedRating}
-              onChange={(_, newValue) => setSelectedRating(newValue)}
-              size="large"
-              precision={1}
-              sx={{
-                "& .MuiRating-iconFilled": {
-                  color: "#ffc107",
-                },
-                "& .MuiRating-iconHover": {
-                  color: "#ffc107",
-                },
-                "& .MuiRating-iconEmpty": {
-                  color: "#e0e0e0",
-                },
-                "& .MuiRating-label": {
-                  fontFamily: "inherit",
-                },
-                direction: "rtl",
-              }}
-              getLabelText={(value) => `${toPersianNumber(value)} ستاره`}
-            />
+            <Box sx={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              {[1, 2, 3, 4, 5].map((value) => (
+                <Box
+                  key={value}
+                  onClick={() => setSelectedRating(value)}
+                  sx={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "8px",
+                    backgroundColor:
+                      selectedRating === value ? "#ffc107" : "#f5f5f5",
+                    color: selectedRating === value ? "white" : "#666",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      backgroundColor:
+                        selectedRating === value ? "#ffc107" : "#e0e0e0",
+                      transform: "scale(1.1)",
+                    },
+                  }}
+                >
+                  <Typography sx={{ fontWeight: "bold" }}>{value}</Typography>
+                </Box>
+              ))}
+            </Box>
             <TextField
               fullWidth
               multiline
@@ -1305,46 +1338,54 @@ const StudentsCounselors: React.FC = () => {
       </Box>
       <DialogContent sx={{ padding: "24px" }}>
         {selectedCounselorDetails && (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
               <Avatar
                 src={selectedCounselorDetails.picUrl}
                 alt={selectedCounselorDetails.counselorName}
                 sx={{ width: "96px", height: "96px" }}
               />
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                {selectedCounselorDetails.counselorName}
-              </Typography>
-            </Box>
-
-            <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography sx={{ color: "#666" }}>وضعیت:</Typography>
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: "bold", mb: 1 }}>
+                  {selectedCounselorDetails.counselorName}
+                </Typography>
                 <Typography
                   sx={{
                     color: getStatusColor(
                       selectedCounselorDetails.requestStatus
                     ),
+                    fontWeight: "medium",
                   }}
                 >
                   {getStatusText(selectedCounselorDetails.requestStatus)}
                 </Typography>
               </Box>
+            </Box>
 
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                backgroundColor: "#f8f9fa",
+                padding: "20px",
+                borderRadius: "12px",
+              }}
+            >
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  padding: "12px",
+                  backgroundColor: "white",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
                 }}
               >
-                <Typography sx={{ color: "#666" }}>تاریخ شروع:</Typography>
+                <Typography sx={{ color: "#666", fontWeight: "medium" }}>
+                  تاریخ شروع:
+                </Typography>
                 <Typography>
                   {selectedCounselorDetails.startDate
                     ? toPersianDate(selectedCounselorDetails.startDate)
@@ -1357,9 +1398,15 @@ const StudentsCounselors: React.FC = () => {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  padding: "12px",
+                  backgroundColor: "white",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
                 }}
               >
-                <Typography sx={{ color: "#666" }}>تاریخ پایان:</Typography>
+                <Typography sx={{ color: "#666", fontWeight: "medium" }}>
+                  تاریخ پایان:
+                </Typography>
                 <Typography>
                   {selectedCounselorDetails.endDate
                     ? toPersianDate(selectedCounselorDetails.endDate)
@@ -1372,9 +1419,13 @@ const StudentsCounselors: React.FC = () => {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  padding: "12px",
+                  backgroundColor: "white",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
                 }}
               >
-                <Typography sx={{ color: "#666" }}>
+                <Typography sx={{ color: "#666", fontWeight: "medium" }}>
                   روزهای باقیمانده:
                 </Typography>
                 <Typography>
@@ -1389,23 +1440,71 @@ const StudentsCounselors: React.FC = () => {
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  padding: "12px",
+                  backgroundColor: "white",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
                 }}
               >
-                <Typography sx={{ color: "#666" }}>امتیاز:</Typography>
-                {selectedCounselorDetails.rate > 0 ? (
-                  <Rating
-                    value={selectedCounselorDetails.rate}
-                    readOnly
-                    size="small"
+                <Typography sx={{ color: "#666", fontWeight: "medium" }}>
+                  امتیاز:
+                </Typography>
+                {selectedCounselorDetails &&
+                selectedCounselorDetails.rate > 0 ? (
+                  <Box
+                    sx={{ display: "flex", alignItems: "center", gap: "4px" }}
+                  >
+                    <Typography sx={{ color: "#666" }}>
+                      {toPersianNumber(selectedCounselorDetails.rate)}
+                    </Typography>
+                    <StarIcon sx={{ color: "#ffc107", fontSize: "20px" }} />
+                  </Box>
+                ) : selectedCounselorDetails?.remainingDays !== null &&
+                  selectedCounselorDetails?.remainingDays < 5 &&
+                  selectedCounselorDetails?.requestStatus === 4 ? (
+                  <Box
+                    onClick={() => {
+                      setDetailsDialogOpen(false);
+                      handleRate(selectedCounselorDetails);
+                    }}
                     sx={{
-                      "& .MuiRating-label": {
-                        fontFamily: "inherit",
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "rgb(108, 73, 203)",
+                      color: "white",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      margin: "0",
+                      animation: "pulse 2s infinite",
+                      "@keyframes pulse": {
+                        "0%": {
+                          boxShadow: "0 0 0 0 rgba(108, 73, 203, 0.4)",
+                        },
+                        "70%": {
+                          boxShadow: "0 0 0 10px rgba(108, 73, 203, 0)",
+                        },
+                        "100%": {
+                          boxShadow: "0 0 0 0 rgba(108, 73, 203, 0)",
+                        },
+                      },
+                      "&:hover": {
+                        backgroundColor: "rgb(87, 57, 168)",
+                        animation: "none",
+                        transform: "scale(1.1)",
+                        transition: "all 0.3s ease",
+                      },
+                      "&:active": {
+                        transform: "scale(0.95)",
                       },
                     }}
-                    getLabelText={(value) => `${toPersianNumber(value)} ستاره`}
-                  />
+                  >
+                    <StarIcon sx={{ fontSize: "20px" }} />
+                  </Box>
                 ) : (
-                  <Typography>بدون امتیاز</Typography>
+                  <Typography sx={{ color: "#666" }}>بدون امتیاز</Typography>
                 )}
               </Box>
             </Box>
