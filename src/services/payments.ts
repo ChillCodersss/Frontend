@@ -40,3 +40,24 @@ export const payingPayments = async (token: string, id: number) => {
   }
   return response.json();
 };
+
+export const cancelRequestCounselor = async (token: string) => {
+  const response = await fetch(
+    `http://${baseURL}/api/RequestCounselor/Cancel`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+        Accept: "text/plain",
+      },
+      body: JSON.stringify({}),
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.log(errorData.message || "خطا در ارتباط با سرور");
+  }
+  return response.json();
+};
