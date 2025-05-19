@@ -15,13 +15,16 @@ import CounselorDisplay from "./pages/CounselorDisplay";
 import Landing from "./pages/Landing/Landing";
 import ScrollToTop from "./components/ScrollToTop";
 // import StudentDisplayPopup from "./components/StudentDisplay/StudentDisplay";
-import StudentList from "./pages/CounselorRequests";
+// import StudentList from "./pages/CounselorRequests";
 import Payments from "./pages/Payments/Payments";
 import ChangePassword from "./components/Header/ChangePassword";
 import StudentProfile from "./pages/StudentProfile";
 import Students from "./pages/CounselorStudents";
+import CounselorRequests from "./pages/Counselorrequests/CounselorRequests";
 
 createRoot(document.getElementById("root")!).render(
+  <>
+
   <BrowserRouter>
     <ScrollToTop />
     <Routes>
@@ -43,9 +46,9 @@ createRoot(document.getElementById("root")!).render(
       {/* Dashboard route with nested routes for both roles */}
       <Route
         path="/dashboard"
-      >
+        >
         {/* Counselor-specific routes */}
-        <Route path="counselorrequests" element={<StudentList />} />
+        <Route path="counselorrequests" element={<CounselorRequests />} />
         <Route path="students" element={<Students />} />
         <Route path="chat-student" element={<div>Chat with Student</div>} />
         <Route path="counseling-files" element={<div>Counseling Stats</div>} />
@@ -58,4 +61,5 @@ createRoot(document.getElementById("root")!).render(
       </Route>
     </Routes>
   </BrowserRouter>
+  </>
 );
