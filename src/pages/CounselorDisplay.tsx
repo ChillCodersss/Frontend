@@ -22,7 +22,7 @@ import { getToken } from "@/services/auth";
 import { getUserInfo } from "@/services/auth"; // Import getUserInfo
 import "react-toastify/dist/ReactToastify.css";
 import "./toast.css";
-import Header from "@/components/Header/Header";
+import defaultpic from "@/assets/DefaultPerson.png"
 
 interface PostData {
   username: string;
@@ -93,7 +93,7 @@ const CounselorDisplay: React.FC = () => {
         uniName: "",
         hsMajorTitle: "",
         content: "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
-        profilePic: "/src/assets/DefaultPerson.png",
+        profilePic: defaultpic,
         workExperience: "نامشخص",
         rate: "",
         studentCounselorId: null,
@@ -116,7 +116,7 @@ const CounselorDisplay: React.FC = () => {
         const data = await response.json();
         const userData = data.value || {};
 
-        let profilePicUrl = "/src/assets/DefaultPerson.png";
+        let profilePicUrl = defaultpic;
         if (userData?.picUrl) {
           try {
             const imageResponse = await fetch(
@@ -157,11 +157,12 @@ const CounselorDisplay: React.FC = () => {
         const normalizedId = String(id);
         const normalizedStudentCounselorId = userData.studentCounselorId ? String(userData.studentCounselorId) : null;
         setIsCancelMode(normalizedId === normalizedStudentCounselorId);
-      } catch (error: any) {
+      } catch (error: any) { 
         console.error("Error fetching counselor data:", error);
         toast.error("خطا در بارگذاری اطلاعات مشاور", {
           position: "bottom-right",
           autoClose: 5000,
+          
           rtl: true,
         });
         setPostData(prev => ({
@@ -287,7 +288,6 @@ const CounselorDisplay: React.FC = () => {
 
   return (
     <>
-      <Header />
       <Box
         sx={{
           position: "relative",
@@ -463,7 +463,7 @@ const CounselorDisplay: React.FC = () => {
                 src={postData.profilePic}
                 alt="Profile"
                 onError={(e) => {
-                  e.currentTarget.src = "/src/assets/DefaultPerson.png";
+                  e.currentTarget.src = defaultpic;
                 }}
                 style={{
                   width: isMobile ? "120px" : "220px",

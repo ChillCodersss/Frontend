@@ -21,7 +21,6 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { getToken } from "@/services/auth";
 import InputBox from "@/components/common/inputbox";
 import SecondaryButton from "@/components/common/SecondaryButton";
-import Header from "@/components/Header/Header";
 
 interface FormData {
   id: number;
@@ -859,7 +858,6 @@ const StudentProfile = () => {
 
   return (
     <>
-      <Header />
       <Box
         sx={{
           display: "flex",

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
-  AppBar,
   Toolbar,
   Avatar,
   TextField,
@@ -330,18 +329,6 @@ const CounselorProfile = () => {
         draggable
         pauseOnHover
       />
-
-      {/* Header */}
-      <AppBar
-        position="fixed"
-        sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          backdropFilter: "blur(10px)",
-          color: "black",
-        }}
-      >
-        <Toolbar></Toolbar>
-      </AppBar>
 
       {/* Main Content */}
       <Box

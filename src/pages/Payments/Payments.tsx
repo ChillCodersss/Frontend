@@ -24,8 +24,6 @@ import PaymentsItem, {
 import { useEffect, useState, useCallback } from "react";
 import { PaymentsHistory, cancelRequestCounselor } from "@/services/payments";
 import { getToken } from "@/services/auth";
-import Header from "@/components/Header/Header";
-import Sidebar from "@/components/Sidebar/Sidebar";
 import {
   PTableHeadRowStyle,
   PTableHeadCellStyle,
@@ -139,8 +137,6 @@ const Payments = () => {
           textAlign: "right",
         }}
       />
-      <Header />
-      <Sidebar>
         <Box>
           {loading ? (
             <Typography sx={PTextStyle}>در حال بارگزاری</Typography>
@@ -261,7 +257,6 @@ const Payments = () => {
             </DialogActions>
           </Dialog>
         </Box>
-      </Sidebar>
     </>
   );
 };
