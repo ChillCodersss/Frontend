@@ -49,7 +49,9 @@ export const cancelRequestCounselor = async (token: string) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        Accept: "text/plain",
       },
+      body: JSON.stringify({}),
     }
   );
 
