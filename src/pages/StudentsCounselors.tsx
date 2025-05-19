@@ -24,8 +24,6 @@ import {
   PaginationItem,
   IconButton,
 } from "@mui/material";
-import Sidebar from "@/components/Sidebar/Sidebar";
-import Header from "@/components/Header/Header";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import StarIcon from "@mui/icons-material/Star";
 import { PaginationRenderItemParams } from "@mui/material";
@@ -177,7 +175,7 @@ const StudentsCounselors: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, currentPage, navigate]);
+  }, [currentPage, statusFilter, navigate]);
 
   useEffect(() => {
     fetchCounselors();
@@ -1441,11 +1439,8 @@ const StudentsCounselors: React.FC = () => {
 
   return (
     <>
-      <Header />
-      <Sidebar>
-        {content}
-        {renderDetailsDialog()}
-      </Sidebar>
+      {content}
+      {renderDetailsDialog()}
     </>
   );
 };
