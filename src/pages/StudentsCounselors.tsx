@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Table,
@@ -123,11 +123,7 @@ const StudentsCounselors: React.FC = () => {
   const [selectedCounselorDetails, setSelectedCounselorDetails] =
     useState<Counselor | null>(null);
 
-  useEffect(() => {
-    fetchCounselors();
-  }, [statusFilter, currentPage]);
-
-  const fetchCounselors = async () => {
+  const fetchCounselors = useCallback(async () => {
     try {
       setLoading(true);
       const token = getToken();
@@ -181,7 +177,11 @@ const StudentsCounselors: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter, currentPage, navigate]);
+
+  useEffect(() => {
+    fetchCounselors();
+  }, [fetchCounselors]);
 
   const getStatusNumber = (statusText: string): number => {
     const statusMap: { [key: string]: number } = {
