@@ -258,7 +258,7 @@ const StudentsCounselors: React.FC = () => {
         return;
       }
 
-      await axios.put(
+      await axios.post(
         `http://62.60.213.13:8080/api/RequestCounselor/Extend/${counselorId}`,
         {},
         {
@@ -923,25 +923,25 @@ const StudentsCounselors: React.FC = () => {
                                   key={`mobile-extend-${counselor.id}`}
                                   name="تمدید"
                                   backgroundColor="rgb(5, 190, 30)"
-                                  width="80px"
-                                  height="28px"
-                                  fontSize="12px"
+                                  width="50px"
+                                  height="22px"
+                                  fontSize="10px"
                                   onClick={() =>
                                     handleExtendClick(counselor.id)
                                   }
-                                  borderRadius="8px"
+                                  borderRadius="4px"
                                 />
                                 <SecondaryButton
                                   key={`mobile-cancel-${counselor.id}`}
                                   name="لغو"
                                   backgroundColor="rgb(221, 84, 84)"
-                                  width="80px"
-                                  height="28px"
-                                  fontSize="12px"
+                                  width="50px"
+                                  height="22px"
+                                  fontSize="10px"
                                   onClick={() =>
                                     handleCancelClick(counselor.id)
                                   }
-                                  borderRadius="8px"
+                                  borderRadius="4px"
                                 />
                               </>
                             )}
@@ -950,11 +950,11 @@ const StudentsCounselors: React.FC = () => {
                                 key={`mobile-payment-${counselor.id}`}
                                 name="صفحه پرداخت"
                                 backgroundColor="rgb(5, 122, 190)"
-                                width="100px"
-                                height="28px"
-                                fontSize="12px"
+                                width="70px"
+                                height="22px"
+                                fontSize="10px"
                                 onClick={() => navigate("/dashboard/payments")}
-                                borderRadius="8px"
+                                borderRadius="4px"
                               />
                             )}
                           </Box>
@@ -971,7 +971,9 @@ const StudentsCounselors: React.FC = () => {
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "space-between",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "16px",
                 padding: "16px 0",
                 width: "100%",
               }}
@@ -998,6 +1000,18 @@ const StudentsCounselors: React.FC = () => {
               >
                 <ArrowForwardIosIcon />
               </IconButton>
+
+              <Typography
+                sx={{
+                  color: "#057abe",
+                  fontSize: "1rem",
+                  fontWeight: "bold",
+                }}
+              >
+                صفحه {toPersianNumber(currentPage)} از{" "}
+                {toPersianNumber(totalPages)}
+              </Typography>
+
               <IconButton
                 onClick={() =>
                   handlePageChange(
