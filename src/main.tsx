@@ -20,11 +20,11 @@ import Payments from "./pages/Payments/Payments";
 import ChangePassword from "./components/Header/ChangePassword";
 import StudentProfile from "./pages/StudentProfile";
 import Students from "./pages/CounselorStudents";
+import StudentsCounselors from "./pages/StudentsCounselors";
 import CounselorRequests from "./pages/Counselorrequests/CounselorRequests";
 import HSLayout from "./layouts/HSLayout";
-import HLayout from "./layouts/HLayout";
 import HWLayout from "./layouts/HWLayout";
-
+import HLayout from "./layouts/HLayout";
 
 createRoot(document.getElementById("root")!).render(
   <>
@@ -66,7 +66,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="incoms" element={<div>Counseling Stats</div>} />
 
         {/* Student-specific routes */}
-        <Route path="studentscounselors" element={<div>My Counselors</div>} />
+        <Route path="studentscounselors" element={<StudentsCounselors />} />
         <Route path="chat-counselor" element={<div>Chat with Counselor</div>} />
         <Route path="payments" element={<Payments />}/>
       </Route>
