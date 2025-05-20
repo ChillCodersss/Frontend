@@ -1,7 +1,6 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
 import { ConfirmDialogState } from './types';
-import { styles } from './styles';
 
 interface ConfirmDialogProps {
   confirmDialog: ConfirmDialogState;
@@ -11,7 +10,7 @@ interface ConfirmDialogProps {
 
 const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ confirmDialog, handleClose, handleConfirm }) => {
   return (
-    <Dialog open={confirmDialog.open} onClose={handleClose} sx={styles.confirmDialog}>
+    <Dialog open={confirmDialog.open} onClose={handleClose} fullWidth dir="rtl" maxWidth="xs">
       <DialogTitle sx={{ fontWeight: 'bold' }}>
         {confirmDialog.action === 'approve' ? 'تأیید درخواست' : 'رد درخواست'}
       </DialogTitle>

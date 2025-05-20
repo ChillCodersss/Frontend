@@ -36,6 +36,7 @@ interface PostData {
   workExperience: string;
   rate: string;
   studentCounselorId: string | null;
+  requestStatus: number;
 }
 
 interface ApiResponse {
@@ -64,6 +65,7 @@ const CounselorDisplay: React.FC = () => {
     workExperience: "نامشخص",
     rate: "",
     studentCounselorId: null,
+    requestStatus: undefined!,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -97,6 +99,7 @@ const CounselorDisplay: React.FC = () => {
         workExperience: "نامشخص",
         rate: "",
         studentCounselorId: null,
+        requestStatus: undefined!,
       });
 
       try {
@@ -152,12 +155,13 @@ const CounselorDisplay: React.FC = () => {
           workExperience: userData.workExperience || "3 سال",
           rate: userData.rate || "",
           studentCounselorId: userData.studentCounselorId ? String(userData.studentCounselorId) : null,
+          requestStatus: userData.requestStatus || undefined,
         });
 
         const normalizedId = String(id);
         const normalizedStudentCounselorId = userData.studentCounselorId ? String(userData.studentCounselorId) : null;
         setIsCancelMode(normalizedId === normalizedStudentCounselorId);
-      } catch (error: any) { 
+      } catch (error: unknown) { 
         console.error("Error fetching counselor data:", error);
         toast.error("خطا در بارگذاری اطلاعات مشاور", {
           position: "bottom-right",
@@ -377,7 +381,7 @@ const CounselorDisplay: React.FC = () => {
               </Box>
 
               {/* Conditionally render the button box only if user is not a counselor */}
-              {userRole !== "Counselor" && (
+              {userRole !== "Counselor" && postData.requestStatus === 1 && (
                 <Box
                   sx={{
                     border: "1px solid #ddd",
@@ -449,7 +453,7 @@ const CounselorDisplay: React.FC = () => {
             <Box
               sx={{
                 width: isMobile ? "100%" : "230px",
-                backgroundColor: "rgb(205, 218, 224)",
+                backgroundColor: "rgb(169, 224, 250)",
                 borderRadius: isMobile ? "12px 12px 0 0" : "0",
                 display: "flex",
                 flexDirection: isMobile ? "row" : "column",

@@ -76,20 +76,7 @@ export const styles: Record<string, SxProps<Theme>> = {
       '&.MuiPaginationItem-previousNext': { transform: 'rotate(180deg)' },
     },
   },
-  aboutMeDialog: {
-    dir: 'rtl',
-    maxWidth: 'sm',
-    fullWidth: true,
-  },
-  confirmDialog: {
-    dir: 'rtl',
-    maxWidth: 'xs',
-    fullWidth: true,
-  },
   studentDetailsDialog: {
-    dir: 'rtl',
-    maxWidth: 'xs',
-    fullWidth: true,
     '& .MuiDialog-paper': {
       padding: 2,
       borderRadius: 2,

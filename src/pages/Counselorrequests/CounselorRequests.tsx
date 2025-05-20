@@ -3,7 +3,7 @@ import { Box, CircularProgress, useMediaQuery, useTheme } from '@mui/material';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { getToken } from "@/services/auth";
-import { Student, Value, ApiResponse, RequestParams, ConfirmDialogState } from './types';
+import { Value, ApiResponse, RequestParams, ConfirmDialogState } from './types';
 import { styles } from './styles';
 import FilterSection from './FilterSection';
 import StudentTable from './StudentTable';
@@ -109,7 +109,7 @@ const useStudents = (
         }
         setImageUrls(newImageUrls);
       } else {
-        setError(response.data.error.message || 'خطا در دریافت اطلاعات');
+        setError(response.data.error?.message || 'خطا در دریافت اطلاعات');
         setValue(null);
       }
     } catch (err) {
@@ -195,12 +195,12 @@ const CounselorRequests: React.FC = () => {
     };
   }, [imageUrls, fetchImage, setImageUrls]);
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
+  const handlePageChange = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
   }, []);
 
   const handleMajorFilterChange = useCallback(
-    (event: React.MouseEvent<HTMLElement>, newFilter: string) => {
+    (_: React.MouseEvent<HTMLElement>, newFilter: string) => {
       if (newFilter !== null) {
         setMajorFilter(newFilter);
         setCurrentPage(1);
@@ -210,7 +210,7 @@ const CounselorRequests: React.FC = () => {
   );
 
   const handleGradeFilterChange = useCallback(
-    (event: React.MouseEvent<HTMLElement>, newFilter: string) => {
+    (_: React.MouseEvent<HTMLElement>, newFilter: string) => {
       if (newFilter !== null) {
         setGradeFilter(newFilter);
         setCurrentPage(1);
@@ -220,7 +220,7 @@ const CounselorRequests: React.FC = () => {
   );
 
   const handleStatusFilterChange = useCallback(
-    (event: React.SyntheticEvent, newFilter: string) => {
+    (_: React.SyntheticEvent, newFilter: string) => {
       if (newFilter !== null) {
         setStatusFilter(newFilter);
         setCurrentPage(1);
