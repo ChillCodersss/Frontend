@@ -256,11 +256,14 @@ const StudentsCounselors: React.FC = () => {
       }
 
       await axios.post(
-        `http://62.60.213.13:8080/api/RequestCounselor/Extend/${counselorId}`,
-        {},
+        `http://62.60.213.13/api/RequestCounselor/Extend`,
+        {
+          Id: counselorId,
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
