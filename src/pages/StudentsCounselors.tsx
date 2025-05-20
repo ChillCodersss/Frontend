@@ -713,9 +713,20 @@ const StudentsCounselors: React.FC = () => {
                             width: "15%",
                           }}
                         >
-                          {counselor.remainingDays
-                            ? toPersianNumber(counselor.remainingDays)
-                            : "-"}
+                          {counselor.remainingDays !== null ? (
+                            counselor.remainingDays < 0 ? (
+                              <Typography sx={{ color: "#f44336" }}>
+                                {toPersianNumber(
+                                  Math.abs(counselor.remainingDays)
+                                )}{" "}
+                                روز گذشته
+                              </Typography>
+                            ) : (
+                              toPersianNumber(counselor.remainingDays)
+                            )
+                          ) : (
+                            "-"
+                          )}
                         </TableCell>
                         <TableCell
                           key={`rating-${counselor.id}`}
@@ -832,14 +843,26 @@ const StudentsCounselors: React.FC = () => {
                                 <SecondaryButton
                                   key={`extend-${counselor.id}`}
                                   name="تمدید"
-                                  backgroundColor="rgb(5, 190, 30)"
+                                  backgroundColor={
+                                    counselor.remainingDays !== null &&
+                                    counselor.remainingDays <= 5
+                                      ? "rgb(5, 190, 30)"
+                                      : "#9e9e9e"
+                                  }
                                   width="80px"
                                   height="28px"
                                   fontSize="12px"
                                   onClick={() =>
-                                    handleExtendClick(counselor.id)
+                                    counselor.remainingDays !== null &&
+                                    counselor.remainingDays <= 5
+                                      ? handleExtendClick(counselor.id)
+                                      : null
                                   }
                                   borderRadius="8px"
+                                  disabled={
+                                    counselor.remainingDays === null ||
+                                    counselor.remainingDays > 5
+                                  }
                                 />
                                 <SecondaryButton
                                   key={`cancel-${counselor.id}`}
@@ -950,14 +973,26 @@ const StudentsCounselors: React.FC = () => {
                                 <SecondaryButton
                                   key={`mobile-extend-${counselor.id}`}
                                   name="تمدید"
-                                  backgroundColor="rgb(5, 190, 30)"
+                                  backgroundColor={
+                                    counselor.remainingDays !== null &&
+                                    counselor.remainingDays <= 5
+                                      ? "rgb(5, 190, 30)"
+                                      : "#9e9e9e"
+                                  }
                                   width="50px"
                                   height="22px"
                                   fontSize="10px"
                                   onClick={() =>
-                                    handleExtendClick(counselor.id)
+                                    counselor.remainingDays !== null &&
+                                    counselor.remainingDays <= 5
+                                      ? handleExtendClick(counselor.id)
+                                      : null
                                   }
                                   borderRadius="4px"
+                                  disabled={
+                                    counselor.remainingDays === null ||
+                                    counselor.remainingDays > 5
+                                  }
                                 />
                                 <SecondaryButton
                                   key={`mobile-cancel-${counselor.id}`}
@@ -1432,9 +1467,20 @@ const StudentsCounselors: React.FC = () => {
                   روزهای باقیمانده:
                 </Typography>
                 <Typography>
-                  {selectedCounselorDetails.remainingDays
-                    ? toPersianNumber(selectedCounselorDetails.remainingDays)
-                    : "-"}
+                  {selectedCounselorDetails.remainingDays !== null ? (
+                    selectedCounselorDetails.remainingDays < 0 ? (
+                      <Typography sx={{ color: "#f44336" }}>
+                        {toPersianNumber(
+                          Math.abs(selectedCounselorDetails.remainingDays)
+                        )}{" "}
+                        روز گذشته
+                      </Typography>
+                    ) : (
+                      toPersianNumber(selectedCounselorDetails.remainingDays)
+                    )
+                  ) : (
+                    "-"
+                  )}
                 </Typography>
               </Box>
 
