@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { Fade, Collapse, Slide } from '@mui/material';
+import { Fade, Slide } from '@mui/material';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Landing/Footer';
+import image1 from '@/assets/testp1.jpg';
+import image2 from '@/assets/testp2.jpg';
 import './AboutUs.css'
 
 
@@ -15,8 +17,6 @@ function AboutUs() {
     };
 
     const slide_timeout = 900;     // timeout in millisecond
-
-    const collapse_timeout = 900;     // timeout in millisecond
 
     const about_banner_h = "درباره ما";
     const about_text1_title = "خانواده بزرگ مشاوریوم";
@@ -94,9 +94,7 @@ function AboutUs() {
                 <section className='ab-container' style={{marginBottom: "50px", marginTop: "50px"}}>
                     <div className='ab-text-container ab-tc1'>
                         <div className='ab-image-wrapper' id="firstImage">
-                            <Collapse orientation='horizontal' in={firstImageVisible} timeout={collapse_timeout}>
-                                <img style={{width: "200px", height: "200px", backgroundColor: "gray"}}/>
-                            </Collapse>
+                            <img className="ab-image" src={image2}/>
                         </div>
                         <Slide direction="left" timeout={slide_timeout} in={firstImageVisible} mountOnEnter unmountOnExit>
                             <div className='ab-text-wrapper'>
@@ -110,9 +108,7 @@ function AboutUs() {
                 <section className='ab-container' style={{marginBottom: "50px"}}>
                     <div className='ab-text-container'>
                         <div className='ab-image-wrapper' id="secondImage">
-                            <Collapse orientation='horizontal' in={secondImageVisible} timeout={collapse_timeout}>
-                                <img style={{width: "200px", height: "200px", backgroundColor: "gray"}}/>
-                            </Collapse>
+                            <img className="ab-image ab-image2" src={image1}/>
                         </div>
                         <Slide direction="right" timeout={slide_timeout} in={secondImageVisible} mountOnEnter unmountOnExit>
                             <div className='ab-text-wrapper ab-tw2'>

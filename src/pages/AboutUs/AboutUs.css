@@ -52,11 +52,23 @@
 }
 
 .ab-image-wrapper {
+    position: relative;
     flex-grow: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    min-height: 200px;
+}
+
+.ab-image {
+    position: absolute;
+    /* height: 200px; */
+    width: 80%;
+    max-width: 500px;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
 }
 
 @media (min-width: 600px) {     /* sm */
@@ -67,6 +79,10 @@
 
     .ab-banner-h {
         font-size: 3rem;
+    }
+
+    .ab-image-wrapper {
+        min-height: 300px;
     }
 }
 
@@ -95,5 +111,14 @@
 
     .ab-tw2 {
         width: 60%;
+    }
+
+    .ab-image {
+        /* height: 250px; */
+        width: 50%;
+    }
+
+    .ab-image2 {
+        width: 75%;
     }
 }
