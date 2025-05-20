@@ -20,7 +20,7 @@ function AboutUs() {
 
     const about_banner_h = "درباره ما";
     const about_text1_title = "خانواده بزرگ مشاوریوم";
-    const about_text1_p1 = `خانواده بزرگ مشاوریوم در سال 1404 با هدف تحقق عدالت آموزشی
+    const about_text1_p1 = `خانواده بزرگ مشاوریوم در سال ۱۴۰۴ با هدف تحقق عدالت آموزشی
                             و ایجاد بستری نوین برای مشاوره تحصیلی تأسیس شد. هدف ما
                             این بوده که تمام دانش‌آموزان کنکوری، بدون دغدغه‌های مالی، بتوانند
                             با استفاده از سیستم نوآورانه این تیم به اهداف و نتایج دلخواه خود دست یابند.`;
@@ -93,33 +93,51 @@ function AboutUs() {
                 </section>
                 <section className='ab-container' style={{marginBottom: "50px", marginTop: "50px"}}>
                     <div className='ab-text-container ab-tc1'>
-                        <div className='ab-image-wrapper' id="firstImage">
+                        <div className='ab-image-wrapper'>
                             <img className="ab-image" src={image2}/>
                         </div>
-                        <Slide direction="left" timeout={slide_timeout} in={firstImageVisible} mountOnEnter unmountOnExit>
-                            <div className='ab-text-wrapper'>
+                        {/* <Slide direction="left" timeout={slide_timeout} in={firstImageVisible}> */}
+                            <div className='ab-text-wrapper' id="firstImage">
+                                <Slide direction="left" timeout={slide_timeout} in={firstImageVisible}>
                                 <h2>{about_text1_title}</h2>
+                                </Slide>
+                                <Slide direction="left" timeout={slide_timeout + 150} in={firstImageVisible}>
                                 <p>{about_text1_p1}</p>
+                                </Slide>
+                                <Slide direction="left" timeout={slide_timeout + 300} in={firstImageVisible}>
                                 <p>{about_text1_p2}</p>
+                                </Slide>
                             </div>
-                        </Slide>
+                        {/* </Slide> */}
                     </div>
                 </section>
                 <section className='ab-container' style={{marginBottom: "50px"}}>
                     <div className='ab-text-container'>
-                        <div className='ab-image-wrapper' id="secondImage">
+                        <div className='ab-image-wrapper'>
                             <img className="ab-image ab-image2" src={image1}/>
                         </div>
-                        <Slide direction="right" timeout={slide_timeout} in={secondImageVisible} mountOnEnter unmountOnExit>
-                            <div className='ab-text-wrapper ab-tw2'>
+                        {/* <Slide direction="right" timeout={slide_timeout} in={secondImageVisible}> */}
+                            <div className='ab-text-wrapper ab-tw2' id="secondImage">
+                                <Slide direction="right" timeout={slide_timeout} in={secondImageVisible}>
                                 <h2>{about_text2_title}</h2>
+                                </Slide>
+                                <Slide direction="right" timeout={slide_timeout + 100} in={secondImageVisible}>
                                 <p>{about_text2_p1}</p>
+                                </Slide>
+                                <Slide direction="right" timeout={slide_timeout + 300} in={secondImageVisible}>
                                 <p>{about_text2_p2}</p>
+                                </Slide>
+                                <Slide direction="right" timeout={slide_timeout + 400} in={secondImageVisible}>
                                 <p>{about_text2_p3}</p>
+                                </Slide>
+                                <Slide direction="right" timeout={slide_timeout + 500} in={secondImageVisible}>
                                 <p>{about_text2_p4}</p>
+                                </Slide>
+                                <Slide direction="right" timeout={slide_timeout + 600} in={secondImageVisible}>
                                 <p>{about_text2_p5}</p>
+                                </Slide>
                             </div>
-                        </Slide>
+                        {/* </Slide> */}
                     </div>
                 </section>
             </main>
