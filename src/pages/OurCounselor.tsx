@@ -130,7 +130,7 @@ const OurCounselor = () => {
           ...prev,
           [picUrl]: sampp, // Use default avatar after timeout
         }));
-      }, 5000);
+      });
 
       setLoadingTimeouts((prev) => ({
         ...prev,

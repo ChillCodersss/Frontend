@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -84,7 +84,7 @@ const ChangePassword = () => {
       if (data.isSuccess) {
         toast.success("رمز عبور با موفقیت تغییر کرد");
         setTimeout(() => {
-          navigate("/Landing");
+          navigate("/");
         }, 1000);
       }
     } catch (error) {
@@ -92,6 +92,14 @@ const ChangePassword = () => {
       toast.error("خطا در ارتباط با سرور");
     }
   };
+
+  useEffect(() => {
+    // Prevent scrolling when this component is mounted
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   return (
     <>
@@ -145,7 +153,7 @@ const ChangePassword = () => {
               boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.4)",
               borderRadius: "12px",
               padding: { xs: "40px", sm: "30px 60px" },
-              margin: "20px",
+              margin: "0px 20px",
               gap: "14px",
             }}
           >
@@ -248,11 +256,11 @@ const ChangePassword = () => {
       <div
         className="area"
         style={{
-          position: "absolute",
+          position: "fixed",
           top: 0,
           left: 0,
-          width: "100%",
-          height: "100%",
+          width: "100vw",
+          height: "100vh",
           zIndex: -1,
         }}
       >

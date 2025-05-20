@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import InputBox from "@/components/common/inputbox";
@@ -17,6 +17,13 @@ const FPGetEmail = () => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
   };
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,7 +93,8 @@ const FPGetEmail = () => {
         alignItems="center"
         sx={{
           height: "100vh",
-          width: "100%",
+          width: "100vw",
+          overflow: "hidden",
         }}
       >
         <form
@@ -166,11 +174,11 @@ const FPGetEmail = () => {
       <div
         className="area"
         style={{
-          position: "absolute",
+          position: "fixed",
           top: 0,
           left: 0,
-          width: "100%",
-          height: "100%",
+          width: "100vw",
+          height: "100vh",
           zIndex: -1,
         }}
       >

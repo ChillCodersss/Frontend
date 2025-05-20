@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -30,6 +30,13 @@ const FPGetNewPassword = () => {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,7 +129,8 @@ const FPGetNewPassword = () => {
         alignItems="center"
         sx={{
           height: "100vh",
-          width: "100%",
+          width: "100vw",
+          overflow: "hidden",
         }}
       >
         <form
@@ -226,11 +234,11 @@ const FPGetNewPassword = () => {
       <div
         className="area"
         style={{
-          position: "absolute",
+          position: "fixed",
           top: 0,
           left: 0,
-          width: "100%",
-          height: "100%",
+          width: "100vw",
+          height: "100vh",
           zIndex: -1,
         }}
       >
