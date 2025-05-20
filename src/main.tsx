@@ -52,6 +52,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/" element={<Landing />} />
         <Route path="/recruitment" element={<Recruitment />} />
         <Route path="/OurCounselor" element={<OurCounselor />} />
+        <Route path="/about-us" element={<div>about us</div>} />
       </Route>
       {/* Dashboard route with nested routes for both roles */}
       <Route

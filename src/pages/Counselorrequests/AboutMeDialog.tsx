@@ -1,6 +1,5 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
-import { styles } from './styles';
 
 interface AboutMeDialogProps {
   selectedAboutMe: string | null;
@@ -9,7 +8,7 @@ interface AboutMeDialogProps {
 
 const AboutMeDialog: React.FC<AboutMeDialogProps> = ({ selectedAboutMe, handleClose }) => {
   return (
-    <Dialog open={!!selectedAboutMe} onClose={handleClose} sx={styles.aboutMeDialog}>
+    <Dialog open={!!selectedAboutMe} onClose={handleClose} fullWidth dir="rtl" maxWidth="sm">
       <DialogTitle sx={{ fontWeight: 'bold' }}>درباره من</DialogTitle>
       <DialogContent>
         <Typography>{selectedAboutMe}</Typography>

@@ -15,6 +15,9 @@ const StudentDetailsDialog: React.FC<StudentDetailsDialogProps> = ({
     <Dialog
       open={open}
       onClose={handleClose}
+      dir= 'rtl'
+      maxWidth= 'xs'
+      fullWidth
       sx={styles.studentDetailsDialog}
     >
       <DialogTitle>
