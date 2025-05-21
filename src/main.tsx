@@ -25,6 +25,7 @@ import CounselorRequests from "./pages/Counselorrequests/CounselorRequests";
 import HSLayout from "./layouts/HSLayout";
 import HWLayout from "./layouts/HWLayout";
 import HLayout from "./layouts/HLayout";
+import AboutUs from "./pages/AboutUs/AboutUs";
 
 createRoot(document.getElementById("root")!).render(
   <>
@@ -52,7 +53,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="/" element={<Landing />} />
         <Route path="/recruitment" element={<Recruitment />} />
         <Route path="/OurCounselor" element={<OurCounselor />} />
-        <Route path="/about-us" element={<div>about us</div>} />
+        <Route path="/about-us" element={<AboutUs />} />
       </Route>
       {/* Dashboard route with nested routes for both roles */}
       <Route
