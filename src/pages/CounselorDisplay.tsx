@@ -36,7 +36,7 @@ interface PostData {
   workExperience: string;
   rate: string;
   studentCounselorId: string | null;
-  requestStatus: number;
+  requestStatus: number | null;
 }
 
 interface ApiResponse {
@@ -65,7 +65,7 @@ const CounselorDisplay: React.FC = () => {
     workExperience: "نامشخص",
     rate: "",
     studentCounselorId: null,
-    requestStatus: undefined!,
+    requestStatus: null,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -99,7 +99,7 @@ const CounselorDisplay: React.FC = () => {
         workExperience: "نامشخص",
         rate: "",
         studentCounselorId: null,
-        requestStatus: undefined!,
+        requestStatus: null,
       });
 
       try {
@@ -155,7 +155,7 @@ const CounselorDisplay: React.FC = () => {
           workExperience: userData.workExperience || "3 سال",
           rate: userData.rate || "",
           studentCounselorId: userData.studentCounselorId ? String(userData.studentCounselorId) : null,
-          requestStatus: userData.requestStatus || undefined,
+          requestStatus: userData.requestStatus || null,
         });
 
         const normalizedId = String(id);
@@ -381,7 +381,7 @@ const CounselorDisplay: React.FC = () => {
               </Box>
 
               {/* Conditionally render the button box only if user is not a counselor */}
-              {userRole !== "Counselor" && postData.requestStatus === 1 && (
+              {userRole !== "Counselor" && (postData.requestStatus === 1 || postData.requestStatus === null) && (
                 <Box
                   sx={{
                     border: "1px solid #ddd",

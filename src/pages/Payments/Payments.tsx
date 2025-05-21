@@ -138,6 +138,18 @@ const Payments = () => {
         }}
       />
       <Box>
+        {/* Add the title here */}
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: "bold",
+            textAlign: "right",
+            margin: "16px 16px 24px 16px",
+            color: "#333",
+          }}
+        >
+          پرداخت‌های من
+        </Typography>
         {loading ? (
           <Typography sx={PTextStyle}>در حال بارگزاری</Typography>
         ) : (
