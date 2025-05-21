@@ -26,6 +26,13 @@ const FPGetVerificationCode = () => {
     }
   }, [timer]);
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log({ pin });
@@ -34,19 +41,16 @@ const FPGetVerificationCode = () => {
       return;
     }
     try {
-      const response = await fetch(
-        "http://62.60.213.13/api/Auth/VerifyCode",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: sentEmail,
-            verificationCode: Number(pin),
-          }),
-        }
-      );
+      const response = await fetch("http://62.60.213.13/api/Auth/VerifyCode", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: sentEmail,
+          verificationCode: Number(pin),
+        }),
+      });
       const data = await response.json();
 
       if (!response.ok) {
@@ -98,7 +102,8 @@ const FPGetVerificationCode = () => {
         alignItems="center"
         sx={{
           height: "100vh",
-          width: "100%",
+          width: "100vw",
+          overflow: "hidden",
         }}
       >
         <form
@@ -234,11 +239,11 @@ const FPGetVerificationCode = () => {
       <div
         className="area"
         style={{
-          position: "absolute",
+          position: "fixed",
           top: 0,
           left: 0,
-          width: "100%",
-          height: "100%",
+          width: "100vw",
+          height: "100vh",
           zIndex: -1,
         }}
       >

@@ -9,7 +9,6 @@ import {
   Typography,
   Menu,
   MenuItem,
-
   Container,
   Avatar,
   Tooltip,
@@ -187,7 +186,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
         color: isWhiteMode ? "#057abe" : "#ffffff",
       }}
     >
-      <Container maxWidth="xl">
+      <Container maxWidth="xl" sx={{ padding: "0 5px 0 16px" }}>
         <Toolbar disableGutters>
           {isLoggedIn ? (
             <Box sx={{ flexGrow: 0 }}>
@@ -288,7 +287,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
             variant="h5"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               ml: 2,
               display: {
@@ -315,7 +314,6 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
             <img
               src={logo}
               alt="Logo"
-
               style={{
                 width: "58px",
                 height: "58px",
@@ -351,6 +349,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
                 horizontal: "left",
               }}
               keepMounted
+              disableScrollLock
               transformOrigin={{
                 vertical: "top",
                 horizontal: "left",
@@ -381,7 +380,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
             </Menu>
           </Box>
           <Typography
-            variant="h6"
+            variant="h5"
             noWrap
             component="a"
             href="/"
@@ -417,8 +416,8 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
             />
           </Box>
         </Toolbar>
-        </Container>
-      </AppBar>
+      </Container>
+    </AppBar>
   );
 };
 

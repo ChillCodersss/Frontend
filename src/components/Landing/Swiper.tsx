@@ -79,7 +79,6 @@ const CounselorSwiper = () => {
       setCounselors([]);
     }
   };
-  console.log(isMobile);
   useEffect(() => {
     fetchCounselors();
   }, []);
