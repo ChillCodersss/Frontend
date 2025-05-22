@@ -32,9 +32,6 @@ const Landing: React.FC = () => {
         in: true,
     }
 
-    // const test_text_fa =   `لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، 
-    //                         و با استفاده از طراحان گرافیک است، چاپگرها ون و سطرآنچنان که لازم است،
-    //                         و برای شرایط فعلی تکنولوژی مورد نیاز، و متخصصان را می طلبد.`;
     const our_counselor_marquee_text = "مشاوران ما";
     const our_counselor_motto_text = "همین امروز مشاور خودت رو انتخاب کن و اولین قدم برای آینده‌ی روشن‌تر رو بردار!";
     // const why_our_site_marquee_text = "چرا مشاوریوم؟";
@@ -140,14 +137,6 @@ const Landing: React.FC = () => {
 
     return (
         <div style={{width: "100%",}}>
-            {/* <header style={{
-                backgroundColor: "gray", height: "70px", 
-                // position: "sticky", top: "0px",
-                display: "flex", alignItems: "center", justifyContent:"center"
-                }}
-            >
-                Header
-            </header> */}
             <main>
                 <section className="l-banner">
                     <div className="l-banner-bg">

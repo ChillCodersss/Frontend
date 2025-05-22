@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { styled } from '@mui/material/styles';
-import { Stepper, Step, StepLabel, useMediaQuery } from '@mui/material';
+import { Stepper, Step, StepLabel, useMediaQuery, Grow } from '@mui/material';
 // import SettingsIcon from '@mui/icons-material/Settings';
 // import GroupAddIcon from '@mui/icons-material/GroupAdd';
 // import VideoLabelIcon from '@mui/icons-material/VideoLabel';
@@ -95,15 +96,61 @@ function ColorlibStepIcon(props: StepIconProps) {
 export default function RoadMap() {
     const small_screen = useMediaQuery("(max-width: 600px)");
 
+    const [stepsVisible, setStepsVisible] = useState({
+        step1Visible: false,
+        step2Visible: false,
+        step3Visible: false,
+    });
+
+    const grow_transition_timeout = 600;     // timeout in millisecond
+
+    useEffect(() => {
+        const steps = document.querySelectorAll(".rm-step-label-wrapper");
+
+        const observer = new IntersectionObserver((entries) => {
+            const entry = entries[0];
+
+            if (entry.isIntersecting) {
+                if (entry.target.id === "step1") {
+                    setStepsVisible((prev) => ({
+                        ...prev,
+                        step1Visible: true,
+                    }));
+                }
+                if (entry.target.id === "step2") {
+                    setStepsVisible((prev) => ({
+                        ...prev,
+                        step2Visible: true,
+                    }));
+                }
+                if (entry.target.id === "step3") {
+                    setStepsVisible((prev) => ({
+                        ...prev,
+                        step3Visible: true,
+                    }));
+                }
+
+                observer.unobserve(entry.target);
+            }
+        }, {
+            threshold: 0.5,
+        });
+
+        observer.observe(steps[0]);
+        observer.observe(steps[1]);
+        observer.observe(steps[2]);
+    }, []);
+
     let steps = [
         {
-            label: "1", src: step1, text: "انتخاب مشاور شخصی",
+            label: "1", src: step1, text: "انتخاب مشاور شخصی", id: "step1", visible: stepsVisible.step1Visible
         },
         {
-            label: "2", src: step2, text: "ثبت درخواست و ثبت‌نام دوره",
+            label: "2", src: step2, text: "ثبت درخواست و ثبت‌نام دوره", id: "step2", visible: stepsVisible.step2Visible
         },
         {
-            label: "3", src: step3, text: "شروع مشاوره تخصصی و دریافت برنامه تحصیلی",
+            label: "3", src: step3, text: "شروع مشاوره تخصصی و دریافت برنامه تحصیلی", id: "step3",
+            visible: stepsVisible.step3Visible
         }
     ];
 
@@ -127,16 +174,18 @@ export default function RoadMap() {
                 ))}
             </Stepper> :
             <div>
-                {steps.map((step, index) => 
-                    <div className='rm-step-label-wrapper' key={index}>
-                        <div className='rm-step-label-first-row'>
-                            <div className='rm-label-number'>{step.label}</div>
-                            <p className='rm-label'>
-                                {step.text}
-                            </p>
+                {steps.map((step, index) =>
+                    <Grow key={index} timeout={grow_transition_timeout} in={step.visible} style={{transformOrigin: "center"}}>
+                        <div className='rm-step-label-wrapper' key={index} id={step.id}>
+                            <div className='rm-step-label-first-row'>
+                                <div className='rm-label-number'>{step.label}</div>
+                                <p className='rm-label'>
+                                    {step.text}
+                                </p>
+                            </div>
+                            <img className='rm-img' src={step.src}/>
                         </div>
-                        <img className='rm-img' src={step.src}/>
-                    </div>
+                    </Grow>
                 )}
             </div>
     );
