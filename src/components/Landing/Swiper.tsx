@@ -1,15 +1,33 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Box, Typography, Avatar, useMediaQuery, Fab } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Avatar,
+  useMediaQuery,
+  Fab,
+  IconButton,
+} from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import EventIcon from "@mui/icons-material/Event";
 import SchoolIcon from "@mui/icons-material/School";
 import CircleIcon from "@mui/icons-material/Circle";
+import { IoIosArrowBack } from "react-icons/io";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SecondaryButton from "../common/SecondaryButton";
-import { Navigation } from "swiper/modules";
+import { Navigation, Autoplay } from "swiper/modules";
+import {
+  OuterBoxStyle,
+  SwiperStyle,
+  SwiperSlideStyle,
+  IconStyle,
+  SwiperSlideTopSection,
+  SwiperSlideAvatar,
+  SwiperSlideTopSectionRateStyle,
+  SwiperSlideIconButtonStyle,
+} from "./SwiperStyles";
 import "swiper";
 import "../../../node_modules/swiper/swiper.css";
 import "../../../node_modules/swiper/swiper-bundle.css";
@@ -18,8 +36,6 @@ import "../../../node_modules/swiper/modules/navigation.css";
 import "swiper/swiper-bundle.css";
 // import "swiper/swiper-bundle.min.css";
 import { useNavigate } from "react-router";
-
-// there is a bug in the swiiper that enables the scroll part of the browser
 
 interface Counselor {
   id: number;
@@ -83,38 +99,9 @@ const CounselorSwiper = () => {
     fetchCounselors();
   }, []);
 
-  const SPV = isMobile ? "auto" : isTablet ? 2 : 3;
-  const centered = isMobile ? true : false;
-
   return (
-    <Box
-      sx={{
-        height: "fit-content",
-        width: "100%",
-        boxSizing: "border-box",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-          padding: "8px",
-          gap: "5px",
-          marginRight: "20px",
-          marginBottom: "20px",
-          // position: "absolute",
-          // top: "10px",
-          // right: "10px",
-          zIndex: 10,
-          // backgroundColor: "#f4c417",
-          borderRadius: "50%",
-          // cursor: "pointer",
-        }}
-      >
+    <Box sx={OuterBoxStyle}>
+      <Box sx={SwiperStyle}>
         <Fab sx={{ boxShadow: "none" }} aria-label="next" id="custom-next">
           <ArrowBackIosRoundedIcon />
         </Fab>
@@ -125,15 +112,29 @@ const CounselorSwiper = () => {
       <Box>
         <Swiper
           dir="rtl"
-          slidesPerView={SPV}
+          slidesPerView={1}
+          centeredSlides={true}
           grabCursor={true}
           spaceBetween={30}
-          centeredSlides={centered}
+          autoplay={{
+            delay: 7000,
+            disableOnInteraction: true,
+            stopOnLastSlide: true,
+          }}
+          breakpoints={{
+            600: {
+              centeredSlides: false,
+            },
+            960: {
+              slidesPerView: 3,
+              centeredSlides: false,
+            },
+          }}
           navigation={{
             prevEl: "#custom-prev",
             nextEl: "#custom-next",
           }}
-          modules={[Navigation]}
+          modules={[Navigation, Autoplay]}
           className="mySwiper"
           style={{ padding: "4px 20px" }}
         >
@@ -142,42 +143,18 @@ const CounselorSwiper = () => {
               <Box
                 key={counselor.id}
                 sx={{
-                  height: "250px",
-                  width: "100%",
+                  ...SwiperSlideStyle,
                   maxWidth: isMobile ? "300px" : "500px",
-                  backgroundColor: "#fff",
-                  borderRadius: "8px",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                  display: "flex",
-                  flexDirection: "column",
-                  border: "1px solid rgb(183, 183, 183)",
-                  position: "relative",
-                  "&:hover": {
-                    boxShadow: "0 2px 4px rgb(0, 0, 0, 0.25)",
-                  },
                 }}
               >
                 {/* Top Section */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    padding: "12px",
-                  }}
-                >
-                  <Typography variant="body2" sx={{ color: "#666" }}>
+                <Box sx={SwiperSlideTopSection}>
+                  <Typography variant="body2" sx={{ color: "#fff" }}>
                     تجربه کار: {counselor.employmentDuration} سال
                   </Typography>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      paddingLeft: "2px",
-                    }}
-                  >
+                  <Box sx={SwiperSlideTopSectionRateStyle}>
                     <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
-                    <Typography variant="body2" sx={{ color: "#666" }}>
+                    <Typography variant="body2" sx={{ color: "#fff" }}>
                       ۴.۸
                     </Typography>
                   </Box>
@@ -193,10 +170,13 @@ const CounselorSwiper = () => {
                   }}
                 >
                   <Avatar
+                    onClick={() => {
+                      navigate(`/OurCounselor/CounselorPage/${counselor.id}`);
+                    }}
                     sx={{
                       width: isMobile ? 100 : 120,
                       height: isMobile ? 100 : 120,
-                      border: "2px solid rgb(8, 57, 136)",
+                      ...SwiperSlideAvatar,
                     }}
                     src={counselor.picUrl}
                   />
@@ -208,61 +188,54 @@ const CounselorSwiper = () => {
                       justifyContent: "center",
                     }}
                   >
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: "bold", color: "#1a49ba" }}
+                    >
                       {counselor.fullName}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#666" }}>
-                      <CircleIcon
-                        sx={{
-                          fontSize: "16px",
-                          verticalAlign: "middle",
-                          marginLeft: "4px",
-                        }}
-                      />
+                      <CircleIcon sx={IconStyle} />
                       {counselor.hsMajor}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#666" }}>
-                      <SchoolIcon
-                        sx={{
-                          fontSize: "16px",
-                          verticalAlign: "middle",
-                          marginLeft: "4px",
-                        }}
-                      />
+                      <SchoolIcon sx={IconStyle} />
                       {counselor.uniMajor}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#666" }}>
-                      <EventIcon
-                        sx={{
-                          fontSize: "16px",
-                          verticalAlign: "middle",
-                          marginLeft: "4px",
-                        }}
-                      />
+                      <EventIcon sx={IconStyle} />
                       کنکور {counselor.entranceExamYear}
                     </Typography>
                   </Box>
                 </Box>
+                <IconButton
+                  onClick={() => {
+                    navigate(`/OurCounselor/CounselorPage/${counselor.id}`);
+                  }}
+                  sx={{
+                    bottom: isMobile ? "15px" : "20px",
+                    left: isMobile ? "15px" : "20px",
+                    width: isMobile ? "32px" : isTablet ? "36px" : "40px",
+                    height: isMobile ? "32px" : isTablet ? "36px" : "40px",
+                    ...SwiperSlideIconButtonStyle,
+                  }}
+                >
+                  <IoIosArrowBack
+                    style={{
+                      fontSize: isMobile ? "20px" : isTablet ? "22px" : "24px",
+                      color: "#1a49ba",
+                    }}
+                  />
+                </IconButton>
               </Box>
             </SwiperSlide>
           ))}
-          <SwiperSlide>
+          <SwiperSlide style={{ display: "flex", justifyContent: "center" }}>
             <Box
               sx={{
-                height: "250px",
-                width: "100%",
-                maxWidth: "300px",
-                backgroundColor: "#fff",
-                borderRadius: "8px",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                display: "flex",
-                flexDirection: "column",
+                ...SwiperSlideStyle,
                 justifyContent: "center",
-                border: "1px solid rgb(183, 183, 183)",
-                position: "relative",
-                "&:hover": {
-                  boxShadow: "0 4px 4px rgba(0,0,0,0.2)",
-                },
+                maxWidth: isMobile ? "300px" : "500px",
               }}
             >
               <SecondaryButton
