@@ -16,7 +16,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import { Swiper, SwiperSlide } from "swiper/react";
-import SecondaryButton from "../common/SecondaryButton";
+// import SecondaryButton from "../common/SecondaryButton";
 import { Navigation, Autoplay } from "swiper/modules";
 import {
   OuterBoxStyle,
@@ -109,6 +109,7 @@ const CounselorSwiper = () => {
           <ArrowForwardIosRoundedIcon />
         </Fab>
       </Box>
+      {/* swiper */}
       <Box>
         <Swiper
           dir="rtl"
@@ -230,31 +231,20 @@ const CounselorSwiper = () => {
               </Box>
             </SwiperSlide>
           ))}
-          <SwiperSlide style={{ display: "flex", justifyContent: "center" }}>
-            <Box
-              sx={{
-                ...SwiperSlideStyle,
-                justifyContent: "center",
-                maxWidth: isMobile ? "300px" : "500px",
-              }}
-            >
-              <SecondaryButton
-                name="مشاهده بیشتر"
-                width={"60%"}
-                height={"60px"}
-                backgroundColor={"#f4c417"}
-                fontSize={"20px"}
-                borderRadius={"9px"}
-                onClick={() => {
-                  navigate("/OurCounselor");
-                }}
-              />
-            </Box>
-          </SwiperSlide>
         </Swiper>
       </Box>
     </Box>
   );
 };
-
+// <SecondaryButton
+//   name="مشاهده بیشتر"
+//   width={"60%"}
+//   height={"60px"}
+//   backgroundColor={"#f4c417"}
+//   fontSize={"20px"}
+//   borderRadius={"9px"}
+//   onClick={() => {
+//     navigate("/OurCounselor");
+//   }}
+// />
 export default CounselorSwiper;

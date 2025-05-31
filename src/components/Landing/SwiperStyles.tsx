@@ -54,7 +54,7 @@ export const SwiperSlideTopSectionRateStyle: SxProps = {
   alignItems: "center",
   gap: "4px",
   paddingLeft: "2px",
-  background: "rgba(255, 215, 0, 0.1)",
+  background: "rgba(255, 255, 255, 0.23)",
   padding: "4px 8px",
   borderRadius: "12px",
 };
