@@ -27,7 +27,7 @@ export const SwiperSlideStyle: SxProps = {
   borderRadius: "8px",
   boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
   background:
-    "linear-gradient(90deg, rgba(8, 57, 136, 0.1) 0%,rgb(255, 255, 255) 50%, rgba(8, 57, 136, 0.1) 100%)",
+    "linear-gradient(90deg, rgba(37, 70, 124, 0.1) 0%,rgb(255, 255, 255) 50%, rgba(37, 70, 124, 0.1) 100%)",
   display: "flex",
   flexDirection: "column",
   gap: "20px",
