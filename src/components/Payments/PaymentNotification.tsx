@@ -75,7 +75,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
           name="پرداخت"
           backgroundColor="rgb(0, 140, 190)"
           fontSize={isMobile ? "0.9rem" : "1rem"}
-          width={isMobile ? "90px" : "150px"}
+          width={isMobile ? "90px" : "120px"}
           height={"32px"}
           borderRadius={"8px"}
           onClick={handlePaymentClick}
@@ -84,7 +84,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
           name="لغو"
           backgroundColor="#d32f2f"
           fontSize={isMobile ? "0.9rem" : "1rem"}
-          width={isMobile ? "90px" : "150px"}
+          width={isMobile ? "90px" : "120px"}
           height={"32px"}
           borderRadius={"8px"}
           onClick={() => onCancelClick()}

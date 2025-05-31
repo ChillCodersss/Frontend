@@ -7,9 +7,7 @@ import { useNavigate } from "react-router";
 // import Marquee from "@/components/Landing/Marquee";
 import SecondaryButton from "@/components/common/SecondaryButton";
 import CounselorSwiper from "@/components/Landing/Swiper.tsx";
-import Footer from "@/components/Landing/Footer";
 import RoadMap from "@/components/Landing/RoadMap";
-import Header from "@/components/Header/Header";
 import Logo from "@/assets/landing_banner_logo.png";
 import './Landing.css';
 
@@ -18,7 +16,7 @@ const Landing: React.FC = () => {
     // const [firstRowVisible, setFirstRowVisible] = useState(false);
     const [firstTextVisible, setFirstTextVisible] = useState(false);
     const [secondTextVisible, setSecondTextVisible] = useState(false);
-    const small_screen = useMediaQuery("(min-width: 600px) and (max-width: 749px)");
+    // const small_screen = useMediaQuery("(min-width: 600px) and (max-width: 749px)");
     const medium_screen = useMediaQuery("(min-width: 750px)");
     const navigate = useNavigate();
     // const not_mobile = small_screen || medium_screen;
@@ -105,23 +103,23 @@ const Landing: React.FC = () => {
         observer.observe(secondText[0]);
     }, []);
 
-    let paper_sx = {
-        direction: "rtl",
-        fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
-        borderRadius: {xs: "6px", sm: "8px", md: "8px"},
-        width: "230px", height: "230px", padding: { xs: "1rem", sm: "1rem", md: "1.1rem" },
-    };
-    const small_screen_paper_sx = {
-        width: "190px", height: "190px",
-    }
-    const medium_screen_paper_sx = {
-        width: "23vw", height: "23vw",
-    };
-    if (small_screen) {
-        paper_sx = {...paper_sx, ...small_screen_paper_sx};
-    } else if (medium_screen) {
-        paper_sx = {...paper_sx, ...medium_screen_paper_sx};
-    }
+    // let paper_sx = {
+    //     direction: "rtl",
+    //     fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
+    //     borderRadius: {xs: "6px", sm: "8px", md: "8px"},
+    //     width: "230px", height: "230px", padding: { xs: "1rem", sm: "1rem", md: "1.1rem" },
+    // };
+    // const small_screen_paper_sx = {
+    //     width: "190px", height: "190px",
+    // }
+    // const medium_screen_paper_sx = {
+    //     width: "23vw", height: "23vw",
+    // };
+    // if (small_screen) {
+    //     paper_sx = {...paper_sx, ...small_screen_paper_sx};
+    // } else if (medium_screen) {
+    //     paper_sx = {...paper_sx, ...medium_screen_paper_sx};
+    // }
 
     const description_box_sx = {
         display: "flex",
@@ -150,7 +148,6 @@ const Landing: React.FC = () => {
             >
                 Header
             </header> */}
-            <Header isWhiteMode={true}/>
             <main>
                 <section className="l-banner">
                     <div className="l-banner-bg">
@@ -338,7 +335,6 @@ const Landing: React.FC = () => {
                     </Box>
                 </section>
             </main>
-            <Footer/>
         </div>
     )
 }

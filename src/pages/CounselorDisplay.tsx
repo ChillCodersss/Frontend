@@ -22,7 +22,7 @@ import { getToken } from "@/services/auth";
 import { getUserInfo } from "@/services/auth"; // Import getUserInfo
 import "react-toastify/dist/ReactToastify.css";
 import "./toast.css";
-import Header from "@/components/Header/Header";
+import defaultpic from "@/assets/DefaultPerson.png"
 
 interface PostData {
   username: string;
@@ -36,6 +36,7 @@ interface PostData {
   workExperience: string;
   rate: string;
   studentCounselorId: string | null;
+  requestStatus: number | null;
 }
 
 interface ApiResponse {
@@ -64,6 +65,7 @@ const CounselorDisplay: React.FC = () => {
     workExperience: "نامشخص",
     rate: "",
     studentCounselorId: null,
+    requestStatus: null,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -93,10 +95,11 @@ const CounselorDisplay: React.FC = () => {
         uniName: "",
         hsMajorTitle: "",
         content: "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
-        profilePic: "/src/assets/DefaultPerson.png",
+        profilePic: defaultpic,
         workExperience: "نامشخص",
         rate: "",
         studentCounselorId: null,
+        requestStatus: null,
       });
 
       try {
@@ -116,7 +119,7 @@ const CounselorDisplay: React.FC = () => {
         const data = await response.json();
         const userData = data.value || {};
 
-        let profilePicUrl = "/src/assets/DefaultPerson.png";
+        let profilePicUrl = defaultpic;
         if (userData?.picUrl) {
           try {
             const imageResponse = await fetch(
@@ -152,16 +155,18 @@ const CounselorDisplay: React.FC = () => {
           workExperience: userData.workExperience || "3 سال",
           rate: userData.rate || "",
           studentCounselorId: userData.studentCounselorId ? String(userData.studentCounselorId) : null,
+          requestStatus: userData.requestStatus || null,
         });
 
         const normalizedId = String(id);
         const normalizedStudentCounselorId = userData.studentCounselorId ? String(userData.studentCounselorId) : null;
         setIsCancelMode(normalizedId === normalizedStudentCounselorId);
-      } catch (error: any) {
+      } catch (error: unknown) { 
         console.error("Error fetching counselor data:", error);
         toast.error("خطا در بارگذاری اطلاعات مشاور", {
           position: "bottom-right",
           autoClose: 5000,
+          
           rtl: true,
         });
         setPostData(prev => ({
@@ -287,7 +292,6 @@ const CounselorDisplay: React.FC = () => {
 
   return (
     <>
-      <Header />
       <Box
         sx={{
           position: "relative",
@@ -377,7 +381,7 @@ const CounselorDisplay: React.FC = () => {
               </Box>
 
               {/* Conditionally render the button box only if user is not a counselor */}
-              {userRole !== "Counselor" && (
+              {userRole !== "Counselor" && (postData.requestStatus === 1 || postData.requestStatus === null) && (
                 <Box
                   sx={{
                     border: "1px solid #ddd",
@@ -449,7 +453,7 @@ const CounselorDisplay: React.FC = () => {
             <Box
               sx={{
                 width: isMobile ? "100%" : "230px",
-                backgroundColor: "rgb(205, 218, 224)",
+                backgroundColor: "rgb(169, 224, 250)",
                 borderRadius: isMobile ? "12px 12px 0 0" : "0",
                 display: "flex",
                 flexDirection: isMobile ? "row" : "column",
@@ -463,7 +467,7 @@ const CounselorDisplay: React.FC = () => {
                 src={postData.profilePic}
                 alt="Profile"
                 onError={(e) => {
-                  e.currentTarget.src = "/src/assets/DefaultPerson.png";
+                  e.currentTarget.src = defaultpic;
                 }}
                 style={{
                   width: isMobile ? "120px" : "220px",

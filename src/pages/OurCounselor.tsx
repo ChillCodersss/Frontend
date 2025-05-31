@@ -10,17 +10,19 @@ import {
   Avatar,
   // Rating,
   Pagination,
+  IconButton,
+  CircularProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
 import EventIcon from "@mui/icons-material/Event";
 import SchoolIcon from "@mui/icons-material/School";
 import CircleIcon from "@mui/icons-material/Circle";
-import SecondaryButton from "../components/common/SecondaryButton";
-import { CgArrowBottomLeft } from "react-icons/cg";
+import { IoIosArrowBack } from "react-icons/io";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import sampp from "../assets/login.png";
+import sampp from "../assets/DefaultPerson.png";
+import ourCounselorPoster from "../assets/ourcounselor_poster.png";
 
 interface Counselor {
   id: number;
@@ -66,6 +68,9 @@ const OurCounselor = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+  const [loadingTimeouts, setLoadingTimeouts] = useState<
+    Record<string, number>
+  >({});
   const pageSize = 4;
   const navigate = useNavigate();
 
@@ -117,8 +122,21 @@ const OurCounselor = () => {
     }
   };
 
-  const fetchImage = async (picUrl: string) => {
+  const fetchImage = async (picUrl: string): Promise<void> => {
     try {
+      // Set a timeout to stop loading after 5 seconds
+      const timeoutId = window.setTimeout(() => {
+        setImageUrls((prev) => ({
+          ...prev,
+          [picUrl]: sampp, // Use default avatar after timeout
+        }));
+      });
+
+      setLoadingTimeouts((prev) => ({
+        ...prev,
+        [picUrl]: timeoutId,
+      }));
+
       const response = await fetch(
         `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
           picUrl
@@ -133,27 +151,39 @@ const OurCounselor = () => {
 
       if (response.ok) {
         const blob = await response.blob();
-        return URL.createObjectURL(blob);
+        const imageUrl = URL.createObjectURL(blob);
+        setImageUrls((prev) => ({
+          ...prev,
+          [picUrl]: imageUrl,
+        }));
+        // Clear the timeout if image loads successfully
+        window.clearTimeout(loadingTimeouts[picUrl]);
+      } else {
+        // Use default avatar if fetch fails
+        setImageUrls((prev) => ({
+          ...prev,
+          [picUrl]: sampp,
+        }));
+        window.clearTimeout(loadingTimeouts[picUrl]);
       }
-      return undefined;
     } catch (error) {
       console.error("Error fetching image:", error);
-      return undefined;
+      // Use default avatar if there's an error
+      setImageUrls((prev) => ({
+        ...prev,
+        [picUrl]: sampp,
+      }));
+      window.clearTimeout(loadingTimeouts[picUrl]);
     }
   };
 
   useEffect(() => {
     const fetchImages = async () => {
-      const newImageUrls: Record<string, string> = {};
       for (const counselor of counselors) {
         if (counselor.picUrl) {
-          const imageUrl = await fetchImage(counselor.picUrl);
-          if (imageUrl) {
-            newImageUrls[counselor.picUrl] = imageUrl;
-          }
+          await fetchImage(counselor.picUrl);
         }
       }
-      setImageUrls(newImageUrls);
     };
 
     if (counselors.length > 0) {
@@ -161,9 +191,20 @@ const OurCounselor = () => {
     }
 
     return () => {
-      Object.values(imageUrls).forEach((url) => URL.revokeObjectURL(url));
+      Object.values(loadingTimeouts).forEach((timeout) =>
+        window.clearTimeout(timeout)
+      );
     };
   }, [counselors]);
+
+  // Cleanup timeouts when component unmounts
+  useEffect(() => {
+    return () => {
+      Object.values(loadingTimeouts).forEach((timeout) =>
+        window.clearTimeout(timeout)
+      );
+    };
+  }, [loadingTimeouts]);
 
   useEffect(() => {
     fetchCounselors();
@@ -184,10 +225,7 @@ const OurCounselor = () => {
   //   fetchCounselors();
   // };
 
-  const handlePageChange = (
-    _: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
+  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);
   };
 
@@ -196,373 +234,469 @@ const OurCounselor = () => {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", direction: "rtl" }}>
-      {/* Top Poster */}
-      <Box
-        sx={{
-          width: "100%",
-          height: isMobile ? "200px" : "300px",
-          backgroundImage: "url(/images/top-poster.jpg)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          marginBottom: "20px",
-          background:
-            "linear-gradient(to right, rgb(8, 57, 136), rgb(0, 119, 182))", // Fallback color if image is not found
-          display: "flex",
-          alignItems: "center",
-          justifyContent: isMobile ? "center" : "flex-start",
-          position: "relative",
-          padding: isMobile ? "0" : "0 40px",
-        }}
-      >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-          <Typography
-            variant={isMobile ? "h5" : "h2"}
-            sx={{
-              color: "white",
-              textAlign: isMobile ? "center" : "right",
-              padding: "0 20px",
-              maxWidth: "800px",
-              fontWeight: "bold",
-              textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
-              fontSize: isMobile ? "1.5rem" : undefined,
-            }}
-          >
-            مشاوران ما
-          </Typography>
-          <Typography
-            variant={isMobile ? "body2" : "h6"}
-            sx={{
-              color: "white",
-              textAlign: isMobile ? "center" : "right",
-              padding: "0 20px",
-              maxWidth: isMobile ? "300px" : "800px",
-              textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
-              fontSize: isMobile ? "0.75rem" : undefined,
-              whiteSpace: "nowrap",
-            }}
-          >
-            با مشاوران متخصص و با تجربه ما، مسیر موفقیت را هموار کنید
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Search and Filter Container */}
-      <Box
-        sx={{
-          maxWidth: "1200px",
-          margin: "0 auto 60px",
-          padding: "20px",
-          backgroundColor: "white",
-          borderRadius: "12px",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: isMobile ? "20px" : "0px",
-          flexWrap: "nowrap",
-        }}
-      >
+    <>
+      <Box sx={{ minHeight: "100vh", direction: "rtl" }}>
+        {/* Top Poster */}
         <Box
           sx={{
+            width: "100%",
+            height: isMobile ? "200px" : "400px",
+            background: "radial-gradient(circle at bottom left, #1a49ba, #09f)",
             display: "flex",
-            gap: "10px",
             alignItems: "center",
-            flex: isMobile ? "1 1 100%" : "1 1 auto",
-            minWidth: isMobile ? "100%" : isTablet ? "350px" : "300px",
-            maxWidth: isMobile ? "100%" : isTablet ? "600px" : "500px",
-            width: isMobile ? "100%" : "auto",
+            justifyContent: "space-between",
+            position: "relative",
+            padding: isMobile ? "0" : "0 40px",
+            overflow: "hidden",
           }}
         >
-          <TextField
-            fullWidth
-            placeholder="جستجو..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <SearchIcon sx={{ color: "rgb(8, 57, 136)", mr: 1 }} />
-              ),
-            }}
+          <Box
+            component="img"
+            src={ourCounselorPoster}
+            alt="Counselor Poster"
             sx={{
-              width: "100%",
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "8px",
-                backgroundColor: "#f5f5f5",
-                marginRight: isMobile ? "0px" : "40px",
-              },
+              height: isMobile ? "200px" : "600px",
+              width: "auto",
+              position: "absolute",
+              left: isMobile ? "40px" : "200px",
+              top: -40,
+              display: isMobile ? "none" : "block",
             }}
           />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+              position: "relative",
+              zIndex: 1,
+              marginRight: isMobile ? "20px" : "40px",
+            }}
+          >
+            <Typography
+              variant={isMobile ? "h5" : "h2"}
+              sx={{
+                color: "white",
+                textAlign: "right",
+                padding: "0 20px",
+                maxWidth: "800px",
+                fontWeight: "bold",
+                textShadow: "2px 2px 4px rgba(0,0,0,0.3)",
+                fontSize: isMobile ? "1.5rem" : undefined,
+              }}
+            >
+              مشاوران ما
+            </Typography>
+            <Typography
+              variant={isMobile ? "body2" : "h6"}
+              sx={{
+                color: "white",
+                textAlign: "right",
+                padding: "0 20px",
+                maxWidth: isMobile ? "300px" : "800px",
+                textShadow: "1px 1px 2px rgba(0,0,0,0.3)",
+                fontSize: isMobile ? "0.75rem" : undefined,
+                whiteSpace: "nowrap",
+              }}
+            >
+              با مشاوران متخصص و با تجربه ما، مسیر موفقیت را هموار کنید
+            </Typography>
+          </Box>
         </Box>
 
+        {/* Search and Filter Container */}
         <Box
           sx={{
-            flex: isMobile ? "1 1 100%" : "0 0 auto",
-            width: isMobile ? "100%" : "auto",
+            maxWidth: "1200px",
+            margin: "20px auto 40px",
+            padding: "20px",
+            backgroundColor: "white",
+            borderRadius: "12px",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
             display: "flex",
-            justifyContent: isMobile ? "center" : "flex-start",
-            marginLeft: isMobile ? "0px" : "40px",
+            flexDirection: isMobile ? "column" : "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: isMobile ? "20px" : "0px",
+            flexWrap: "nowrap",
           }}
         >
-          <ToggleButtonGroup
-            value={filter}
-            exclusive
-            onChange={handleFilterChange}
-            sx={{
-              display: "flex",
-              gap: "15px",
-              "& .MuiToggleButton-root": {
-                border: "1px solid rgb(8, 57, 136)",
-                color: "#rgb(8, 57, 136)",
-                borderRadius: "8px",
-                padding: "8px 16px",
-                "&.Mui-selected": {
-                  backgroundColor: "rgb(8, 57, 136)",
-                  color: "white",
-                },
-                "&:hover": {
-                  backgroundColor: "rgb(177, 188, 205)",
-                },
-              },
-            }}
-          >
-            <ToggleButton value="همه">همه</ToggleButton>
-            <ToggleButton value="ریاضی">ریاضی</ToggleButton>
-            <ToggleButton value="تجربی">تجربی</ToggleButton>
-            <ToggleButton value="انسانی">انسانی</ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-      </Box>
-
-      {/* Counselors Container */}
-      <Box
-        sx={{
-          width: "100%",
-          maxWidth: "100%",
-          margin: "0 auto",
-          padding: isMobile ? "0px 16px" : "0 40px",
-          display: "flex",
-          justifyContent: "center",
-          paddingBottom: isMobile ? "10px" : "50px",
-          boxSizing: "border-box",
-        }}
-      >
-        {loading ? (
           <Box
             sx={{
               display: "flex",
-              justifyContent: "center",
+              gap: "10px",
               alignItems: "center",
-              height: "200px",
+              flex: isMobile ? "1 1 100%" : "1 1 auto",
+              minWidth: isMobile ? "100%" : isTablet ? "350px" : "300px",
+              maxWidth: isMobile ? "100%" : isTablet ? "600px" : "500px",
+              width: isMobile ? "100%" : "auto",
             }}
           >
-            <Typography>در حال بارگذاری...</Typography>
-          </Box>
-        ) : error ? (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "200px",
-            }}
-          >
-            <Typography color="error">{error}</Typography>
-          </Box>
-        ) : counselors.length === 0 ? (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "200px",
-            }}
-          >
-            <Typography>مشاوری یافت نشد</Typography>
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-              rowGap: "30px",
-              columnGap: "40px",
-              justifyContent: "center",
-              width: "100%",
-              maxWidth: "1600px",
-            }}
-          >
-            {counselors.map((counselor) => (
-              <Box
-                key={counselor.id}
-                sx={{
-                  height: "250px",
-                  width: "100%",
-                  maxWidth: "500px",
-                  backgroundColor: "#fff",
+            <TextField
+              fullWidth
+              placeholder="جستجو..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <SearchIcon sx={{ color: "rgb(8, 57, 136)", mr: 1 }} />
+                ),
+              }}
+              sx={{
+                width: "100%",
+                "& .MuiOutlinedInput-root": {
                   borderRadius: "8px",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                  display: "flex",
-                  flexDirection: "column",
-                  border: "1px solid rgb(183, 183, 183)",
-                  position: "relative",
-                  "&:hover": {
-                    boxShadow: "0 4px 4px rgba(0,0,0,0.2)",
+                  backgroundColor: "#f5f5f5",
+                  marginRight: isMobile ? "0px" : "40px",
+                },
+              }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              flex: isMobile ? "1 1 100%" : "0 0 auto",
+              width: isMobile ? "100%" : "auto",
+              display: "flex",
+              justifyContent: isMobile ? "center" : "flex-start",
+              marginLeft: isMobile ? "0px" : "40px",
+            }}
+          >
+            <ToggleButtonGroup
+              value={filter}
+              exclusive
+              onChange={handleFilterChange}
+              sx={{
+                display: "flex",
+                gap: "15px",
+                "& .MuiToggleButton-root": {
+                  border: "1px solid rgb(8, 57, 136)",
+                  color: "#rgb(8, 57, 136)",
+                  borderRadius: "8px",
+                  padding: "8px 16px",
+                  "&.Mui-selected": {
+                    backgroundColor: "rgb(8, 57, 136)",
+                    color: "white",
                   },
-                }}
-              >
-                {/* Top Section */}
+                  "&:hover": {
+                    backgroundColor: "rgb(177, 188, 205)",
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="همه">همه</ToggleButton>
+              <ToggleButton value="ریاضی">ریاضی</ToggleButton>
+              <ToggleButton value="تجربی">تجربی</ToggleButton>
+              <ToggleButton value="انسانی">انسانی</ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+        </Box>
+
+        {/* Counselors Container */}
+        <Box
+          sx={{
+            width: "100%",
+            maxWidth: "100%",
+            margin: "0 auto",
+            padding: isMobile ? "0px 16px" : "0 40px",
+            display: "flex",
+            justifyContent: "center",
+            paddingBottom: isMobile ? "10px" : "50px",
+            boxSizing: "border-box",
+          }}
+        >
+          {loading ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <Typography>در حال بارگذاری...</Typography>
+            </Box>
+          ) : error ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <Typography color="error">{error}</Typography>
+            </Box>
+          ) : counselors.length === 0 ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <Typography>مشاوری یافت نشد</Typography>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+                rowGap: "30px",
+                columnGap: "40px",
+                justifyContent: "center",
+                width: "100%",
+                maxWidth: "1600px",
+              }}
+            >
+              {counselors.map((counselor) => (
                 <Box
+                  key={counselor.id}
                   sx={{
+                    height: "240px",
+                    width: "100%",
+                    maxWidth: "500px",
+                    backgroundColor: "#fff",
+                    borderRadius: "16px",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
                     display: "flex",
-                    justifyContent: "space-between",
-                    padding: "12px",
+                    flexDirection: "column",
+                    border: "1px solid rgba(183, 183, 183, 0.2)",
+                    position: "relative",
+                    transition: "all 0.3s ease",
+                    overflow: "hidden",
+                    "&:hover": {
+                      transform: "translateY(-5px)",
+                      boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+                    },
                   }}
                 >
-                  <Typography variant="body2" sx={{ color: "#666" }}>
-                    تجربه کار: {counselor.employmentDuration} سال
-                  </Typography>
+                  {/* Top Section */}
                   <Box
                     sx={{
                       display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      paddingLeft: "2px",
+                      justifyContent: "space-between",
+                      padding: "16px",
+                      background:
+                        "linear-gradient(45deg, rgba(8, 57, 136, 0.05) 0%, rgba(8, 57, 136, 0.1) 100%)",
                     }}
                   >
-                    <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
-                    <Typography variant="body2" sx={{ color: "#666" }}>
-                      ۴.۸
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "rgb(8, 57, 136)", fontWeight: 500 }}
+                    >
+                      تجربه کار: {counselor.employmentDuration} سال
                     </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px",
+                        paddingLeft: "2px",
+                        background: "rgba(255, 215, 0, 0.1)",
+                        padding: "4px 8px",
+                        borderRadius: "12px",
+                      }}
+                    >
+                      <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "#666", fontWeight: 500 }}
+                      >
+                        ۴.۸
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
 
-                {/* Profile Section */}
-                <Box
-                  sx={{
-                    display: "flex",
-                    gap: "16px",
-                    padding: "0 16px",
-                    marginTop: "10px",
-                  }}
-                >
-                  <Avatar
-                    sx={{
-                      width: isMobile ? 100 : 120,
-                      height: isMobile ? 100 : 120,
-                      border: "2px solid rgb(8, 57, 136)",
-                    }}
-                    src={counselor.picUrl ? imageUrls[counselor.picUrl] : sampp}
-                  />
+                  {/* Profile Section */}
                   <Box
                     sx={{
                       display: "flex",
-                      flexDirection: "column",
-                      gap: "8px",
-                      justifyContent: "center",
+                      gap: "20px",
+                      padding: "20px",
+                      // marginTop: "10px",
                     }}
                   >
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      {counselor.fullName}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: "#666" }}>
-                      <CircleIcon
+                    {counselor.picUrl && !imageUrls[counselor.picUrl] ? (
+                      <Box
                         sx={{
-                          fontSize: "16px",
-                          verticalAlign: "middle",
-                          marginLeft: "4px",
+                          width: isMobile ? 100 : 120,
+                          height: isMobile ? 100 : 120,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          border: "3px solid rgb(8, 57, 136)",
+                          borderRadius: "50%",
+                          backgroundColor: "rgba(8, 57, 136, 0.05)",
                         }}
-                      />
-                      {counselor.hsMajor}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: "#666" }}>
-                      <SchoolIcon
+                      >
+                        <CircularProgress
+                          size={isMobile ? 60 : 70}
+                          sx={{
+                            color: "rgb(8, 57, 136)",
+                          }}
+                        />
+                      </Box>
+                    ) : (
+                      <Avatar
+                        onClick={() => handleViewProfile(counselor.id)}
                         sx={{
-                          fontSize: "16px",
-                          verticalAlign: "middle",
-                          marginLeft: "4px",
+                          width: isMobile ? 100 : 120,
+                          height: isMobile ? 100 : 120,
+                          border: "3px solid rgb(8, 57, 136)",
+                          boxShadow: "0 4px 12px rgba(8, 57, 136, 0.2)",
+                          transition: "all 0.3s ease",
+                          cursor: "pointer",
+                          "&:hover": {
+                            transform: "scale(1.05)",
+                            boxShadow: "0 6px 16px rgba(8, 57, 136, 0.3)",
+                          },
                         }}
+                        src={
+                          counselor.picUrl ? imageUrls[counselor.picUrl] : sampp
+                        }
                       />
-                      {counselor.uniMajor}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: "#666" }}>
-                      <EventIcon
+                    )}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "12px",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        sx={{ fontWeight: "bold", color: "rgb(8, 57, 136)" }}
+                      >
+                        {counselor.fullName}
+                      </Typography>
+                      <Typography
+                        variant="body2"
                         sx={{
-                          fontSize: "16px",
-                          verticalAlign: "middle",
-                          marginLeft: "4px",
+                          color: "#666",
+                          display: "flex",
+                          alignItems: "center",
                         }}
-                      />
-                      کنکور {counselor.entranceExamYear}
-                    </Typography>
+                      >
+                        <CircleIcon
+                          sx={{
+                            fontSize: "16px",
+                            color: "rgb(8, 57, 136)",
+                            marginLeft: "8px",
+                          }}
+                        />
+                        {counselor.hsMajor}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "#666",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <SchoolIcon
+                          sx={{
+                            fontSize: "16px",
+                            color: "rgb(8, 57, 136)",
+                            marginLeft: "8px",
+                          }}
+                        />
+                        {counselor.uniMajor}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "#666",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        <EventIcon
+                          sx={{
+                            fontSize: "16px",
+                            color: "rgb(8, 57, 136)",
+                            marginLeft: "8px",
+                          }}
+                        />
+                        کنکور {counselor.entranceExamYear}
+                      </Typography>
+                    </Box>
                   </Box>
-                </Box>
 
-                {/* Navigation Button */}
-                <SecondaryButton
-                  name="مشاهده"
-                  backgroundColor="transparent"
-                  width="auto"
-                  height="35px"
-                  fontSize="16px"
-                  borderRadius="8px"
-                  onClick={() => handleViewProfile(counselor.id)}
-                  sx={{
-                    position: "absolute",
-                    bottom: "16px",
-                    left: "16px",
-                    padding: "0 20px",
-                    minHeight: "35px",
-                    lineHeight: "35px",
-                    background:
-                      "linear-gradient(45deg, rgb(8, 57, 136) 0%,rgb(8, 57, 136) 100%)",
-                  }}
-                >
-                  <CgArrowBottomLeft
-                    style={{ fontSize: "24px", color: "white" }}
-                  />
-                </SecondaryButton>
-              </Box>
-            ))}
+                  {/* Navigation Button */}
+                  <IconButton
+                    onClick={() => handleViewProfile(counselor.id)}
+                    sx={{
+                      position: "absolute",
+                      bottom: isMobile ? "25px" : "20px",
+                      left: "20px",
+                      backgroundColor: "#FFD700",
+                      width: isMobile ? "32px" : isTablet ? "36px" : "40px",
+                      height: isMobile ? "32px" : isTablet ? "36px" : "40px",
+                      boxShadow: "0 4px 12px rgba(255, 215, 0, 0.3)",
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        backgroundColor: "#FFD700",
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 6px 16px rgba(255, 215, 0, 0.4)",
+                      },
+                    }}
+                  >
+                    <IoIosArrowBack
+                      style={{
+                        fontSize: isMobile
+                          ? "20px"
+                          : isTablet
+                          ? "22px"
+                          : "24px",
+                        color: "rgb(8, 57, 136)",
+                      }}
+                    />
+                  </IconButton>
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+
+        {/* Pagination - Only show if there are items */}
+        {!loading && !error && counselors.length > 0 && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              // marginBottom: "40px",
+            }}
+          >
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              dir="rtl"
+              showFirstButton={false}
+              showLastButton={false}
+              sx={{
+                marginBottom: "40px",
+                "& .MuiPaginationItem-root": {
+                  color: "rgb(8, 57, 136)",
+                  "&.Mui-selected": {
+                    backgroundColor: "rgb(8, 57, 136)",
+                    color: "white",
+                  },
+                  "&.MuiPaginationItem-previousNext": {
+                    transform: "rotate(180deg)",
+                  },
+                },
+              }}
+            />
           </Box>
         )}
       </Box>
-
-      {/* Pagination - Only show if there are items */}
-      {!loading && !error && counselors.length > 0 && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            marginBottom: "40px",
-          }}
-        >
-          <Pagination
-            count={totalPages}
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
-            dir="rtl"
-            showFirstButton={false}
-            showLastButton={false}
-            sx={{
-              marginBottom: "40px",
-              "& .MuiPaginationItem-root": {
-                color: "rgb(8, 57, 136)",
-                "&.Mui-selected": {
-                  backgroundColor: "rgb(8, 57, 136)",
-                  color: "white",
-                },
-                "&.MuiPaginationItem-previousNext": {
-                  transform: "rotate(180deg)",
-                },
-              },
-            }}
-          />
-        </Box>
-      )}
-    </Box>
+    </>
   );
 };
 

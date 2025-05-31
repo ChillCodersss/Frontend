@@ -24,8 +24,6 @@ import PaymentsItem, {
 import { useEffect, useState, useCallback } from "react";
 import { PaymentsHistory, cancelRequestCounselor } from "@/services/payments";
 import { getToken } from "@/services/auth";
-import Header from "@/components/Header/Header";
-import Sidebar from "@/components/Sidebar/Sidebar";
 import {
   PTableHeadRowStyle,
   PTableHeadCellStyle,
@@ -139,129 +137,150 @@ const Payments = () => {
           textAlign: "right",
         }}
       />
-      <Header />
-      <Sidebar>
-        <Box>
-          {loading ? (
-            <Typography sx={PTextStyle}>در حال بارگزاری</Typography>
-          ) : (
-            <Box>
-              <Box sx={PMainBoxStyle}>
-                {payments.length === 0 ? (
-                  <Typography sx={PTextStyle}>شما پرداختی ندارید</Typography>
-                ) : (
-                  <Box sx={PTableBoxStyle}>
-                    <TableContainer sx={PITableContainerStyle}>
-                      <Table>
-                        <TableHead>
-                          <TableRow sx={PTableHeadRowStyle}>
-                            <TableCell sx={PTableHeadCellStyle}>مبلغ</TableCell>
-                            <TableCell sx={PTableHeadCellStyle}>
-                              مشاور
-                            </TableCell>
-                            <TableCell sx={PTableHeadCellStyle}>
-                              طول دوره
-                            </TableCell>
-                            <TableCell sx={PTableHeadCellStyle}>
-                              تاریخ
-                            </TableCell>
-                            <TableCell sx={PTableHeadCellStyle}>
-                              عملیات
-                            </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {payments
-                            .filter((payment) => !payment.isPaid)
-                            .map((payment) => (
-                              <NotificationItem
-                                key={payment.id}
-                                {...payment}
-                                operation={fetchPayments}
-                                onCancelClick={handleCancelClick}
-                              />
-                            ))}
-                          {payments
-                            .filter((payment) => payment.isPaid)
-                            .map((payment) => (
-                              <PaymentsItem
-                                key={payment.id}
-                                {...payment}
-                                operation={showMoreDetails}
-                              />
-                            ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                    <Box
-                      sx={{ display: "flex", justifyContent: "center", mt: 2 }}
-                    >
-                      <Pagination
-                        count={totalPages}
-                        page={currentPage}
-                        onChange={handlePageChange}
-                        color="primary"
-                        dir="rtl"
-                        size={isSmallScreen ? "small" : "medium"}
-                        sx={PPaginationStyle}
-                      />
-                    </Box>
+      <Box>
+        {/* Add the title here */}
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: "bold",
+            textAlign: "right",
+            margin: "16px 16px 24px 16px",
+            color: "#333",
+          }}
+        >
+          پرداخت‌های من
+        </Typography>
+        {loading ? (
+          <Typography sx={PTextStyle}>در حال بارگزاری</Typography>
+        ) : (
+          <Box>
+            <Box sx={PMainBoxStyle}>
+              {payments.length === 0 ? (
+                <Typography sx={PTextStyle}>شما پرداختی ندارید</Typography>
+              ) : (
+                <Box sx={PTableBoxStyle}>
+                  <TableContainer sx={PITableContainerStyle}>
+                    <Table>
+                      <TableHead>
+                        <TableRow sx={PTableHeadRowStyle}>
+                          <TableCell
+                            sx={{ ...PTableHeadCellStyle, width: "20%" }}
+                          >
+                            مبلغ
+                          </TableCell>
+                          <TableCell
+                            sx={{ ...PTableHeadCellStyle, width: "15%" }}
+                          >
+                            مشاور
+                          </TableCell>
+                          <TableCell
+                            sx={{ ...PTableHeadCellStyle, width: "15%" }}
+                          >
+                            طول دوره
+                          </TableCell>
+                          <TableCell
+                            sx={{ ...PTableHeadCellStyle, width: "15%" }}
+                          >
+                            تاریخ
+                          </TableCell>
+                          <TableCell
+                            sx={{ ...PTableHeadCellStyle, width: "35%" }}
+                          >
+                            عملیات
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {payments
+                          .filter((payment) => !payment.isPaid)
+                          .map((payment) => (
+                            <NotificationItem
+                              key={payment.id}
+                              {...payment}
+                              operation={fetchPayments}
+                              onCancelClick={handleCancelClick}
+                            />
+                          ))}
+                        {payments
+                          .filter((payment) => payment.isPaid)
+                          .map((payment) => (
+                            <PaymentsItem
+                              key={payment.id}
+                              {...payment}
+                              operation={showMoreDetails}
+                            />
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <Box
+                    sx={{ display: "flex", justifyContent: "center", mt: 2 }}
+                  >
+                    <Pagination
+                      count={totalPages}
+                      page={currentPage}
+                      onChange={handlePageChange}
+                      color="primary"
+                      dir="rtl"
+                      size={isSmallScreen ? "small" : "medium"}
+                      sx={PPaginationStyle}
+                    />
                   </Box>
-                )}
-              </Box>
+                </Box>
+              )}
             </Box>
-          )}
-          <Dialog
-            open={!!moreDetails}
-            onClose={closeMoreDetails}
-            dir="rtl"
-            maxWidth="sm"
-            fullWidth
-          >
-            <DialogTitle sx={{ fontWeight: "bold" }}>جزییات</DialogTitle>
-            <DialogContent>
-              <Typography>{moreDetails}</Typography>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={closeMoreDetails} color="primary">
-                بستن
-              </Button>
-            </DialogActions>
-          </Dialog>
-          <Dialog
-            open={cancelDialogOpen}
-            onClose={handleCancelClose}
-            dir="rtl"
-            maxWidth="xs"
-            fullWidth
-          >
-            <DialogTitle sx={{ fontWeight: "bold" }}>
-              لغو درخواست مشاوره{" "}
-            </DialogTitle>
-            <DialogContent>
-              <Typography>
-                آیا مطمئن هستید که می‌خواهید این پرداخت را لغو کنید؟
-              </Typography>
-            </DialogContent>
-            <DialogActions sx={{ gap: "10px" }}>
-              <Button
-                onClick={handleCancelClose}
-                color="primary"
-                variant="contained"
-              >
-                خیر
-              </Button>
-              <Button
-                onClick={handleCancelConfirm}
-                color="error"
-                variant="outlined"
-              >
-                بله، لغو کن
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </Box>
-      </Sidebar>
+          </Box>
+        )}
+        <Dialog
+          open={!!moreDetails}
+          onClose={closeMoreDetails}
+          dir="rtl"
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle sx={{ fontWeight: "bold" }}>جزییات</DialogTitle>
+          <DialogContent>
+            <Typography>{moreDetails}</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeMoreDetails} color="primary">
+              بستن
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={cancelDialogOpen}
+          onClose={handleCancelClose}
+          dir="rtl"
+          maxWidth="xs"
+          fullWidth
+        >
+          <DialogTitle sx={{ fontWeight: "bold" }}>
+            لغو درخواست مشاوره{" "}
+          </DialogTitle>
+          <DialogContent>
+            <Typography>
+              آیا مطمئن هستید که می‌خواهید این پرداخت را لغو کنید؟
+            </Typography>
+          </DialogContent>
+          <DialogActions sx={{ gap: "10px" }}>
+            <Button
+              onClick={handleCancelClose}
+              color="primary"
+              variant="contained"
+            >
+              خیر
+            </Button>
+            <Button
+              onClick={handleCancelConfirm}
+              color="error"
+              variant="outlined"
+            >
+              بله، لغو کن
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
     </>
   );
 };
