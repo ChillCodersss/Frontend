@@ -4,12 +4,14 @@ import { Box, Typography } from "@mui/material";
 interface ChatBubbleProps {
   message: string;
   isOwn?: boolean;
+  isStudent?: boolean;
   time?: string;
 }
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({
   message,
   isOwn = false,
+  isStudent = false,
   time,
 }) => {
   return (
@@ -18,19 +20,19 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
         display: "flex",
         flexDirection: "column",
         alignItems: isOwn ? "flex-end" : "flex-start",
-        mb: 1.5,
+        marginBottom: "12px",
       }}
     >
       <Box
         sx={{
           maxWidth: "70%",
-          bgcolor: isOwn ? "#057ABE" : "#f1f1f1",
-          color: isOwn ? "#fff" : "#222",
+          bgcolor: isStudent ? " #DAEFFE" : " #F6E08F",
+          color: "rgb(34, 34, 34)",
           px: 2,
           py: 1,
           borderRadius: 2,
-          borderTopLeftRadius: isOwn ? 12 : 2,
-          borderTopRightRadius: isOwn ? 2 : 12,
+          borderTopLeftRadius: isOwn ? 2 : 12,
+          borderTopRightRadius: isOwn ? 12 : 2,
           boxShadow: 1,
           wordBreak: "break-word",
         }}
@@ -43,12 +45,12 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
         <Typography
           variant="caption"
           sx={{
-            color: "#888",
-            mt: 0.5,
+            color: "rgb(64, 64, 64)",
+            marginTop: "4px",
             fontSize: "0.75rem",
             textAlign: isOwn ? "right" : "left",
-            pr: isOwn ? 0.5 : 0,
-            pl: isOwn ? 0 : 0.5,
+            paddingRight: isOwn ? "4px" : "0",
+            paddingLeft: isOwn ? "0" : "4px",
           }}
         >
           {time}

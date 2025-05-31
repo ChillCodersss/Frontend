@@ -24,6 +24,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
+      // the shift is for new line adding type shi*
       e.preventDefault();
       handleSend();
     }
@@ -35,9 +36,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
       sx={{
         display: "flex",
         alignItems: "center",
-        p: 1,
+        padding: "10px",
         borderRadius: 3,
-        mt: 1,
+        marginTop: "10px",
       }}
     >
       <TextField
@@ -48,17 +49,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         disabled={disabled}
-        InputProps={{
-          disableUnderline: true,
-          sx: { px: 1, fontSize: "1rem" },
-        }}
-        sx={{ direction: "rtl" }}
+        sx={{ direction: "rtl", padding: "0px 8px", fontSize: "1rem" }}
       />
       <IconButton
         color="primary"
         onClick={handleSend}
         disabled={disabled || !value.trim()}
-        sx={{ ml: 1 }}
+        sx={{ marginLeft: "8px" }}
       >
         <SendIcon />
       </IconButton>
