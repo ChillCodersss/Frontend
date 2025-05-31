@@ -16,11 +16,12 @@ import { IoIosArrowBack } from "react-icons/io";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 import { Swiper, SwiperSlide } from "swiper/react";
-// import SecondaryButton from "../common/SecondaryButton";
+import SecondaryButton from "../common/SecondaryButton";
 import { Navigation, Autoplay } from "swiper/modules";
 import {
   OuterBoxStyle,
-  SwiperStyle,
+  SwiperTopSectionStyle,
+  SwiperButtonsStyle,
   SwiperSlideStyle,
   IconStyle,
   SwiperSlideTopSection,
@@ -101,15 +102,31 @@ const CounselorSwiper = () => {
 
   return (
     <Box sx={OuterBoxStyle}>
-      <Box sx={SwiperStyle}>
-        <Fab sx={{ boxShadow: "none" }} aria-label="next" id="custom-next">
-          <ArrowBackIosRoundedIcon />
-        </Fab>
-        <Fab sx={{ boxShadow: "none" }} aria-label="prev" id="custom-prev">
-          <ArrowForwardIosRoundedIcon />
-        </Fab>
+      {/* top section */}
+      <Box sx={SwiperTopSectionStyle}>
+        <Box sx={SwiperButtonsStyle}>
+          <Fab sx={{ boxShadow: "none" }} aria-label="next" id="custom-next">
+            <ArrowBackIosRoundedIcon />
+          </Fab>
+          <Fab sx={{ boxShadow: "none" }} aria-label="prev" id="custom-prev">
+            <ArrowForwardIosRoundedIcon />
+          </Fab>
+        </Box>
+        <Box sx={{ marginLeft: isMobile ? "20px" : "0px" }}>
+          <SecondaryButton
+            name="مشاهده بیشتر"
+            width={isMobile ? "105px" : "150px"}
+            height={isMobile ? "50px" : "60px"}
+            backgroundColor={"#f4c417"}
+            fontSize={isMobile ? "16px" : "20px"}
+            borderRadius={"10px"}
+            onClick={() => {
+              navigate("/OurCounselor");
+            }}
+          />
+        </Box>
       </Box>
-      {/* swiper */}
+      {/* swiper section */}
       <Box>
         <Swiper
           dir="rtl"
@@ -236,15 +253,5 @@ const CounselorSwiper = () => {
     </Box>
   );
 };
-// <SecondaryButton
-//   name="مشاهده بیشتر"
-//   width={"60%"}
-//   height={"60px"}
-//   backgroundColor={"#f4c417"}
-//   fontSize={"20px"}
-//   borderRadius={"9px"}
-//   onClick={() => {
-//     navigate("/OurCounselor");
-//   }}
-// />
+
 export default CounselorSwiper;

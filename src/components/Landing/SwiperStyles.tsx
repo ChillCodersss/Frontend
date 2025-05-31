@@ -9,16 +9,24 @@ export const OuterBoxStyle: SxProps = {
   justifyContent: "center",
 };
 
-export const SwiperStyle: SxProps = {
+export const SwiperTopSectionStyle: SxProps = {
   display: "flex",
-  justifyContent: "flex-end",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "20px",
+  direction: "rtl",
+};
+export const SwiperButtonsStyle: SxProps = {
+  display: "flex",
+  justifyContent: "center",
   alignItems: "center",
   padding: "8px",
   gap: "5px",
-  marginRight: "20px",
-  marginBottom: "20px",
+  // marginRight: "20px",
+  // marginBottom: "20px",
   zIndex: 10,
   borderRadius: "50%",
+  direction: "ltr",
 };
 
 export const SwiperSlideStyle: SxProps = {
