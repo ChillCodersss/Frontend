@@ -46,11 +46,14 @@ const ContactPage: React.FC = () => {
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
-        p: 2,
+        padding: "20px",
         boxSizing: "border-box",
       }}
     >
-      <Typography variant="h6" sx={{ mb: 2, textAlign: "center" }}>
+      <Typography
+        variant="h6"
+        sx={{ marginBottom: "16px", textAlign: "center" }}
+      >
         مشاوران من
       </Typography>
       <TextField
@@ -59,23 +62,25 @@ const ContactPage: React.FC = () => {
         value={search}
         dir="rtl"
         onChange={(e) => setSearch(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <IconButton>
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          ),
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <IconButton>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          },
         }}
-        sx={{ mb: 2 }}
+        sx={{ marginBottom: "16px" }}
       />
-      <Divider sx={{ mb: 2 }} />
+      <Divider sx={{ marginBottom: "16px" }} />
       <Box sx={{ flex: 1, overflowY: "auto" }}>
         <List>
           {filteredContacts.length === 0 ? (
-            <Typography sx={{ textAlign: "center", mt: 2 }}>
-              مخاطبی یافت نشد.
+            <Typography sx={{ textAlign: "center", marginTop: "16px" }}>
+              هیچ مشاوری ندارید.
             </Typography>
           ) : (
             filteredContacts.map((contact) => (
