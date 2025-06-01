@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -31,6 +32,8 @@ const contactsData = [
 ];
 
 const ContactPage: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [contacts] = useState(contactsData);
 
@@ -84,7 +87,20 @@ const ContactPage: React.FC = () => {
             </Typography>
           ) : (
             filteredContacts.map((contact) => (
-              <ContactsItem key={contact.id} {...contact} onClick={() => {}} />
+              <ContactsItem
+                key={contact.id}
+                {...contact}
+                onClick={() => {
+                  console.log(location.pathname);
+                  if (location.pathname === "/dashboard/student-contacts") {
+                    navigate(`student-chat/${contact.id}`);
+                  } else if (
+                    location.pathname === "/dashboard/counselor-contacts"
+                  ) {
+                    navigate(`counselor-chat/${contact.id}`);
+                  }
+                }}
+              />
             ))
           )}
         </List>
