@@ -20,7 +20,7 @@ import {
   Message as MessageIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
-  AttachMoney as AttachMoneyIcon 
+  AttachMoney as AttachMoneyIcon,
 } from "@mui/icons-material";
 import { getUserInfo, removeToken } from "@/services/auth";
 
@@ -44,16 +44,44 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 
   // Define sidebar items for each role
   const counselorSidebarItems: SidebarItem[] = [
-    { label: "درخواست های من", icon: <EmailIcon  />, path: "/dashboard/counselorrequests" },
-    { label: "دانش آموزان من", icon: <PeopleIcon />, path: "/dashboard/students" },
-    { label: "چت های من ", icon: <MessageIcon />, path: "/dashboard/chat-student" },
-    { label: "پرداختی ها", icon: <AttachMoneyIcon />, path: "/dashboard/incoms" },
+    {
+      label: "درخواست های من",
+      icon: <EmailIcon />,
+      path: "/dashboard/counselorrequests",
+    },
+    {
+      label: "دانش آموزان من",
+      icon: <PeopleIcon />,
+      path: "/dashboard/students",
+    },
+    {
+      label: "چت های من ",
+      icon: <MessageIcon />,
+      path: "/dashboard/counselor-contacts",
+    },
+    {
+      label: "پرداختی ها",
+      icon: <AttachMoneyIcon />,
+      path: "/dashboard/incoms",
+    },
   ];
 
   const studentSidebarItems: SidebarItem[] = [
-    { label: "مشاوران من", icon: <PersonIcon />, path: "/dashboard/studentscounselors" },
-    { label: "چت با مشاور", icon: <MessageIcon />, path: "/dashboard/chat-counselor" },
-    { label: "پرداختی ها", icon: <AttachMoneyIcon />, path: "/dashboard/payments " },
+    {
+      label: "مشاوران من",
+      icon: <PersonIcon />,
+      path: "/dashboard/studentscounselors",
+    },
+    {
+      label: "چت با مشاور",
+      icon: <MessageIcon />,
+      path: "/dashboard/student-contacts",
+    },
+    {
+      label: "پرداختی ها",
+      icon: <AttachMoneyIcon />,
+      path: "/dashboard/payments ",
+    },
   ];
 
   // Fetch user role on mount
@@ -65,7 +93,12 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     }
   }, []);
 
-  const sidebarItems = role === "Counselor" ? counselorSidebarItems : role === "Student" ? studentSidebarItems : [];
+  const sidebarItems =
+    role === "Counselor"
+      ? counselorSidebarItems
+      : role === "Student"
+      ? studentSidebarItems
+      : [];
 
   const handleDrawerToggle = () => {
     setOpen(!open);

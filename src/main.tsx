@@ -65,7 +65,7 @@ createRoot(document.getElementById("root")!).render(
           {/* Counselor-specific routes */}
           <Route path="counselorrequests" element={<CounselorRequests />} />
           <Route path="students" element={<Students />} />
-          <Route path="chat-student" element={<div>Chat with Student</div>} />
+          <Route path="student-contacts" element={<ContactPage />} />
           <Route
             path="counseling-files"
             element={<div>Counseling Stats</div>}

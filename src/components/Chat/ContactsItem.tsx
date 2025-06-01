@@ -33,8 +33,8 @@ const ContactsItem: React.FC<ContactsItemProps> = ({
       component="button"
       sx={{
         direction: "rtl",
-        mb: 1,
-        borderRadius: 2,
+        marginBottom: "8px",
+        borderRadius: "8px",
         bgcolor: "#f5f5f5",
         border: "2px solid #057ABE",
         "&:hover": { bgcolor: "#e0f7fa" },
@@ -45,6 +45,7 @@ const ContactsItem: React.FC<ContactsItemProps> = ({
         <Avatar
           src={avatar}
           sx={{
+            //  should i keep this?
             border: online ? "3px solid #4caf50" : "2px solid #bdbdbd",
           }}
         ></Avatar>
@@ -66,11 +67,18 @@ const ContactsItem: React.FC<ContactsItemProps> = ({
           </Typography>
         }
       />
-      <Box sx={{ ml: 1, display: "flex", alignItems: "center" }}>
+      <Box
+        sx={{
+          marginLeft: "8px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         {active ? (
-          <ChatBubbleIcon sx={{ color: "#057ABE", ml: 1 }} />
+          <ChatBubbleIcon sx={{ color: "#057ABE", fontSize: "27px" }} />
         ) : (
-          <HistoryIcon sx={{ color: "#057ABE", ml: 1 }} />
+          <HistoryIcon sx={{ color: "#057ABE", fontSize: "27px" }} />
         )}
       </Box>
     </ListItem>
