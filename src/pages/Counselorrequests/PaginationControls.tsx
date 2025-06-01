@@ -22,7 +22,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
       onChange={handlePageChange}
       color="primary"
       dir="rtl"
-      size={isSmallScreen ? 'small' : 'medium'}
+      size={isSmallScreen ? 'medium' : 'large'}
       sx={styles.pagination}
     />
   );
