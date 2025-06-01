@@ -15,7 +15,7 @@ import ContactsItem from "@/components/Chat/ContactsItem";
 const contactsData = [
   {
     id: 1,
-    name: "علی رضایی",
+    name: "هومن متین",
     lastMessage: "سلام چطوری شما چه خبرا",
     avatar: "",
     online: true,
@@ -23,7 +23,7 @@ const contactsData = [
   },
   {
     id: 2,
-    name: "مریم احمدی",
+    name: "مهیار نیاوند",
     lastMessage: "دوره خوبی رو با هم گذروندیم",
     avatar: "",
     online: false,
@@ -91,13 +91,12 @@ const ContactPage: React.FC = () => {
                 key={contact.id}
                 {...contact}
                 onClick={() => {
-                  console.log(location.pathname);
                   if (location.pathname === "/dashboard/student-contacts") {
-                    navigate(`student-chat/${contact.id}`);
+                    navigate(`/dashboard/student-chat/${contact.id}`);
                   } else if (
                     location.pathname === "/dashboard/counselor-contacts"
                   ) {
-                    navigate(`counselor-chat/${contact.id}`);
+                    navigate(`/dashboard/counselor-chat/${contact.id}`);
                   }
                 }}
               />
