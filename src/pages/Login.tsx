@@ -8,7 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Email from "@mui/icons-material/Email";
-import logo from "@/assets/logo.jpg";
+import logo from "@/assets/logo.png";
 import loginimg from "@/assets/login.png";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -97,7 +97,7 @@ const Login: React.FC = () => {
       });
 
       // Navigate to role-specific dashboard route
-      const redirectPath = data.value.role === "Counselor" ? "/dashboard/counselorrequests" : "/dashboard/studentscounselors";
+      const redirectPath = data.value.role === "Counselor" ? "/dashboard/students" : "/dashboard/studentscounselors";
       setTimeout(() => {
         navigate(redirectPath);
       }, 2000);
@@ -194,12 +194,8 @@ const Login: React.FC = () => {
                 <img
                   src={logo}
                   alt="Logo"
-                  style={{
-                    width: "120px",
-                    height: "120px",
-                    borderRadius: "50%",
-                    marginRight: "-7px",
-                  }}
+                  onClick={() => navigate("/")}
+                  className="logo-hover"
                 />
               </Box>
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Box, CircularProgress, useMediaQuery, useTheme } from '@mui/material';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
-import { getToken } from "@/services/auth";
+import { getToken } from '@/services/auth';
 import { Value, ApiResponse, RequestParams, ConfirmDialogState } from './types';
 import { styles } from './styles';
 import FilterSection from './FilterSection';
@@ -26,19 +26,27 @@ const useStudents = (
 
   const getMajorCode = (major: string): number | null => {
     switch (major) {
-      case 'ریاضی': return 1;
-      case 'تجربی': return 2;
-      case 'انسانی': return 3;
-      default: return null;
+      case 'ریاضی':
+        return 1;
+      case 'تجربی':
+        return 2;
+      case 'انسانی':
+        return 3;
+      default:
+        return null;
     }
   };
 
   const getGradeCode = (grade: string): number | null => {
     switch (grade) {
-      case 'پایه دهم': return 1;
-      case 'پایه یازدهم': return 2;
-      case 'پایه دوازدهم': return 3;
-      default: return null;
+      case 'پایه دهم':
+        return 1;
+      case 'پایه یازدهم':
+        return 2;
+      case 'پایه دوازدهم':
+        return 3;
+      default:
+        return null;
     }
   };
 
@@ -48,9 +56,9 @@ const useStudents = (
       const response = await fetch(
         `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(picUrl)}`,
         {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
@@ -62,7 +70,7 @@ const useStudents = (
       console.error(`Failed to load image for URL ${picUrl}, Status: ${response.status}`);
       return '';
     } catch (error) {
-      console.error("Error fetching image:", error);
+      console.error('Error fetching image:', error);
       return '';
     }
   };
@@ -90,13 +98,10 @@ const useStudents = (
       else if (statusFilter === 'لغو شده') params.Status = 7;
       else if (statusFilter === 'تایید شده') params.Status = 3;
 
-      const response = await axios.get<ApiResponse>(
-        'http://62.60.213.13/api/RequestCounselor/GetList',
-        {
-          params,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get<ApiResponse>('http://62.60.213.13/api/RequestCounselor/GetList', {
+        params,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data.isSuccess) {
         setValue(response.data.value);
@@ -140,7 +145,7 @@ const CounselorRequests: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [majorFilter, setMajorFilter] = useState<string>('همه');
   const [gradeFilter, setGradeFilter] = useState<string>('همه');
-  const [statusFilter, setStatusFilter] = useState<string>('همه');
+  const [statusFilter, setStatusFilter] = useState<string>('فعال');
   const [selectedAboutMe, setSelectedAboutMe] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(true);
@@ -304,44 +309,39 @@ const CounselorRequests: React.FC = () => {
   }
 
   return (
-    <>
-        <Box sx={styles.container}>
-          <FilterSection
-            statusFilter={statusFilter}
-            majorFilter={majorFilter}
-            gradeFilter={gradeFilter}
-            handleStatusFilterChange={handleStatusFilterChange}
-            handleMajorFilterChange={handleMajorFilterChange}
-            handleGradeFilterChange={handleGradeFilterChange}
-            isSmallScreen={isSmallScreen}
-          />
-          <StudentTable
-            value={value}
-            loading={loading}
-            error={error}
-            imageUrls={imageUrls}
-            imageElements={imageElements}
-            handleShowMore={handleShowMore}
-            handleOpenConfirmDialog={handleOpenConfirmDialog}
-            isSmallScreen={isSmallScreen}
-          />
-          <PaginationControls
-            totalPages={value?.totalPages || 1}
-            currentPage={currentPage}
-            handlePageChange={handlePageChange}
-            isSmallScreen={isSmallScreen}
-          />
-          <AboutMeDialog
-            selectedAboutMe={selectedAboutMe}
-            handleClose={handleCloseAboutMeDialog}
-          />
-          <ConfirmDialog
-            confirmDialog={confirmDialog}
-            handleClose={handleCloseConfirmDialog}
-            handleConfirm={handleConfirmAction}
-          />
-        </Box>
-    </>
+    <Box sx={styles.container}>
+      <FilterSection
+        statusFilter={statusFilter}
+        majorFilter={majorFilter}
+        gradeFilter={gradeFilter}
+        handleStatusFilterChange={handleStatusFilterChange}
+        handleMajorFilterChange={handleMajorFilterChange}
+        handleGradeFilterChange={handleGradeFilterChange}
+        isSmallScreen={isSmallScreen}
+      />
+      <StudentTable
+        value={value}
+        loading={loading}
+        error={error}
+        imageUrls={imageUrls}
+        imageElements={imageElements}
+        handleShowMore={handleShowMore}
+        handleOpenConfirmDialog={handleOpenConfirmDialog}
+        isSmallScreen={isSmallScreen}
+      />
+      <PaginationControls
+        totalPages={value?.totalPages || 1}
+        currentPage={currentPage}
+        handlePageChange={handlePageChange}
+        isSmallScreen={isSmallScreen}
+      />
+      <AboutMeDialog selectedAboutMe={selectedAboutMe} handleClose={handleCloseAboutMeDialog} />
+      <ConfirmDialog
+        confirmDialog={confirmDialog}
+        handleClose={handleCloseConfirmDialog}
+        handleConfirm={handleConfirmAction}
+      />
+    </Box>
   );
 };
 
