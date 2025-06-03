@@ -628,13 +628,14 @@ const StudentsCounselors: React.FC = () => {
                             padding: "8px 16px",
                             height: "48px",
                             width: "20%",
+                            verticalAlign: "middle",
                           }}
                         >
                           <Box
                             sx={{
                               display: "flex",
                               alignItems: "center",
-                              justifyContent: "center",
+                              justifyContent: "flex-start",
                               gap: "8px",
                               width: "100%",
                               cursor: "pointer",
@@ -651,9 +652,17 @@ const StudentsCounselors: React.FC = () => {
                             <Avatar
                               src={counselor.picUrl}
                               alt={counselor.counselorName}
-                              sx={{ width: "48px", height: "48px" }}
+                              sx={{
+                                width: "48px",
+                                height: "48px",
+                                flexShrink: 0,
+                                marginRight: "auto",
+                              }}
                             />
-                            <Typography className="counselor-name">
+                            <Typography
+                              className="counselor-name"
+                              sx={{ flex: 1 }}
+                            >
                               {counselor.counselorName}
                             </Typography>
                           </Box>
@@ -823,6 +832,7 @@ const StudentsCounselors: React.FC = () => {
                             height: "48px",
                             width: "15%",
                             paddingLeft: "32px",
+                            minWidth: "200px",
                           }}
                         >
                           <Box
@@ -830,6 +840,7 @@ const StudentsCounselors: React.FC = () => {
                               display: "flex",
                               justifyContent: "center",
                               gap: "8px",
+                              minHeight: "28px",
                             }}
                           >
                             {counselor.requestStatus === 4 && (
