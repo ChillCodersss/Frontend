@@ -21,6 +21,8 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { getToken } from "@/services/auth";
 import InputBox from "@/components/common/inputbox";
 import SecondaryButton from "@/components/common/SecondaryButton";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface FormData {
   id: number;
@@ -646,6 +648,7 @@ const StudentProfile = () => {
     try {
       const token = getToken();
       if (!token) {
+        toast.error("توکن احراز هویت یافت نشد. لطفا دوباره وارد شوید.");
         return;
       }
 
@@ -740,12 +743,14 @@ const StudentProfile = () => {
                 `${field}: ${(errors as string[]).join(", ")}`
             )
             .join("\n");
-          throw new Error(`خطاهای اعتبارسنجی:\n${validationErrors}`);
+          toast.error(`خطاهای اعتبارسنجی:\n${validationErrors}`);
+          return;
         }
 
-        throw new Error(
+        toast.error(
           errorData.title || errorData.message || "خطا در بروزرسانی پروفایل"
         );
+        return;
       }
 
       const data = await response.json();
@@ -773,6 +778,7 @@ const StudentProfile = () => {
             }
           } catch (imageError) {
             console.error("خطا در دریافت تصویر پروفایل:", imageError);
+            toast.error("خطا در دریافت تصویر پروفایل");
           }
         }
 
@@ -785,9 +791,13 @@ const StudentProfile = () => {
         setInitialFormData(updatedFormData);
         setProfilePicFile(null);
         setIsEditMode(false);
+        toast.success("تغییرات با موفقیت ذخیره شد!");
+      } else {
+        toast.error(data.message || "خطا در بروزرسانی پروفایل");
       }
     } catch (error) {
       console.error("خطا در ذخیره پروفایل:", error);
+      toast.error("خطا در ذخیره پروفایل. لطفا دوباره تلاش کنید.");
     }
   };
 
@@ -1658,6 +1668,17 @@ const StudentProfile = () => {
           </Box>
         </Box>
       </Box>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </>
   );
 };
