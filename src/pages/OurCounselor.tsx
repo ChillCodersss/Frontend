@@ -24,6 +24,11 @@ import { useNavigate } from "react-router-dom";
 import sampp from "../assets/DefaultPerson.png";
 import ourCounselorPoster from "../assets/ourcounselor_poster.png";
 
+const toPersianNumber = (num: number): string => {
+  const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+  return num.toString().replace(/\d/g, (x) => persianDigits[parseInt(x)]);
+};
+
 interface Counselor {
   id: number;
   fullName: string;
@@ -34,6 +39,7 @@ interface Counselor {
   employmentDuration: number;
   picName: string | null;
   picUrl: string | null; // This is the MinIO file path
+  rate: number;
 }
 
 interface ApiResponse {
@@ -504,7 +510,7 @@ const OurCounselor = () => {
                         variant="body2"
                         sx={{ color: "#666", fontWeight: 500 }}
                       >
-                        ۴.۸
+                        {toPersianNumber(counselor.rate)}
                       </Typography>
                     </Box>
                   </Box>
