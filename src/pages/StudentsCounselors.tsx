@@ -19,7 +19,6 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Avatar,
-  TextField,
   PaginationItem,
   IconButton,
 } from "@mui/material";
@@ -113,7 +112,6 @@ const StudentsCounselors: React.FC = () => {
   const [selectedCounselorId, setSelectedCounselorId] = useState<number | null>(
     null
   );
-  const [comment, setComment] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
@@ -303,10 +301,10 @@ const StudentsCounselors: React.FC = () => {
       }
 
       await axios.post(
-        `http://62.60.213.13:8080/api/RequestCounselor/Rate/${selectedCounselor.id}`,
+        `http://62.60.213.13:8080/api/Rates`,
         {
-          rate: selectedRating,
-          comment: comment,
+          requestCounselorId: selectedCounselor.id,
+          score: selectedRating,
         },
         {
           headers: {
@@ -323,7 +321,6 @@ const StudentsCounselors: React.FC = () => {
         )
       );
       setRatingDialogOpen(false);
-      setComment("");
     } catch (error) {
       console.error("Error submitting rating:", error);
       if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -759,9 +756,6 @@ const StudentsCounselors: React.FC = () => {
                                   />
                                 ))}
                               </Box>
-                              <Typography sx={{ color: "#666" }}>
-                                {toPersianNumber(counselor.rate)} از 5
-                              </Typography>
                             </Box>
                           ) : counselor.remainingDays !== null &&
                             counselor.remainingDays < 5 &&
@@ -1208,39 +1202,6 @@ const StudentsCounselors: React.FC = () => {
                 </Box>
               ))}
             </Box>
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              placeholder="نظر خود را بنویسید..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              sx={{
-                mt: 3,
-                "& .MuiOutlinedInput-root": {
-                  backgroundColor: "white",
-                  borderRadius: { xs: "6px", sm: "6px", md: "8px" },
-                  transition: "border-color 0.3s ease",
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgb(204, 207, 209)",
-                    borderWidth: "2px",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#1976d2",
-                    borderWidth: "2.3px",
-                  },
-                },
-                "& .MuiOutlinedInput-input": {
-                  textAlign: "right",
-                  direction: "rtl",
-                },
-                "& .MuiInputBase-input::placeholder": {
-                  fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
-                  textAlign: "right",
-                  direction: "rtl",
-                },
-              }}
-            />
           </Box>
         </DialogContent>
         <DialogActions
