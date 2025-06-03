@@ -137,8 +137,7 @@ const Payments = () => {
           textAlign: "right",
         }}
       />
-      <Box>
-        {/* Add the title here */}
+      <Box sx={{ margin: "16px" }}>
         <Typography
           variant="h5"
           sx={{

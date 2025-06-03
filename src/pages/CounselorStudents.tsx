@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import {
   Box,
   Table,
@@ -19,11 +25,11 @@ import {
   useTheme,
   Tabs,
   Tab,
-} from '@mui/material';
-import axios from 'axios';
+} from "@mui/material";
+import axios from "axios";
 import { getToken } from "@/services/auth";
-import { Navigate } from 'react-router-dom';
-import StudentDisplayPopup from '@/components/StudentDisplay/StudentDisplay';
+import { Navigate } from "react-router-dom";
+import StudentDisplayPopup from "@/components/StudentDisplay/StudentDisplay";
 
 interface Student {
   id: number;
@@ -87,27 +93,37 @@ const useStudents = (
 
   const getMajorCode = (major: string): number | null => {
     switch (major) {
-      case 'ریاضی': return 1;
-      case 'تجربی': return 2;
-      case 'انسانی': return 3;
-      default: return null;
+      case "ریاضی":
+        return 1;
+      case "تجربی":
+        return 2;
+      case "انسانی":
+        return 3;
+      default:
+        return null;
     }
   };
 
   const getGradeCode = (grade: string): number | null => {
     switch (grade) {
-      case 'پایه دهم': return 1;
-      case 'پایه یازدهم': return 2;
-      case 'پایه دوازدهم': return 3;
-      default: return null;
+      case "پایه دهم":
+        return 1;
+      case "پایه یازدهم":
+        return 2;
+      case "پایه دوازدهم":
+        return 3;
+      default:
+        return null;
     }
   };
 
   const fetchImage = async (picUrl: string) => {
-    if (!token) return '';
+    if (!token) return "";
     try {
       const response = await fetch(
-        `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(picUrl)}`,
+        `http://62.60.213.13/api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(
+          picUrl
+        )}`,
         {
           method: "GET",
           headers: {
@@ -120,17 +136,19 @@ const useStudents = (
         const blob = await response.blob();
         return URL.createObjectURL(blob);
       }
-      console.error(`Failed to load image for URL ${picUrl}, Status: ${response.status}`);
-      return '';
+      console.error(
+        `Failed to load image for URL ${picUrl}, Status: ${response.status}`
+      );
+      return "";
     } catch (error) {
       console.error("Error fetching image:", error);
-      return '';
+      return "";
     }
   };
 
   const fetchStudents = useCallback(async () => {
     if (!token) {
-      setError('لطفاً دوباره وارد شوید');
+      setError("لطفاً دوباره وارد شوید");
       setLoading(false);
       return;
     }
@@ -146,13 +164,13 @@ const useStudents = (
         GradeLevel: gradeCode,
       };
 
-      if (statusFilter === 'فعال') {
+      if (statusFilter === "فعال") {
         params.Status = 4;
-      } else if (statusFilter === 'گذشته') {
+      } else if (statusFilter === "گذشته") {
         params.Status = 5;
       }
       const response = await axios.get<ApiResponse>(
-        'http://62.60.213.13/api/RequestCounselor/MyStudents',
+        "http://62.60.213.13/api/RequestCounselor/MyStudents",
         {
           params,
           headers: { Authorization: `Bearer ${token}` },
@@ -172,12 +190,12 @@ const useStudents = (
         }
         setImageUrls(newImageUrls);
       } else {
-        setError(response.data.error.message || 'خطا در دریافت اطلاعات');
+        setError(response.data.error.message || "خطا در دریافت اطلاعات");
         setValue(null);
       }
     } catch (err) {
-      console.error('Error fetching students:', err);
-      setError('خطا در دریافت اطلاعات');
+      console.error("Error fetching students:", err);
+      setError("خطا در دریافت اطلاعات");
       setValue(null);
     } finally {
       setLoading(false);
@@ -190,20 +208,30 @@ const useStudents = (
 
   useEffect(() => {
     return () => {
-      Object.values(imageUrls).forEach((url) => url && URL.revokeObjectURL(url));
+      Object.values(imageUrls).forEach(
+        (url) => url && URL.revokeObjectURL(url)
+      );
     };
   }, [imageUrls]);
 
-  return { value, loading, error, imageUrls, setImageUrls, fetchImage, fetchStudents };
+  return {
+    value,
+    loading,
+    error,
+    imageUrls,
+    setImageUrls,
+    fetchImage,
+    fetchStudents,
+  };
 };
 
 const Students: React.FC = () => {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [currentPage, setCurrentPage] = useState(1);
-  const [majorFilter, setMajorFilter] = useState<string>('همه');
-  const [gradeFilter, setGradeFilter] = useState<string>('همه');
-  const [statusFilter, setStatusFilter] = useState<string>('فعال');
+  const [majorFilter, setMajorFilter] = useState<string>("همه");
+  const [gradeFilter, setGradeFilter] = useState<string>("همه");
+  const [statusFilter, setStatusFilter] = useState<string>("فعال");
   // const [selectedAboutMe, setSelectedAboutMe] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(true);
@@ -215,14 +243,15 @@ const Students: React.FC = () => {
     setTokenLoading(false);
   }, []);
 
-  const { value, loading, error, imageUrls, setImageUrls, fetchImage } = useStudents(
-    currentPage,
-    pageSize,
-    majorFilter,
-    gradeFilter,
-    statusFilter,
-    token
-  );
+  const { value, loading, error, imageUrls, setImageUrls, fetchImage } =
+    useStudents(
+      currentPage,
+      pageSize,
+      majorFilter,
+      gradeFilter,
+      statusFilter,
+      token
+    );
 
   const observer = useRef<IntersectionObserver | null>(null);
   const imageElements = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -256,9 +285,12 @@ const Students: React.FC = () => {
     };
   }, [imageUrls, fetchImage, setImageUrls]);
 
-  const handlePageChange = useCallback((_: React.ChangeEvent<unknown>, page: number) => {
-    setCurrentPage(page);
-  }, []);
+  const handlePageChange = useCallback(
+    (_: React.ChangeEvent<unknown>, page: number) => {
+      setCurrentPage(page);
+    },
+    []
+  );
 
   const handleMajorFilterChange = useCallback(
     (_: React.MouseEvent<HTMLElement>, newFilter: string) => {
@@ -298,7 +330,7 @@ const Students: React.FC = () => {
 
   if (tokenLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
         <CircularProgress size={24} />
       </Box>
     );
@@ -309,29 +341,31 @@ const Students: React.FC = () => {
   }
 
   return (
-    <Box sx={{ 
-      direction: 'rtl', 
-      padding: 1, 
-      maxWidth: 1200, 
-      margin: 'auto',
-      overflowX: 'auto'
-    }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 1.8 }}>
+    <Box
+      sx={{
+        direction: "rtl",
+        padding: 1,
+        maxWidth: 1200,
+        margin: "16px",
+        overflowX: "auto",
+      }}
+    >
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 1.8 }}>
         <Tabs
           value={statusFilter}
           onChange={handleStatusFilterChange}
           centered
           sx={{
-            '& .MuiTab-root': {
-              fontSize: isSmallScreen ? '0.75rem' : '0.875rem',
-              color: '#057abe',
-              '&.Mui-selected': {
-                color: '#057abe',
-                fontWeight: 'bold',
+            "& .MuiTab-root": {
+              fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
+              color: "#057abe",
+              "&.Mui-selected": {
+                color: "#057abe",
+                fontWeight: "bold",
               },
             },
-            '& .MuiTabs-indicator': {
-              backgroundColor: '#057abe',
+            "& .MuiTabs-indicator": {
+              backgroundColor: "#057abe",
             },
           }}
         >
@@ -342,15 +376,22 @@ const Students: React.FC = () => {
 
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: isSmallScreen ? 'column' : 'row',
+          display: "flex",
+          flexDirection: isSmallScreen ? "column" : "row",
           gap: isSmallScreen ? 2 : 8,
           mb: 3,
-          justifyContent: 'center',
+          justifyContent: "center",
         }}
       >
         <Box>
-          <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', textAlign: isSmallScreen ? 'center' : 'right' }}>
+          <Typography
+            variant="body1"
+            sx={{
+              mb: 1,
+              fontWeight: "bold",
+              textAlign: isSmallScreen ? "center" : "right",
+            }}
+          >
             رشته
           </Typography>
           <ToggleButtonGroup
@@ -358,21 +399,21 @@ const Students: React.FC = () => {
             exclusive
             onChange={handleMajorFilterChange}
             sx={{
-              gap: '6px',
-              flexWrap: isSmallScreen ? 'wrap' : 'nowrap',
-              justifyContent: 'center',
-              '& .MuiToggleButton-root': {
-                border: '1px solid #057abe',
-                color: '#057abe',
-                borderRadius: '8px',
-                padding: isSmallScreen ? '6px 8px' : '8px 16px',
-                fontSize: isSmallScreen ? '0.75rem' : '0.875rem',
-                '&.Mui-selected': {
-                  backgroundColor: '#057abe',
-                  color: 'white',
+              gap: "6px",
+              flexWrap: isSmallScreen ? "wrap" : "nowrap",
+              justifyContent: "center",
+              "& .MuiToggleButton-root": {
+                border: "1px solid #057abe",
+                color: "#057abe",
+                borderRadius: "8px",
+                padding: isSmallScreen ? "6px 8px" : "8px 16px",
+                fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
+                "&.Mui-selected": {
+                  backgroundColor: "#057abe",
+                  color: "white",
                 },
-                '&:hover': {
-                  backgroundColor: 'rgb(177, 188, 205)',
+                "&:hover": {
+                  backgroundColor: "rgb(177, 188, 205)",
                 },
               },
             }}
@@ -384,7 +425,14 @@ const Students: React.FC = () => {
           </ToggleButtonGroup>
         </Box>
         <Box>
-          <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', textAlign: isSmallScreen ? 'center' : 'right' }}>
+          <Typography
+            variant="body1"
+            sx={{
+              mb: 1,
+              fontWeight: "bold",
+              textAlign: isSmallScreen ? "center" : "right",
+            }}
+          >
             پایه
           </Typography>
           <ToggleButtonGroup
@@ -392,21 +440,21 @@ const Students: React.FC = () => {
             exclusive
             onChange={handleGradeFilterChange}
             sx={{
-              gap: '6px',
-              flexWrap: isSmallScreen ? 'wrap' : 'nowrap',
-              justifyContent: 'center',
-              '& .MuiToggleButton-root': {
-                border: '1px solid #057abe',
-                color: '#057abe',
+              gap: "6px",
+              flexWrap: isSmallScreen ? "wrap" : "nowrap",
+              justifyContent: "center",
+              "& .MuiToggleButton-root": {
+                border: "1px solid #057abe",
+                color: "#057abe",
                 borderRadius: "8px",
-                padding: isSmallScreen ? '6px 8px' : '8px 16px',
-                fontSize: isSmallScreen ? '0.75rem' : '0.875rem',
-                '&.Mui-selected': {
-                  backgroundColor: '#057abe',
-                  color: 'white',
+                padding: isSmallScreen ? "6px 8px" : "8px 16px",
+                fontSize: isSmallScreen ? "0.75rem" : "0.875rem",
+                "&.Mui-selected": {
+                  backgroundColor: "#057abe",
+                  color: "white",
                 },
-                '&:hover': {
-                  backgroundColor: 'rgb(177, 188, 205)',
+                "&:hover": {
+                  backgroundColor: "rgb(177, 188, 205)",
                 },
               },
             }}
@@ -420,7 +468,7 @@ const Students: React.FC = () => {
       </Box>
 
       {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress size={24} />
         </Box>
       )}
@@ -430,58 +478,134 @@ const Students: React.FC = () => {
         </Alert>
       )}
       {!loading && !error && !value && (
-        <Typography sx={{ textAlign: 'center', py: 4 }}>
+        <Typography sx={{ textAlign: "center", py: 4 }}>
           داده‌ای یافت نشد
         </Typography>
       )}
       {!loading && !error && value && (
         <>
           {filteredItems.length === 0 ? (
-            <Typography sx={{ textAlign: 'center', py: 2 }}>
+            <Typography sx={{ textAlign: "center", py: 2 }}>
               دانش‌آموزی یافت نشد
             </Typography>
           ) : (
-            <TableContainer 
-              component={Paper} 
-              sx={{ 
-                boxShadow: 3, 
-                maxHeight: isSmallScreen ? '60vh' : '70vh', 
-                overflowY: 'auto', 
-                marginTop: isSmallScreen ? '20px' : '50px',
-                minWidth: isSmallScreen ? '100%' : ' '
+            <TableContainer
+              component={Paper}
+              sx={{
+                boxShadow: 3,
+                maxHeight: isSmallScreen ? "60vh" : "70vh",
+                overflowY: "auto",
+                marginTop: isSmallScreen ? "20px" : "50px",
+                minWidth: isSmallScreen ? "100%" : " ",
               }}
             >
-              <Table stickyHeader size={isSmallScreen ? 'small' : 'medium'}>
+              <Table stickyHeader size={isSmallScreen ? "small" : "medium"}>
                 <TableHead>
-                  <TableRow sx={{ backgroundColor: 'grey.100', textAlign: "right" }}>
+                  <TableRow
+                    sx={{ backgroundColor: "grey.100", textAlign: "right" }}
+                  >
                     {!isSmallScreen && (
                       <>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "right", padding: '8px' , paddingRight: "120px" }}>نام</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>رشته</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>پایه تحصیلی</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>روز باقی مانده</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '8px' }}>عملیات</TableCell>
+                        <TableCell
+                          sx={{
+                            fontWeight: "bold",
+                            textAlign: "right",
+                            padding: "8px",
+                            paddingRight: "120px",
+                          }}
+                        >
+                          نام
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            padding: "8px",
+                          }}
+                        >
+                          رشته
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            padding: "8px",
+                          }}
+                        >
+                          پایه تحصیلی
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            padding: "8px",
+                          }}
+                        >
+                          روز باقی مانده
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            padding: "8px",
+                          }}
+                        >
+                          عملیات
+                        </TableCell>
                       </>
                     )}
                     {isSmallScreen && (
                       <>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '4px' }}>اطلاعات دانش‌آموز</TableCell>
-                        <TableCell sx={{ fontWeight: 'bold', textAlign: "center", padding: '4px' }}>عملیات</TableCell>
+                        <TableCell
+                          sx={{
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            padding: "4px",
+                          }}
+                        >
+                          اطلاعات دانش‌آموز
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            padding: "4px",
+                          }}
+                        >
+                          عملیات
+                        </TableCell>
                       </>
                     )}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredItems.map((student) => (
-                    <TableRow key={student.id} sx={{ '&:hover': { bgcolor: 'grey.50' } }}>
+                    <TableRow
+                      key={student.id}
+                      sx={{ "&:hover": { bgcolor: "grey.50" } }}
+                    >
                       {!isSmallScreen && (
                         <>
-                          <TableCell sx={{ padding: '8px', textAlign: 'center' }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'right', gap: 1 , paddingRight: "50px" }}>
+                          <TableCell
+                            sx={{ padding: "8px", textAlign: "center" }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "right",
+                                gap: 1,
+                                paddingRight: "50px",
+                              }}
+                            >
                               <Box
                                 data-pic-url={student.picUrl}
                                 ref={(el: HTMLDivElement) => {
-                                  if (el && student.picUrl) imageElements.current.set(student.picUrl, el);
+                                  if (el && student.picUrl)
+                                    imageElements.current.set(
+                                      student.picUrl,
+                                      el
+                                    );
                                 }}
                               >
                                 {student.picUrl && imageUrls[student.picUrl] ? (
@@ -491,66 +615,123 @@ const Students: React.FC = () => {
                                     sx={{ width: 60, height: 60 }}
                                   />
                                 ) : (
-                                  <Avatar sx={{ width: 60, height: 60, bgcolor: 'grey.300' }}>
+                                  <Avatar
+                                    sx={{
+                                      width: 60,
+                                      height: 60,
+                                      bgcolor: "grey.300",
+                                    }}
+                                  >
                                     {student.firstName.charAt(0)}
                                   </Avatar>
                                 )}
                               </Box>
-                              <Typography sx={{ fontWeight: 'bold' }}>
+                              <Typography sx={{ fontWeight: "bold" }}>
                                 {`${student.firstName} ${student.lastName}`}
                               </Typography>
                             </Box>
                           </TableCell>
-                          <TableCell sx={{ textAlign: "center", padding: '8px' }}>{student.majorTitle || 'ندارد'}</TableCell>
-                          <TableCell sx={{ textAlign: "center", padding: '8px' }}>{student.gradeLevel || 'ندارد'}</TableCell>
-                          <TableCell sx={{ textAlign: "center", padding: '8px' }}>{student.remainingDays || 'ندارد'}</TableCell>
-                          <TableCell sx={{ padding: '8px' }}>
-                            <StudentDisplayPopup studentId={student.studentId.toString()} />
+                          <TableCell
+                            sx={{ textAlign: "center", padding: "8px" }}
+                          >
+                            {student.majorTitle || "ندارد"}
+                          </TableCell>
+                          <TableCell
+                            sx={{ textAlign: "center", padding: "8px" }}
+                          >
+                            {student.gradeLevel || "ندارد"}
+                          </TableCell>
+                          <TableCell
+                            sx={{ textAlign: "center", padding: "8px" }}
+                          >
+                            {student.remainingDays || "ندارد"}
+                          </TableCell>
+                          <TableCell sx={{ padding: "8px" }}>
+                            <StudentDisplayPopup
+                              studentId={student.studentId.toString()}
+                            />
                           </TableCell>
                         </>
                       )}
                       {isSmallScreen && (
                         <>
-                          <TableCell sx={{ padding: '4px' }}>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <TableCell sx={{ padding: "4px" }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 1,
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
                                 <Box
                                   data-pic-url={student.picUrl}
                                   ref={(el: HTMLDivElement) => {
-                                    if (el && student.picUrl) imageElements.current.set(student.picUrl, el);
+                                    if (el && student.picUrl)
+                                      imageElements.current.set(
+                                        student.picUrl,
+                                        el
+                                      );
                                   }}
                                 >
-                                  {student.picUrl && imageUrls[student.picUrl] ? (
+                                  {student.picUrl &&
+                                  imageUrls[student.picUrl] ? (
                                     <Avatar
                                       src={imageUrls[student.picUrl]}
                                       alt={`${student.firstName} ${student.lastName}`}
                                       sx={{ width: 40, height: 40 }}
                                     />
                                   ) : (
-                                    <Avatar sx={{ width: 40, height: 40, bgcolor: 'grey.300' }}>
+                                    <Avatar
+                                      sx={{
+                                        width: 40,
+                                        height: 40,
+                                        bgcolor: "grey.300",
+                                      }}
+                                    >
                                       {student.firstName.charAt(0)}
                                     </Avatar>
                                   )}
                                 </Box>
-                                <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                                <Typography
+                                  variant="subtitle2"
+                                  sx={{ fontWeight: "bold" }}
+                                >
                                   {`${student.firstName} ${student.lastName}`}
                                 </Typography>
                               </Box>
-                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexWrap: "wrap",
+                                  gap: 1,
+                                }}
+                              >
                                 <Typography variant="caption">
-                                  <strong>رشته:</strong> {student.majorTitle || 'ندارد'}
+                                  <strong>رشته:</strong>{" "}
+                                  {student.majorTitle || "ندارد"}
                                 </Typography>
                                 <Typography variant="caption">
-                                  <strong>پایه:</strong> {student.gradeLevel || 'ندارد'}
+                                  <strong>پایه:</strong>{" "}
+                                  {student.gradeLevel || "ندارد"}
                                 </Typography>
                                 <Typography variant="caption">
-                                  <strong>روز باقی مانده:</strong> {student.remainingDays || 'ندارد'}
+                                  <strong>روز باقی مانده:</strong>{" "}
+                                  {student.remainingDays || "ندارد"}
                                 </Typography>
                               </Box>
                             </Box>
                           </TableCell>
-                          <TableCell sx={{ padding: '4px' }}>
-                            <StudentDisplayPopup studentId={student.studentId.toString()} />
+                          <TableCell sx={{ padding: "4px" }}>
+                            <StudentDisplayPopup
+                              studentId={student.studentId.toString()}
+                            />
                           </TableCell>
                         </>
                       )}
@@ -561,23 +742,23 @@ const Students: React.FC = () => {
             </TableContainer>
           )}
 
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             <Pagination
               count={value?.totalPages || 1}
               page={currentPage}
               onChange={handlePageChange}
               color="primary"
               dir="rtl"
-              size={isSmallScreen ? 'small' : 'medium'}
+              size={isSmallScreen ? "small" : "medium"}
               sx={{
-                '& .MuiPaginationItem-root': {
-                  color: '#057abe',
-                  '&.Mui-selected': {
-                    backgroundColor: '#057abe',
-                    color: 'white',
+                "& .MuiPaginationItem-root": {
+                  color: "#057abe",
+                  "&.Mui-selected": {
+                    backgroundColor: "#057abe",
+                    color: "white",
                   },
-                  '&.MuiPaginationItem-previousNext': {
-                    transform: 'rotate(180deg)',
+                  "&.MuiPaginationItem-previousNext": {
+                    transform: "rotate(180deg)",
                   },
                 },
               }}
@@ -587,7 +768,6 @@ const Students: React.FC = () => {
       )}
     </Box>
   );
-
 };
 
 export default Students;

@@ -294,7 +294,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: "1rem",
+          // p: "1rem",
           backgroundColor: "rgb(255, 255, 255)",
           marginRight: isMobile ? 0 : `${sidebarWidth}px`,
           transition: "margin-right 0.3s ease-in-out",

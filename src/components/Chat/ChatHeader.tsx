@@ -34,7 +34,7 @@ const ChatHeader: React.FC = () => {
         justifyContent: "space-between",
         direction: "rtl",
         position: "sticky",
-        top: 0,
+        top: "64px",
         width: "100%",
         padding: "12px 16px",
         boxSizing: "border-box",

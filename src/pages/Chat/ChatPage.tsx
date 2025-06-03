@@ -12,6 +12,7 @@ const ChatPage = () => {
         minHeight: "100vh",
         display: "flex",
         padding: "0px",
+        position: "relative",
         flexDirection: "column",
         boxSizing: "border-box",
         ":has()": { padding: "0px !important" },
