@@ -122,6 +122,11 @@ const PersianCalendar: React.FC<PersianCalendarProps> = ({
   const [showYearSelector, setShowYearSelector] = useState(false);
   const [showMonthSelector, setShowMonthSelector] = useState(false);
 
+  // Add useEffect to update selectedDate when value prop changes
+  useEffect(() => {
+    setSelectedDate(value || "");
+  }, [value]);
+
   // Function to convert numbers to Persian
   const toPersianNumber = (num: string | number): string => {
     if (num === undefined || num === null) return "";
@@ -627,6 +632,16 @@ const StudentProfile = () => {
     setIsEditMode(true);
   };
 
+  const handleCancel = () => {
+    setIsEditMode(false);
+    // Force a complete reset of the form data
+    const resetData = JSON.parse(JSON.stringify(initialFormData));
+    setFormData(resetData);
+    setProvinceInputValue("");
+    setProvinceOptions([]);
+    setProfilePicFile(null);
+  };
+
   const handleSave = async () => {
     try {
       const token = getToken();
@@ -761,30 +776,19 @@ const StudentProfile = () => {
           }
         }
 
-        setFormData((prev) => ({
-          ...prev,
+        const updatedFormData = {
+          ...formData,
           profileImage: profilePicUrl,
-        }));
+        };
 
-        setInitialFormData((prev) => ({
-          ...prev,
-          profileImage: profilePicUrl,
-        }));
-
+        setFormData(updatedFormData);
+        setInitialFormData(updatedFormData);
         setProfilePicFile(null);
         setIsEditMode(false);
       }
     } catch (error) {
       console.error("خطا در ذخیره پروفایل:", error);
     }
-  };
-
-  const handleCancel = () => {
-    setIsEditMode(false);
-    setFormData({ ...initialFormData });
-    setProvinceInputValue("");
-    setProvinceOptions([]);
-    setProfilePicFile(null);
   };
 
   const noopChange = () => {};
@@ -842,7 +846,7 @@ const StudentProfile = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 35 }}>
+      <Box sx={{ display: "flex", justifyContent: "center", py: 35 }}>
         <CircularProgress />
       </Box>
     );
