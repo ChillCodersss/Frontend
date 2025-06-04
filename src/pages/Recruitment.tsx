@@ -194,7 +194,7 @@ const Recruitment: React.FC = () => {
             });
 
             setTimeout(() => {
-                navigate("/Landing");
+                navigate("/");
             }, 5000);
 
             setFormData({
