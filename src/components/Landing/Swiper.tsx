@@ -15,8 +15,9 @@ import CircleIcon from "@mui/icons-material/Circle";
 import { IoIosArrowBack } from "react-icons/io";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { Swiper, SwiperSlide } from "swiper/react";
-import SecondaryButton from "../common/SecondaryButton";
+// import SecondaryButton from "../common/SecondaryButton";
 import { Navigation, Autoplay } from "swiper/modules";
 import {
   OuterBoxStyle,
@@ -112,8 +113,8 @@ const CounselorSwiper = () => {
             <ArrowForwardIosRoundedIcon />
           </Fab>
         </Box>
-        <Box sx={{ marginLeft: isMobile ? "20px" : "0px" }}>
-          <SecondaryButton
+        <Box>
+          {/* <SecondaryButton
             name="مشاهده بیشتر"
             width={isMobile ? "105px" : "150px"}
             height={isMobile ? "50px" : "60px"}
@@ -123,7 +124,22 @@ const CounselorSwiper = () => {
             onClick={() => {
               navigate("/OurCounselor");
             }}
-          />
+          /> */}
+          <Fab
+            variant="extended"
+            sx={{
+              marginLeft: isMobile ? "20px" : "0px",
+              boxShadow: "none", height: "56px",
+              fontSize: isMobile ? "12px" : "18px",
+              ml: 1
+            }}
+            onClick={() => {
+              navigate("/OurCounselor")
+            }}
+          >
+            <GroupAddIcon sx={{ ml: 1 }} />
+            مشاهده بیشتر
+          </Fab>
         </Box>
       </Box>
       {/* swiper section */}
