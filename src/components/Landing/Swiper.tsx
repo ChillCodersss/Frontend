@@ -130,7 +130,6 @@ const CounselorSwiper = () => {
             }));
           }
           if (entry.target.id === "show-more") {
-            console.log("here");
             setButtonsVisible((prev) => ({
               ...prev,
               showMore: true,
