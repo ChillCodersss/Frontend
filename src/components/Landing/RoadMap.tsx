@@ -6,9 +6,9 @@ import { useMediaQuery, Grow, Zoom } from '@mui/material';
 // import GroupAddIcon from '@mui/icons-material/GroupAdd';
 // import VideoLabelIcon from '@mui/icons-material/VideoLabel';
 // import { StepIconProps } from '@mui/material/StepIcon';
-import step1Image from "@/assets/select_counselor.png";
+import step1Image from "@/assets/select_counselor.jpg";
 import step2Image from "@/assets/submit_request.jpg";
-import step3Image from "@/assets/start_study.png";
+import step3Image from "@/assets/start_study.jpg";
 import './RoadMap.css'
 
 // const ColorlibStepIconRoot = styled('div')<{
