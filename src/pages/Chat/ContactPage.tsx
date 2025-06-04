@@ -45,8 +45,6 @@ const ContactPage: React.FC = () => {
     <Box
       sx={{
         width: "100%",
-        height: "100%",
-        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         padding: "20px",
@@ -79,7 +77,12 @@ const ContactPage: React.FC = () => {
         sx={{ marginBottom: "16px" }}
       />
       <Divider sx={{ marginBottom: "16px" }} />
-      <Box sx={{ flex: 1, overflowY: "auto" }}>
+      <Box
+        sx={{
+          maxHeight: 400,
+          overflowY: "auto",
+        }}
+      >
         <List>
           {filteredContacts.length === 0 ? (
             <Typography sx={{ textAlign: "center", marginTop: "16px" }}>

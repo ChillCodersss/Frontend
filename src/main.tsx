@@ -67,7 +67,6 @@ createRoot(document.getElementById("root")!).render(
           <Route path="counselorrequests" element={<CounselorRequests />} />
           <Route path="students" element={<Students />} />
           <Route path="student-contacts" element={<ContactPage />} />
-          <Route path="student-chat/:id" element={<ChatPage />} />
           <Route
             path="counseling-files"
             element={<div>Counseling Stats</div>}
@@ -77,8 +76,11 @@ createRoot(document.getElementById("root")!).render(
           {/* Student-specific routes */}
           <Route path="studentscounselors" element={<StudentsCounselors />} />
           <Route path="counselor-contacts" element={<ContactPage />} />
-          <Route path="counselor-chat/:id" element={<ChatPage />} />
           <Route path="payments" element={<Payments />} />
+        </Route>
+        <Route path="/dashboard" element={<HLayout />}>
+          <Route path="student-chat/:id" element={<ChatPage />} />
+          <Route path="counselor-chat/:id" element={<ChatPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -10,12 +10,17 @@ import {
   DialogTitle,
   DialogActions,
   Button,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import InfoIcon from "@mui/icons-material/Info";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import hoomanImg from "@/assets/hooman.jpg";
 
 const ChatHeader: React.FC = () => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -34,29 +39,46 @@ const ChatHeader: React.FC = () => {
         justifyContent: "space-between",
         direction: "rtl",
         position: "sticky",
-        top: "64px",
+        top: isSmallScreen ? "58px" : "64px",
         width: "100%",
         padding: "12px 16px",
         boxSizing: "border-box",
-        borderBottom: "2px solid rgb(175, 175, 175)",
+        zIndex: 100,
         backgroundColor: "#fff",
         minHeight: "56px",
+        boxShadow: "0 2px 8px 0 rgba(0,0,0,0.06)",
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: isSmallScreen ? "4px" : "16px",
+        }}
+      >
         <IconButton onClick={() => window.history.back()}>
           <ArrowForwardIcon />
         </IconButton>
         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Avatar />
+          <Avatar src={hoomanImg} />
           <Typography
-            sx={{ fontWeight: "bold", fontSize: "20px", marginLeft: "8px" }}
+            sx={{
+              fontWeight: "bold",
+              fontSize: isSmallScreen ? "14px" : "20px",
+              marginLeft: "8px",
+            }}
           >
             هومن متین
           </Typography>
         </Box>
       </Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: isSmallScreen ? "4px" : "16px",
+        }}
+      >
         <IconButton onClick={() => handleClickOpen()}>
           <InfoIcon />
         </IconButton>
