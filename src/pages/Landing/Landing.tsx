@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import { useRef } from "react";
-import { Box, useMediaQuery, Fade } from "@mui/material";
-// import { Paper, Grow } from "@mui/material";
+import { Box, useMediaQuery, Fade, Zoom } from "@mui/material";
+// import { Grow } from "@mui/material";
 import { useNavigate } from "react-router";
 // import { Card, CardActionArea } from "@mui/material";
 // import Marquee from "@/components/Landing/Marquee";
@@ -9,28 +9,30 @@ import SecondaryButton from "@/components/common/SecondaryButton";
 import CounselorSwiper from "@/components/Landing/Swiper.tsx";
 import RoadMap from "@/components/Landing/RoadMap";
 import Logo from "@/assets/landing_banner_logo.png";
+import ChatImage from "@/assets/chat_screen.jpg";
+import RecImage from "@/assets/recruit_screen.jpg";
 import './Landing.css';
 
 
 const Landing: React.FC = () => {
-    // const [firstRowVisible, setFirstRowVisible] = useState(false);
     const [firstTextVisible, setFirstTextVisible] = useState(false);
     const [secondTextVisible, setSecondTextVisible] = useState(false);
+    const [imagesVisible, setImagesVisible] = useState({
+        row3ImageVisible: false,
+        row4ImageVisible: false,
+    });
     // const small_screen = useMediaQuery("(min-width: 600px) and (max-width: 749px)");
     const medium_screen = useMediaQuery("(min-width: 750px)");
     const navigate = useNavigate();
     // const not_mobile = small_screen || medium_screen;
     // const reduced_motion = useMediaQuery("(prefers-reduced-motion)");
 
-    // const paper_transition_props = {
-    //     timeout: 600,     // timeout in millisecond
-    //     in: firstRowVisible,
-    // };
-
     const fade_sx = {
-        timeout: 600,     // timeout in millisecond
+        timeout: 800,     // timeout in millisecond
         in: true,
     }
+
+    const zoom_timeout = 600;     // timeout in millisecond
 
     const our_counselor_marquee_text = "مشاوران ما";
     const our_counselor_motto_text = "همین امروز مشاور خودت رو انتخاب کن و اولین قدم برای آینده‌ی روشن‌تر رو بردار!";
@@ -46,25 +48,6 @@ const Landing: React.FC = () => {
                                     درآمد کسب کنید و تاثیر واقعی بسازید.`;
     const road_map_header = "چطور با مشاوریوم شروع کنم؟";
     const road_map_text = "تمام مراحل فقط در چند دقیقه و کاملاً آنلاین!";
-
-    // const firstRowRef = useRef(null);
-
-    // useEffect(() => {
-    //     const firstRow = document.querySelectorAll(".l-first-row");
-
-    //     const observer = new IntersectionObserver((entries) => {
-    //         const entry = entries[0];
-
-    //         if (entry.isIntersecting) {
-    //             setFirstRowVisible(true);
-    //             observer.unobserve(firstRow[0]);
-    //         }
-    //     }, {
-    //         threshold: 0.5,
-    //     });
-
-    //     observer.observe(firstRow[0]);
-    // }, []);
 
     useEffect(() => {
         const firstText = document.querySelectorAll(`[id="firstText"]`);
@@ -100,23 +83,35 @@ const Landing: React.FC = () => {
         observer.observe(secondText[0]);
     }, []);
 
-    // let paper_sx = {
-    //     direction: "rtl",
-    //     fontSize: { xs: "0.9rem", sm: "0.9rem", md: "1rem" },
-    //     borderRadius: {xs: "6px", sm: "8px", md: "8px"},
-    //     width: "230px", height: "230px", padding: { xs: "1rem", sm: "1rem", md: "1.1rem" },
-    // };
-    // const small_screen_paper_sx = {
-    //     width: "190px", height: "190px",
-    // }
-    // const medium_screen_paper_sx = {
-    //     width: "23vw", height: "23vw",
-    // };
-    // if (small_screen) {
-    //     paper_sx = {...paper_sx, ...small_screen_paper_sx};
-    // } else if (medium_screen) {
-    //     paper_sx = {...paper_sx, ...medium_screen_paper_sx};
-    // }
+    useEffect(() => {
+        const images = document.querySelectorAll(".l-row-img");
+
+        const observer = new IntersectionObserver((entries) => {
+            for (const entry of entries) {
+                if (entry.isIntersecting) {
+                    if (entry.target.id === "row3-img") {
+                        setImagesVisible((prev) => ({
+                            ...prev,
+                            row3ImageVisible: true,
+                        }));
+                    }
+                    if (entry.target.id === "row4-img") {
+                        setImagesVisible((prev) => ({
+                            ...prev,
+                            row4ImageVisible: true,
+                        }));
+                    }
+
+                    observer.unobserve(entry.target);
+                }
+            }
+        }, {
+            threshold: 0.3,
+        });
+
+        observer.observe(images[0]);
+        observer.observe(images[1]);
+    }, []);
 
     const description_box_sx = {
         display: "flex",
@@ -149,23 +144,6 @@ const Landing: React.FC = () => {
                             <p className="l-banner-p">{banner_p}</p>
                     </Fade>
                 </section>
-                {/* <section id={"firstRow"} ref={firstRowRef} className="l-container l-first-row">
-                    <Grow {...paper_transition_props} timeout={paper_transition_props.timeout + 800} >
-                        <Paper elevation={4} sx={ paper_sx }>
-                            {test_text_fa}
-                        </Paper>
-                    </Grow>
-                    <Grow {...paper_transition_props} timeout={paper_transition_props.timeout + 400}>
-                        <Paper elevation={4} sx={ paper_sx }>
-                            {test_text_fa}
-                        </Paper>
-                    </Grow>
-                    <Grow {...paper_transition_props}>
-                        <Paper elevation={4} sx={ paper_sx }>
-                            {test_text_fa}
-                        </Paper>
-                    </Grow>
-                </section> */}
                 <section id={"RoadMap"} className="l-container l-road-map-container">
                     <h2 className="l-road-map-h">{road_map_header}</h2>
                     <p className="l-road-map-p">{road_map_text}</p>
@@ -238,25 +216,37 @@ const Landing: React.FC = () => {
                                 justifyContent: "center",
                                 alignItems: "center",
                                 position: "relative",
-                                overflow: "hidden",
                             }}
                         >
-                            <div 
-                                style={{
-                                    backgroundColor: "#09f",
-                                    borderRadius: "50%",
-                                    width: medium_screen ? "calc(61.94444 * 1vw)" : "calc(124.26667 * 1vw)",
-                                    height: medium_screen ? "calc(61.94444 * 1vw)" : "calc(124.26667 * 1vw)",
-                                    left: "0",
-                                    top: "0",
-                                    position: "absolute",
-                                    transform: medium_screen ?
-                                        "translate(-50%,-50%) translateX(calc(3.75*1vw))" :
-                                        "translate(-50%,-50%) translateY(-10px)",
-                                }}
-                            />
+                            <div style={{
+                                overflow: "hidden",
+                                position: "absolute",
+                                width: "100%",
+                                height: "100%",
+                            }}>
+                                <div 
+                                    style={{
+                                        backgroundColor: "#09f",
+                                        borderRadius: "50%",
+                                        width: medium_screen ? "calc(61.94444 * 1vw)" : "calc(124.26667 * 1vw)",
+                                        height: medium_screen ? "calc(61.94444 * 1vw)" : "calc(124.26667 * 1vw)",
+                                        left: "0",
+                                        top: "0",
+                                        position: "absolute",
+                                        transform: medium_screen ?
+                                            "translate(-50%,-50%) translateX(calc(3.75*1vw))" :
+                                            "translate(-50%,-50%) translateY(-10px)",
+                                    }}
+                                />
+                            </div>
                             <div className="l-row3-img-wrapper">
-                                <img className="l-row3-img"/>
+                                <Zoom
+                                    timeout={zoom_timeout}
+                                    in={imagesVisible.row3ImageVisible}
+                                    style={{transformOrigin: "center"}}
+                                >
+                                    <img className="l-row-img" src={ChatImage} id={"row3-img"}/>
+                                </Zoom>
                             </div>
                         </Box>
                     </Box>
@@ -300,25 +290,37 @@ const Landing: React.FC = () => {
                                 justifyContent: "center",
                                 alignItems: "center",
                                 position: "relative",
-                                overflow: "hidden",
                             }}
                         >
-                            <div 
-                                style={{
-                                    backgroundColor: " #ffad42",
-                                    borderRadius: "50%",
-                                    width: medium_screen ? "calc(61.94444 * 1vw)" : "calc(124.26667*1vw)",
-                                    height: medium_screen ? "calc(61.94444 * 1vw)" : "calc(124.26667*1vw)",
-                                    right: medium_screen ? "calc(50*1vw)" : "0",
-                                    top: "0",
-                                    position: "absolute",
-                                    transform: medium_screen ? 
-                                        "translate(50%,-50%) translate(calc(1.52778*1vw),calc(-3.125*1vw))" :
-                                        "translate(50%,-50%)",
-                                }}
-                            />
+                            <div style={{
+                                overflow: "hidden",
+                                position: "absolute",
+                                width: "100%",
+                                height: "100%",
+                            }}>
+                                <div 
+                                    style={{
+                                        backgroundColor: " #ffad42",
+                                        borderRadius: "50%",
+                                        width: medium_screen ? "calc(61.94444 * 1vw)" : "calc(124.26667*1vw)",
+                                        height: medium_screen ? "calc(61.94444 * 1vw)" : "calc(124.26667*1vw)",
+                                        right: medium_screen ? "calc(50*1vw)" : "0",
+                                        top: "0",
+                                        position: "absolute",
+                                        transform: medium_screen ? 
+                                            "translate(50%,-50%) translate(calc(1.52778*1vw),calc(-3.125*1vw))" :
+                                            "translate(50%,-50%)",
+                                    }}
+                                />
+                            </div>
                             <div className="l-row4-img-wrapper">
-                                <img className="l-row4-img"/>
+                                <Zoom
+                                    timeout={zoom_timeout}
+                                    in={imagesVisible.row4ImageVisible}
+                                    style={{transformOrigin: "center"}}
+                                >
+                                    <img className="l-row-img" src={RecImage} id={"row4-img"}/>
+                                </Zoom>
                             </div>
                         </Box>
                     </Box>
