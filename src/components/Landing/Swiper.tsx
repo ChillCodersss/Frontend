@@ -7,6 +7,7 @@ import {
   useMediaQuery,
   Fab,
   IconButton,
+  Zoom,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import EventIcon from "@mui/icons-material/Event";
@@ -76,6 +77,12 @@ const CounselorSwiper = () => {
   const isTablet = useMediaQuery("(min-width:601px) and (max-width:960px)");
   // const isDesktop = useMediaQuery("(min-width:961px)");
   const [counselors, setCounselors] = useState<Counselor[]>([]);
+  // animation
+  const [buttonsVisible, setButtonsVisible] = useState({
+    customPrev: false,
+    customNext: false,
+    showMore: false,
+  });
   const navigate = useNavigate();
 
   const fetchCounselors = async () => {
@@ -101,17 +108,62 @@ const CounselorSwiper = () => {
     fetchCounselors();
   }, []);
 
+  // animation
+  useEffect(() => {
+    const customPrev = document.querySelectorAll(`[id="custom-prev"]`);
+    const customNext = document.querySelectorAll(`[id="custom-next"]`);
+    const showMore = document.querySelectorAll(`[id="show-more"]`);
+
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          if (entry.target.id === "custom-prev") {
+            setButtonsVisible((prev) => ({
+              ...prev,
+              customPrev: true,
+            }));
+          }
+          if (entry.target.id === "custom-next") {
+            setButtonsVisible((prev) => ({
+              ...prev,
+              customNext: true,
+            }));
+          }
+          if (entry.target.id === "show-more") {
+            console.log("here");
+            setButtonsVisible((prev) => ({
+              ...prev,
+              showMore: true,
+            }));
+          }
+
+          observer.unobserve(entry.target);
+        }
+      }
+    }, {
+      threshold: 0.3,
+    });
+
+    observer.observe(customPrev[0]);
+    observer.observe(customNext[0]);
+    observer.observe(showMore[0])
+  }, []);
+
   return (
     <Box sx={OuterBoxStyle}>
       {/* top section */}
       <Box sx={SwiperTopSectionStyle}>
         <Box sx={SwiperButtonsStyle}>
-          <Fab sx={{ boxShadow: "none" }} aria-label="next" id="custom-next">
-            <ArrowBackIosRoundedIcon />
-          </Fab>
-          <Fab sx={{ boxShadow: "none" }} aria-label="prev" id="custom-prev">
-            <ArrowForwardIosRoundedIcon />
-          </Fab>
+          <Zoom timeout={800} in={buttonsVisible.customNext}>
+            <Fab sx={{ boxShadow: "none" }} aria-label="next" id="custom-next">
+              <ArrowBackIosRoundedIcon />
+            </Fab>
+          </Zoom>
+          <Zoom timeout={800} in={buttonsVisible.customPrev}>
+            <Fab sx={{ boxShadow: "none" }} aria-label="prev" id="custom-prev">
+              <ArrowForwardIosRoundedIcon />
+            </Fab>
+          </Zoom>
         </Box>
         <Box>
           {/* <SecondaryButton
@@ -131,11 +183,15 @@ const CounselorSwiper = () => {
               marginLeft: isMobile ? "20px" : "0px",
               boxShadow: "none", height: "56px",
               fontSize: isMobile ? "12px" : "18px",
-              ml: 1
+              ml: 1,
+              // animation
+              transform: buttonsVisible.showMore ? "translateX(0px)" : "translateX(-50%)",
+              transition: "transform 800ms, opacity 800ms", opacity: buttonsVisible.showMore ? "100%" : "0%",
             }}
             onClick={() => {
               navigate("/OurCounselor")
             }}
+            id={"show-more"}
           >
             <GroupAddIcon sx={{ ml: 1 }} />
             مشاهده بیشتر
@@ -172,13 +228,17 @@ const CounselorSwiper = () => {
           className="mySwiper"
           style={{ padding: "4px 20px" }}
         >
-          {counselors.map((counselor) => (
+          {counselors.map((counselor, index) => (
             <SwiperSlide key={counselor.id}>
               <Box
                 key={counselor.id}
                 sx={{
                   ...SwiperSlideStyle,
                   maxWidth: isMobile ? "300px" : "500px",
+                  // animation
+                  transform: buttonsVisible.showMore ? "translateX(0px)" : "translateX(-50%)",
+                  transition: "transform 800ms, opacity 800ms", opacity: buttonsVisible.showMore ? "100%" : "0%",
+                  transitionDelay: `${index * 100}ms`
                 }}
               >
                 {/* Top Section */}
