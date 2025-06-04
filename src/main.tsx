@@ -26,6 +26,7 @@ import HSLayout from "./layouts/HSLayout";
 import HWLayout from "./layouts/HWLayout";
 import HLayout from "./layouts/HLayout";
 import AboutUs from "./pages/AboutUs/AboutUs";
+import CounselorPayments from "./pages/CounselorPayments/CounselorPayments";
 
 createRoot(document.getElementById("root")!).render(
   <>
@@ -65,7 +66,7 @@ createRoot(document.getElementById("root")!).render(
         <Route path="students" element={<Students />} />
         <Route path="chat-student" element={<div>Chat with Student</div>} />
         <Route path="counseling-files" element={<div>Counseling Stats</div>} />
-        <Route path="incoms" element={<div>Counseling Stats</div>} />
+        <Route path="incoms" element={<CounselorPayments />} />
 
         {/* Student-specific routes */}
         <Route path="studentscounselors" element={<StudentsCounselors />} />
