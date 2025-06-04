@@ -4,6 +4,7 @@ import { Fade, Slide } from '@mui/material';
 // import Footer from '@/components/Landing/Footer';
 import image1 from '@/assets/testp1.jpg';
 import image2 from '@/assets/testp2.jpg';
+import Logo from "@/assets/Notebook.svg";
 import './AboutUs.css'
 
 
@@ -86,6 +87,7 @@ function AboutUs() {
             <main>
                 <section className='ab-container ab-banner'>
                     <div className='ab-banner-bg'>
+                        <img className="ab-banner-bg-img" src={Logo}/>
                     </div>
                     <Fade {...fade_sx}>
                         <h1 className='ab-banner-h'>{about_banner_h}</h1>

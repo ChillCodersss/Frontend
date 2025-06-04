@@ -57,8 +57,8 @@ function Footer() {
             <div className="l-footer-last-row">
                 <p className="footer-copyright-text">{copyrightText}</p>
                 <div className="l-footer-last-row-icon-container">
-                    <img src={`${ telegramLogo }`}/>
-                    <img src={`${ linkedinLogo }`}/>
+                    <img className="l-footer-last-row-icon" src={`${ telegramLogo }`} onClick={() => {window.open()}}/>
+                    <img className="l-footer-last-row-icon" src={`${ linkedinLogo }`} onClick={() => {window.open()}}/>
                 </div>
             </div>
         </footer>

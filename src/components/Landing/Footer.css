@@ -99,6 +99,15 @@
     column-gap: 5px;
 }
 
+.l-footer-last-row-icon {
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.l-footer-last-row-icon:hover {
+    transform: translateY(-4px);
+}
+
 .footer-copyright-text {
     color: #e6e6e6;
     direction: rtl;
