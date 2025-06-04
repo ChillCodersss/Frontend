@@ -19,7 +19,6 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Avatar,
-  TextField,
   PaginationItem,
   IconButton,
 } from "@mui/material";
@@ -113,7 +112,6 @@ const StudentsCounselors: React.FC = () => {
   const [selectedCounselorId, setSelectedCounselorId] = useState<number | null>(
     null
   );
-  const [comment, setComment] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
@@ -303,10 +301,10 @@ const StudentsCounselors: React.FC = () => {
       }
 
       await axios.post(
-        `http://62.60.213.13:8080/api/RequestCounselor/Rate/${selectedCounselor.id}`,
+        `http://62.60.213.13:8080/api/Rates`,
         {
-          rate: selectedRating,
-          comment: comment,
+          requestCounselorId: selectedCounselor.id,
+          score: selectedRating,
         },
         {
           headers: {
@@ -323,7 +321,6 @@ const StudentsCounselors: React.FC = () => {
         )
       );
       setRatingDialogOpen(false);
-      setComment("");
     } catch (error) {
       console.error("Error submitting rating:", error);
       if (axios.isAxiosError(error) && error.response?.status === 401) {
@@ -631,13 +628,14 @@ const StudentsCounselors: React.FC = () => {
                             padding: "8px 16px",
                             height: "48px",
                             width: "20%",
+                            verticalAlign: "middle",
                           }}
                         >
                           <Box
                             sx={{
                               display: "flex",
                               alignItems: "center",
-                              justifyContent: "center",
+                              justifyContent: "flex-start",
                               gap: "8px",
                               width: "100%",
                               cursor: "pointer",
@@ -654,9 +652,17 @@ const StudentsCounselors: React.FC = () => {
                             <Avatar
                               src={counselor.picUrl}
                               alt={counselor.counselorName}
-                              sx={{ width: "48px", height: "48px" }}
+                              sx={{
+                                width: "48px",
+                                height: "48px",
+                                flexShrink: 0,
+                                marginRight: "auto",
+                              }}
                             />
-                            <Typography className="counselor-name">
+                            <Typography
+                              className="counselor-name"
+                              sx={{ flex: 1 }}
+                            >
                               {counselor.counselorName}
                             </Typography>
                           </Box>
@@ -759,9 +765,6 @@ const StudentsCounselors: React.FC = () => {
                                   />
                                 ))}
                               </Box>
-                              <Typography sx={{ color: "#666" }}>
-                                {toPersianNumber(counselor.rate)} از 5
-                              </Typography>
                             </Box>
                           ) : counselor.remainingDays !== null &&
                             counselor.remainingDays < 5 &&
@@ -829,6 +832,7 @@ const StudentsCounselors: React.FC = () => {
                             height: "48px",
                             width: "15%",
                             paddingLeft: "32px",
+                            minWidth: "200px",
                           }}
                         >
                           <Box
@@ -836,6 +840,7 @@ const StudentsCounselors: React.FC = () => {
                               display: "flex",
                               justifyContent: "center",
                               gap: "8px",
+                              minHeight: "28px",
                             }}
                           >
                             {counselor.requestStatus === 4 && (
@@ -1208,39 +1213,6 @@ const StudentsCounselors: React.FC = () => {
                 </Box>
               ))}
             </Box>
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              placeholder="نظر خود را بنویسید..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              sx={{
-                mt: 3,
-                "& .MuiOutlinedInput-root": {
-                  backgroundColor: "white",
-                  borderRadius: { xs: "6px", sm: "6px", md: "8px" },
-                  transition: "border-color 0.3s ease",
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgb(204, 207, 209)",
-                    borderWidth: "2px",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#1976d2",
-                    borderWidth: "2.3px",
-                  },
-                },
-                "& .MuiOutlinedInput-input": {
-                  textAlign: "right",
-                  direction: "rtl",
-                },
-                "& .MuiInputBase-input::placeholder": {
-                  fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
-                  textAlign: "right",
-                  direction: "rtl",
-                },
-              }}
-            />
           </Box>
         </DialogContent>
         <DialogActions
