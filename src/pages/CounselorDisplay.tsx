@@ -23,7 +23,7 @@ import { getToken } from "@/services/auth";
 import { getUserInfo } from "@/services/auth";
 import "react-toastify/dist/ReactToastify.css";
 import "./toast.css";
-import defaultpic from "@/assets/DefaultPerson.png"
+import defaultpic from "@/assets/DefaultPerson.png";
 
 interface PostData {
   username: string;
@@ -188,7 +188,7 @@ const CounselorDisplay: React.FC = () => {
           hsMajorTitle: userData.hsMajorTitle || "نامشخص",
           content: userData.aboutMe || "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
           profilePic: profilePicUrl,
-          employmentDuration: userData.employmentDuration || "0",
+          employmentDuration: userData.employmentDuration || 0,
           rate: userData.rate || "",
           studentCounselorId: userData.studentCounselorId ? String(userData.studentCounselorId) : null,
           requestStatus: userData.requestStatus || null,
@@ -298,6 +298,16 @@ const CounselorDisplay: React.FC = () => {
           body: JSON.stringify({}),
         });
 
+        if (response.status === 401) {
+          toast.error("برای لغو درخواست، لطفاً ابتدا وارد حساب کاربری خود شوید.", {
+            position: "bottom-right",
+            autoClose: 5000,
+            rtl: true,
+          });
+          // navigate("/login");
+          return;
+        }
+
         const data: ApiResponse = await response.json();
 
         if (!response.ok || data.isFailure) {
@@ -332,6 +342,16 @@ const CounselorDisplay: React.FC = () => {
           },
           body: formData,
         });
+
+        if (response.status === 401) {
+          toast.error("برای ارسال درخواست، لطفاً ابتدا وارد حساب کاربری خود شوید.", {
+            position: "bottom-right",
+            autoClose: 5000,
+            rtl: true,
+          });
+          // navigate("/login");
+          return;
+        }
 
         const data: ApiResponse = await response.json();
 
@@ -404,9 +424,23 @@ const CounselorDisplay: React.FC = () => {
         }),
       });
 
+      if (response.status === 401) {
+        toast.error("برای ارسال نظر، لطفاً ابتدا وارد حساب کاربری خود شوید.", {
+          position: "bottom-right",
+          autoClose: 5000,
+          rtl: true,
+        });
+        // navigate("/login");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error("خطا در ارسال نظر");
+      }
+
       const data: ApiResponse = await response.json();
 
-      if (!response.ok || data.isFailure) {
+      if (data.isFailure) {
         throw new Error(data.message || "خطا در ارسال نظر");
       }
 
@@ -708,338 +742,339 @@ const CounselorDisplay: React.FC = () => {
                       gap: "8px",
                       minWidth: isMobile ? "120px" : "auto",
                     }}
+                  >
+                    <EventIcon sx={{ color: "#555" }} />
+                    <Typography
+                      variant="body1"
+                      sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
                     >
-                      <EventIcon sx={{ color: "#555" }} />
-                      <Typography
-                        variant="body1"
-                        sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
-                      >
-                        کنکور {postData.entranceExamYear || "نامشخص"}
-                      </Typography>
-                    </Box>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        minWidth: isMobile ? "120px" : "auto",
-                      }}
-                      >
-                        <DomainIcon sx={{ color: "#555" }} />
-                        <Typography
-                          variant="body1"
-                          sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
-                        >
-                          {postData.uniName || "نامشخص"}
-                        </Typography>
-                      </Box>
-
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          minWidth: isMobile ? "120px" : "auto",
-                        }}
-                        >
-                          <SchoolIcon sx={{ color: "#555" }} />
-                          <Typography
-                            variant="body1"
-                            sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
-                          >
-                            {postData.uniMajor || "نامشخص"}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Box>
+                      کنکور {postData.entranceExamYear || "نامشخص"}
+                    </Typography>
                   </Box>
 
-                  {/* Comment Section */}
                   <Box
                     sx={{
-                      boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-                      borderRadius: "12px",
-                      backgroundColor: "white",
-                      padding: isMobile ? "10px" : "20px",
-                      margintop: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      minWidth: isMobile ? "120px" : "auto",
                     }}
                   >
+                    <DomainIcon sx={{ color: "#555" }} />
                     <Typography
-                      variant={isMobile ? "h6" : "h5"}
-                      sx={{
-                        ...typographyStyles,
-                        textAlign: "right",
-                        mb: 3,
-                      }}
+                      variant="body1"
+                      sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
                     >
-                      نظرات
+                      {postData.uniName || "نامشخص"}
                     </Typography>
-
-                    {/* Comment Input Form */}
-                    {userRole !== "Counselor" && (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          flexDirection: isMobile ? "column" : "row",
-                          gap: "16px",
-                          mb: 4,
-                        }}
-                      >
-<TextField
-  placeholder="نظر خود را بنویسید..."
-  multiline
-  rows={3}
-  value={commentText}
-  onChange={(e) => setCommentText(e.target.value)}
-  variant="outlined"
-  fullWidth
-  sx={{
-    "& .MuiInputBase-root": {
-      borderRadius: "8px",
-      backgroundColor: "#f9f9f9",
-      textAlign: "right",
-    },
-    "& .MuiOutlinedInput-root": {
-      padding: "10px",
-      textAlign: "right",
-      "& fieldset": {
-        borderColor: "#ddd", // رنگ حاشیه در حالت عادی
-      },
-      "&:hover fieldset": {
-        borderColor: "#1976d2", // رنگ حاشیه هنگام هاور
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "#1976d2", // رنگ حاشیه هنگام فوکوس (آبی)
-        borderWidth: "2px", // ضخامت حاشیه هنگام فوکوس
-      },
-    },
-    "& .MuiInputBase-input::placeholder": {
-      color: "#777", // رنگ پلِیس‌هولدر
-      opacity: 1, // اطمینان از نمایش کامل پلِیس‌هولدر
-    },
-  }}
-/>
-                        <SecondaryButton
-                          name="ارسال نظر"
-                          variant="contained"
-                          backgroundColor="#3f51b5"
-                          fontSize={isMobile ? "0.9rem" : "1rem"}
-                          width={isMobile ? "100%" : "200px"}
-                          height={"40px"}
-                          borderRadius="20px"
-                          onClick={handleCommentSubmit}
-                          disabled={!commentText.trim()}
-                          sx={{
-                            width: isMobile ? "100%" : "200px",
-                            height: "40px",
-                            fontSize: isMobile ? "0.9rem" : "1rem",
-                          }}
-                        />
-                      </Box>
-                    )}
-
-                    {/* Comments */}
-                    <Box>
-                      {comments.length === 0 ? (
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            color: "#555",
-                            textAlign: "right",
-                            fontSize: isMobile ? "0.9rem" : "1rem",
-                          }}
-                        >
-                          هنوز نظری ثبت نشده است.
-                        </Typography>
-                      ) : (
-                        comments.map((comment) => (
-                          <Box
-                            key={comment.text + comment.studentName} // Using text+studentName as a unique key
-                            sx={{
-                              borderBottom: "1px solid #ddd",
-                              padding: "15px 0",
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: "8px",
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Typography
-                                variant="subtitle1"
-                                sx={{
-                                  fontWeight: "bold",
-                                  color: "#333",
-                                  fontSize: isMobile ? "0.9rem" : "1rem",
-                                }}
-                              >
-                                {comment.studentName}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  color: "#777",
-                                  fontSize: isMobile ? "0.8rem" : "0.9rem",
-                                }}
-                              >
-                                {comment.createDate}
-                              </Typography>
-                            </Box>
-                            <Typography
-                              variant="body1"
-                              sx={{
-                                color: "#444",
-                                lineHeight: 1.6,
-                                fontSize: isMobile ? "0.9rem" : "1rem",
-                                textAlign: "right",
-                              }}
-                            >
-                              {comment.text}
-                            </Typography>
-                          </Box>
-                        ))
-                      )}
-                    </Box>
-
-                    {/* Pagination Controls */}
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        mt: 3,
-                      }}
-                    >
-                      <SecondaryButton
-                        name="صفحه قبل"
-                        onClick={handlePreviousPage}
-                        disabled={!hasPreviousPage}
-                        width={isMobile ? "100px" : "120px"}
-                        height="40px"
-                        fontSize={isMobile ? "14px" : "16px"}
-                        borderRadius="8px"
-                        backgroundColor="#1976d2"
-                      />
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: "#333",
-                          fontSize: isMobile ? "0.9rem" : "1rem",
-                        }}
-                      >
-                        صفحه {pageIndex} از {totalPages}
-                      </Typography>
-                      <SecondaryButton
-                        name="صفحه بعد"
-                        onClick={handleNextPage}
-                        disabled={!hasNextPage}
-                        width={isMobile ? "100px" : "120px"}
-                        height="40px"
-                        fontSize={isMobile ? "14px" : "16px"}
-                        borderRadius="8px"
-                        backgroundColor="#1976d2"
-                      />
-                    </Box>
                   </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      minWidth: isMobile ? "120px" : "auto",
+                    }}
+                  >
+                    <SchoolIcon sx={{ color: "#555" }} />
+                    <Typography
+                      variant="body1"
+                      sx={{ color: "#555", fontWeight: "700", fontSize: isMobile ? "0.8rem" : "0.9rem" }}
+                    >
+                      {postData.uniMajor || "نامشخص"}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Comment Section */}
+            <Box
+              sx={{
+                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                borderRadius: "12px",
+                backgroundColor: "white",
+                padding: isMobile ? "10px" : "20px",
+                marginTop: "20px",
+              }}
+            >
+              <Typography
+                variant={isMobile ? "h6" : "h5"}
+                sx={{
+                  ...typographyStyles,
+                  textAlign: "right",
+                  mb: 3,
+                }}
+              >
+                نظرات
+              </Typography>
+
+              {/* Comment Input Form */}
+              {userRole !== "Counselor" && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: "16px",
+                    mb: 4,
+                    alignItems: "center",
+                    justifyContent: isMobile ? "center" : "flex-start",
+                  }}
+                >
+                  <TextField
+                    placeholder="نظر خود را بنویسید..."
+                    multiline
+                    rows={3}
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    variant="outlined"
+                    fullWidth
+                    sx={{
+                      "& .MuiInputBase-root": {
+                        borderRadius: "8px",
+                        backgroundColor: "#f9f9f9",
+                        textAlign: "right",
+                      },
+                      "& .MuiOutlinedInput-root": {
+                        padding: "10px",
+                        textAlign: "right",
+                        "& fieldset": {
+                          borderColor: "#ddd",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#1976d2",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#1976d2",
+                          borderWidth: "2px",
+                        },
+                      },
+                      "& .MuiInputBase-input::placeholder": {
+                        color: "#777",
+                        opacity: 1,
+                      },
+                    }}
+                  />
+                  <SecondaryButton
+                    name="ارسال نظر"
+                    variant="contained"
+                    backgroundColor="#3f51b5"
+                    fontSize={isMobile ? "0.9rem" : "1rem"}
+                    width={isMobile ? "100%" : "200px"}
+                    height={"40px"}
+                    borderRadius="20px"
+                    onClick={handleCommentSubmit}
+                    disabled={!commentText.trim()}
+                    sx={{
+                      width: isMobile ? "100%" : "200px",
+                      height: "40px",
+                      fontSize: isMobile ? "0.9rem" : "1rem",
+                    }}
+                  />
                 </Box>
               )}
 
-              <Dialog
-                open={openDialog}
-                onClose={handleCloseDialog}
-                sx={{
-                  "& .MuiDialog-paper": {
-                    backgroundColor: "#fff",
-                    borderRadius: "16px",
-                    boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)",
-                    padding: "16px",
-                    maxWidth: isMobile ? "90%" : "400px",
-                    width: "100%",
-                  },
-                  direction: "rtl",
-                }}
-              >
-                <DialogTitle
-                  sx={{
-                    fontSize: isMobile ? "1.2rem" : "1.5rem",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                    color: "#333",
-                    pb: 1,
-                  }}
-                >
-                  {isCancelMode ? "تأیید لغو درخواست" : "تأیید درخواست"}
-                </DialogTitle>
-                <DialogContent
-                  sx={{
-                    px: isMobile ? 2 : 4,
-                    py: 2,
-                  }}
-                >
-                  <DialogContentText
+              {/* Comments */}
+              <Box>
+                {comments.length === 0 ? (
+                  <Typography
+                    variant="body1"
                     sx={{
                       color: "#555",
+                      textAlign: "right",
                       fontSize: isMobile ? "0.9rem" : "1rem",
-                      lineHeight: 1.6,
-                      textAlign: "center",
                     }}
                   >
-                    {isCancelMode
-                      ? `آیا مطمئن هستید که می‌خواهید درخواست مشاوره با ${postData.username || "مشاور"} را لغو کنید؟`
-                      : `آیا مطمئن هستید که می‌خواهید درخواست مشاوره با ${postData.username || "مشاور"} را ثبت کنید؟`}
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions
+                    هنوز نظری ثبت نشده است.
+                  </Typography>
+                ) : (
+                  comments.map((comment) => (
+                    <Box
+                      key={comment.text + comment.studentName}
+                      sx={{
+                        borderBottom: "1px solid #ddd",
+                        padding: "15px 0",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "8px",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography
+                          variant="subtitle1"
+                          sx={{
+                            fontWeight: "bold",
+                            color: "#333",
+                            fontSize: isMobile ? "0.9rem" : "1rem",
+                          }}
+                        >
+                          {comment.studentName}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "#777",
+                            fontSize: isMobile ? "0.8rem" : "0.9rem",
+                          }}
+                        >
+                          {comment.createDate}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: "#444",
+                          lineHeight: 1.6,
+                          fontSize: isMobile ? "0.9rem" : "1rem",
+                          textAlign: "right",
+                        }}
+                      >
+                        {comment.text}
+                      </Typography>
+                    </Box>
+                  ))
+                )}
+              </Box>
+
+              {/* Pagination Controls */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mt: 3,
+                }}
+              >
+                <SecondaryButton
+                  name="صفحه قبل"
+                  onClick={handlePreviousPage}
+                  disabled={!hasPreviousPage}
+                  width={isMobile ? "100px" : "120px"}
+                  height="40px"
+                  fontSize={isMobile ? "14px" : "16px"}
+                  borderRadius="8px"
+                  backgroundColor="#1976d2"
+                />
+                <Typography
+                  variant="body1"
                   sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    px: isMobile ? 2 : 4,
-                    pb: 2,
-                    gap: 2,
+                    color: "#333",
+                    fontSize: isMobile ? "0.9rem" : "1rem",
                   }}
                 >
-                  <SecondaryButton
-                    name="انصراف"
-                    backgroundColor="#d32f2f"
-                    onClick={handleCloseDialog}
-                    width={isMobile ? "100px" : "120px"}
-                    height="40px"
-                    fontSize={isMobile ? "14px" : "16px"}
-                    borderRadius="8px"
-                  />
-                  <SecondaryButton
-                    name="تأیید"
-                    backgroundColor="#1976d2"
-                    onClick={handleConfirm}
-                    width={isMobile ? "100px" : "120px"}
-                    height="40px"
-                    fontSize={isMobile ? "14px" : "16px"}
-                    borderRadius="8px"
-                  />
-                </DialogActions>
-              </Dialog>
-
-              <ToastContainer
-                position="bottom-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={true}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-              />
+                  صفحه {pageIndex} از {totalPages}
+                </Typography>
+                <SecondaryButton
+                  name="صفحه بعد"
+                  onClick={handleNextPage}
+                  disabled={!hasNextPage}
+                  width={isMobile ? "100px" : "120px"}
+                  height="40px"
+                  fontSize={isMobile ? "14px" : "16px"}
+                  borderRadius="8px"
+                  backgroundColor="#1976d2"
+                />
+              </Box>
             </Box>
-          </>
-        );
-      };
+          </Box>
+        )}
 
-      export default CounselorDisplay;
+        <Dialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          sx={{
+            "& .MuiDialog-paper": {
+              backgroundColor: "#fff",
+              borderRadius: "16px",
+              boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.2)",
+              padding: "16px",
+              maxWidth: isMobile ? "90%" : "400px",
+              width: "100%",
+            },
+            direction: "rtl",
+          }}
+        >
+          <DialogTitle
+            sx={{
+              fontSize: isMobile ? "1.2rem" : "1.5rem",
+              fontWeight: "bold",
+              textAlign: "center",
+              color: "#333",
+              pb: 1,
+            }}
+          >
+            {isCancelMode ? "تأیید لغو درخواست" : "تأیید درخواست"}
+          </DialogTitle>
+          <DialogContent
+            sx={{
+              px: isMobile ? 2 : 4,
+              py: 2,
+            }}
+          >
+            <DialogContentText
+              sx={{
+                color: "#555",
+                fontSize: isMobile ? "0.9rem" : "1rem",
+                lineHeight: 1.6,
+                textAlign: "center",
+              }}
+            >
+              {isCancelMode
+                ? `آیا مطمئن هستید که می‌خواهید درخواست مشاوره با ${postData.username || "مشاور"} را لغو کنید؟`
+                : `آیا مطمئن هستید که می‌خواهید درخواست مشاوره با ${postData.username || "مشاور"} را ثبت کنید؟`}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              px: isMobile ? 2 : 4,
+              pb: 2,
+              gap: 2,
+            }}
+          >
+            <SecondaryButton
+              name="انصراف"
+              backgroundColor="#d32f2f"
+              onClick={handleCloseDialog}
+              width={isMobile ? "100px" : "120px"}
+              height="40px"
+              fontSize={isMobile ? "14px" : "16px"}
+              borderRadius="8px"
+            />
+            <SecondaryButton
+              name="تأیید"
+              backgroundColor="#1976d2"
+              onClick={handleConfirm}
+              width={isMobile ? "100px" : "120px"}
+              height="40px"
+              fontSize={isMobile ? "14px" : "16px"}
+              borderRadius="8px"
+            />
+          </DialogActions>
+        </Dialog>
+
+        <ToastContainer
+          position="bottom-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={true}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+      </Box>
+    </>
+  );
+};
+
+export default CounselorDisplay;
