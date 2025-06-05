@@ -49,6 +49,17 @@ const ContactPage: React.FC = () => {
         flexDirection: "column",
         padding: "20px",
         boxSizing: "border-box",
+        animation: "slideLeft 0.5s cubic-bezier(0.4,0,0.2,1)",
+        "@keyframes slideLeft": {
+          from: {
+            opacity: 0,
+            transform: "translateX(70px)",
+          },
+          to: {
+            opacity: 1,
+            transform: "translateX(0)",
+          },
+        },
       }}
     >
       <Typography

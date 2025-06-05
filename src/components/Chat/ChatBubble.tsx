@@ -37,7 +37,6 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
           borderTopRightRadius: isOwn ? "0" : "16px",
           marginLeft: !isOwn ? "8px" : "0",
           marginRight: !isOwn ? "0" : "8px",
-          // boxShadow: 1,
           wordBreak: "break-word",
         }}
       >

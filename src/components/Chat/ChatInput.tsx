@@ -70,6 +70,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
               alignItems: "center",
               padding: 0,
               height: "100%",
+              wordBreak: "break-word",
+              whiteSpace: "pre-wrap",
             },
           },
         }}
@@ -90,8 +92,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
         disabled={false}
         sx={{
           backgroundColor: "#fff",
-          height: isSmallScreen ? "36px" : "48px", // Match TextField height
-          width: isSmallScreen ? "36px" : "48px", // Optional: make it a circle
+          height: isSmallScreen ? "36px" : "48px",
+          width: isSmallScreen ? "36px" : "48px",
           color: "#fff",
           transition: "background-color 0.4s, color 1s",
           display: "flex",

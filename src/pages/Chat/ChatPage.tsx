@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import ChatHeader from "@/components/Chat/ChatHeader";
-
 import { ChatBubbleProps } from "@/components/Chat/ChatBubble";
 import MainChat from "../../components/Chat/MainChat";
 
@@ -52,6 +51,17 @@ const ChatPage = () => {
         flexDirection: "column",
         boxSizing: "border-box",
         padding: 0,
+        animation: "slideRight 0.5s cubic-bezier(0.4,0,0.2,1)",
+        "@keyframes slideRight": {
+          from: {
+            opacity: 0,
+            transform: "translateX(-70px)",
+          },
+          to: {
+            opacity: 1,
+            transform: "translateX(0)",
+          },
+        },
       }}
     >
       <ChatHeader />

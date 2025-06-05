@@ -16,7 +16,6 @@ import {
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import InfoIcon from "@mui/icons-material/Info";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import hoomanImg from "@/assets/hooman.jpg";
 
 const ChatHeader: React.FC = () => {
   const theme = useTheme();
@@ -60,7 +59,7 @@ const ChatHeader: React.FC = () => {
           <ArrowForwardIcon />
         </IconButton>
         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Avatar src={hoomanImg} />
+          <Avatar />
           <Typography
             sx={{
               fontWeight: "bold",
