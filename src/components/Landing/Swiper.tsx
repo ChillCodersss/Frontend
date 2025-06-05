@@ -16,9 +16,8 @@ import CircleIcon from "@mui/icons-material/Circle";
 import { IoIosArrowBack } from "react-icons/io";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
-import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 import { Swiper, SwiperSlide } from "swiper/react";
-// import SecondaryButton from "../common/SecondaryButton";
 import { Navigation, Autoplay } from "swiper/modules";
 import {
   OuterBoxStyle,
@@ -50,6 +49,7 @@ interface Counselor {
   employmentDuration: number;
   picName: string | null;
   picUrl: string;
+  rate: number;
 }
 
 interface ApiResponse {
@@ -114,38 +114,41 @@ const CounselorSwiper = () => {
     const customNext = document.querySelectorAll(`[id="custom-next"]`);
     const showMore = document.querySelectorAll(`[id="show-more"]`);
 
-    const observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          if (entry.target.id === "custom-prev") {
-            setButtonsVisible((prev) => ({
-              ...prev,
-              customPrev: true,
-            }));
-          }
-          if (entry.target.id === "custom-next") {
-            setButtonsVisible((prev) => ({
-              ...prev,
-              customNext: true,
-            }));
-          }
-          if (entry.target.id === "show-more") {
-            setButtonsVisible((prev) => ({
-              ...prev,
-              showMore: true,
-            }));
-          }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            if (entry.target.id === "custom-prev") {
+              setButtonsVisible((prev) => ({
+                ...prev,
+                customPrev: true,
+              }));
+            }
+            if (entry.target.id === "custom-next") {
+              setButtonsVisible((prev) => ({
+                ...prev,
+                customNext: true,
+              }));
+            }
+            if (entry.target.id === "show-more") {
+              setButtonsVisible((prev) => ({
+                ...prev,
+                showMore: true,
+              }));
+            }
 
-          observer.unobserve(entry.target);
+            observer.unobserve(entry.target);
+          }
         }
+      },
+      {
+        threshold: 0.3,
       }
-    }, {
-      threshold: 0.3,
-    });
+    );
 
     observer.observe(customPrev[0]);
     observer.observe(customNext[0]);
-    observer.observe(showMore[0])
+    observer.observe(showMore[0]);
   }, []);
 
   return (
@@ -165,30 +168,23 @@ const CounselorSwiper = () => {
           </Zoom>
         </Box>
         <Box>
-          {/* <SecondaryButton
-            name="مشاهده بیشتر"
-            width={isMobile ? "105px" : "150px"}
-            height={isMobile ? "50px" : "60px"}
-            backgroundColor={"#f4c417"}
-            fontSize={isMobile ? "16px" : "20px"}
-            borderRadius={"10px"}
-            onClick={() => {
-              navigate("/OurCounselor");
-            }}
-          /> */}
           <Fab
             variant="extended"
             sx={{
               marginLeft: isMobile ? "20px" : "0px",
-              boxShadow: "none", height: "56px",
+              boxShadow: "none",
+              height: "56px",
               fontSize: isMobile ? "12px" : "18px",
               ml: 1,
               // animation
-              transform: buttonsVisible.showMore ? "translateX(0px)" : "translateX(-50%)",
-              transition: "transform 800ms, opacity 800ms", opacity: buttonsVisible.showMore ? "100%" : "0%",
+              transform: buttonsVisible.showMore
+                ? "translateX(0px)"
+                : "translateX(-50%)",
+              transition: "transform 800ms, opacity 800ms",
+              opacity: buttonsVisible.showMore ? "100%" : "0%",
             }}
             onClick={() => {
-              navigate("/OurCounselor")
+              navigate("/OurCounselor");
             }}
             id={"show-more"}
           >
@@ -235,9 +231,12 @@ const CounselorSwiper = () => {
                   ...SwiperSlideStyle,
                   maxWidth: isMobile ? "300px" : "500px",
                   // animation
-                  transform: buttonsVisible.showMore ? "translateX(0px)" : "translateX(-50%)",
-                  transition: "transform 800ms, opacity 800ms", opacity: buttonsVisible.showMore ? "100%" : "0%",
-                  transitionDelay: `${index * 100}ms`
+                  transform: buttonsVisible.showMore
+                    ? "translateX(0px)"
+                    : "translateX(-50%)",
+                  transition: "transform 800ms, opacity 800ms",
+                  opacity: buttonsVisible.showMore ? "100%" : "0%",
+                  transitionDelay: `${index * 100}ms`,
                 }}
               >
                 {/* Top Section */}
@@ -248,7 +247,10 @@ const CounselorSwiper = () => {
                   <Box sx={SwiperSlideTopSectionRateStyle}>
                     <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
                     <Typography variant="body2" sx={{ color: "#fff" }}>
-                      ۴.۸
+                      {counselor.rate
+                        .toLocaleString("fa-IR")
+                        .toString()
+                        .replace("٫", ".")}
                     </Typography>
                   </Box>
                 </Box>
