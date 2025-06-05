@@ -366,7 +366,7 @@ const StudentsCounselors: React.FC = () => {
         direction: "rtl",
         padding: isSmallScreen ? "8px" : "16px 16px 0px 16px",
         maxWidth: 1200,
-        margin: "auto",
+        margin: "16px",
         overflowX: "auto",
       }}
     >

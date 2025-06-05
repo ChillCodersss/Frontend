@@ -26,54 +26,64 @@ import HSLayout from "./layouts/HSLayout";
 import HWLayout from "./layouts/HWLayout";
 import HLayout from "./layouts/HLayout";
 import AboutUs from "./pages/AboutUs/AboutUs";
+import ContactPage from "./pages/Chat/ContactPage";
+import ChatPage from "./pages/Chat/ChatPage";
 import CounselorPayments from "./pages/CounselorPayments/CounselorPayments";
 
 createRoot(document.getElementById("root")!).render(
   <>
+    <BrowserRouter>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route element={<HLayout />}>
+          <Route path="/forgot-password" element={<FPGetEmail />} />
+          <Route
+            path="/verification-code"
+            element={<FPGetVerificationCode />}
+          />
+          <Route path="/set-new-password" element={<FPGetNewPassword />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/CounselorProfile" element={<CounselorProfile />} />
+          <Route path="/StudentProfile" element={<StudentProfile />} />
 
-  <BrowserRouter>
-    <ScrollToTop />
-    <Routes>
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
-      <Route element={<HLayout />}>
+          <Route path="/CounselorDisplay" element={<CounselorDisplay />} />
+          <Route
+            path="/OurCounselor/CounselorPage/:id"
+            element={<CounselorDisplay />}
+          />
 
-      <Route path="/forgot-password" element={<FPGetEmail />} />
-      <Route path="/verification-code" element={<FPGetVerificationCode />} />
-      <Route path="/set-new-password" element={<FPGetNewPassword />} />
-      <Route path="/change-password" element={<ChangePassword />} />
-      <Route path="/CounselorProfile" element={<CounselorProfile />} />
-      <Route path="/StudentProfile" element={<StudentProfile />} />
+          {/* <Route path="/StudentDisplayPopup" element={<StudentDisplayPopup studentId={""} />} /> */}
+        </Route>
+        <Route element={<HWLayout />}>
+          <Route path="/" element={<Landing />} />
+          <Route path="/recruitment" element={<Recruitment />} />
+          <Route path="/OurCounselor" element={<OurCounselor />} />
+          <Route path="/about-us" element={<AboutUs />} />
+        </Route>
+        {/* Dashboard route with nested routes for both roles */}
+        <Route path="/dashboard" element={<HSLayout />}>
+          {/* Counselor-specific routes */}
+          <Route path="counselorrequests" element={<CounselorRequests />} />
+          <Route path="students" element={<Students />} />
+          <Route path="student-contacts" element={<ContactPage />} />
+          <Route
+            path="counseling-files"
+            element={<div>Counseling Stats</div>}
+          />
+          <Route path="incoms" element={<div>Counseling Stats</div>} />
 
-      <Route path="/CounselorDisplay" element={<CounselorDisplay />} />
-      <Route path="/OurCounselor/CounselorPage/:id" element={<CounselorDisplay />} />
-
-      {/* <Route path="/StudentDisplayPopup" element={<StudentDisplayPopup studentId={""} />} /> */}
-      </Route>
-      <Route element={<HWLayout />}>
-        <Route path="/" element={<Landing />} />
-        <Route path="/recruitment" element={<Recruitment />} />
-        <Route path="/OurCounselor" element={<OurCounselor />} />
-        <Route path="/about-us" element={<AboutUs />} />
-      </Route>
-      {/* Dashboard route with nested routes for both roles */}
-      <Route
-        path="/dashboard"
-        element={<HSLayout />}
-        >
-        {/* Counselor-specific routes */}
-        <Route path="counselorrequests" element={<CounselorRequests />} />
-        <Route path="students" element={<Students />} />
-        <Route path="chat-student" element={<div>Chat with Student</div>} />
-        <Route path="counseling-files" element={<div>Counseling Stats</div>} />
-        <Route path="incoms" element={<CounselorPayments />} />
-
-        {/* Student-specific routes */}
-        <Route path="studentscounselors" element={<StudentsCounselors />} />
-        <Route path="chat-counselor" element={<div>Chat with Counselor</div>} />
-        <Route path="payments" element={<Payments />}/>
-      </Route>
-    </Routes>
-  </BrowserRouter>
+          {/* Student-specific routes */}
+          <Route path="studentscounselors" element={<StudentsCounselors />} />
+          <Route path="counselor-contacts" element={<ContactPage />} />
+          <Route path="payments" element={<Payments />} />
+        </Route>
+        <Route path="/dashboard" element={<HLayout />}>
+          <Route path="student-chat/:id" element={<ChatPage />} />
+          <Route path="counselor-chat/:id" element={<ChatPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   </>
 );

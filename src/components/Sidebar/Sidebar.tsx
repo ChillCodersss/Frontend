@@ -20,7 +20,7 @@ import {
   Message as MessageIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
-  AttachMoney as AttachMoneyIcon 
+  AttachMoney as AttachMoneyIcon,
 } from "@mui/icons-material";
 import { getUserInfo, removeToken } from "@/services/auth";
 
@@ -44,6 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 
   // Define sidebar items for each role
   const counselorSidebarItems: SidebarItem[] = [
+
     { label: "دانش آموزان من", icon: <PeopleIcon />, path: "/dashboard/students" },
     { label: "درخواست های من", icon: <EmailIcon  />, path: "/dashboard/counselorrequests" },
     { label: "چت های من ", icon: <MessageIcon />, path: "/dashboard/chat-student" },
@@ -51,9 +52,21 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   ];
 
   const studentSidebarItems: SidebarItem[] = [
-    { label: "مشاوران من", icon: <PersonIcon />, path: "/dashboard/studentscounselors" },
-    { label: "چت با مشاور", icon: <MessageIcon />, path: "/dashboard/chat-counselor" },
-    { label: "پرداختی ها", icon: <AttachMoneyIcon />, path: "/dashboard/payments " },
+    {
+      label: "مشاوران من",
+      icon: <PersonIcon />,
+      path: "/dashboard/studentscounselors",
+    },
+    {
+      label: "چت با مشاور",
+      icon: <MessageIcon />,
+      path: "/dashboard/student-contacts",
+    },
+    {
+      label: "پرداختی ها",
+      icon: <AttachMoneyIcon />,
+      path: "/dashboard/payments ",
+    },
   ];
 
   // Fetch user role on mount
@@ -65,7 +78,12 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     }
   }, []);
 
-  const sidebarItems = role === "Counselor" ? counselorSidebarItems : role === "Student" ? studentSidebarItems : [];
+  const sidebarItems =
+    role === "Counselor"
+      ? counselorSidebarItems
+      : role === "Student"
+      ? studentSidebarItems
+      : [];
 
   const handleDrawerToggle = () => {
     setOpen(!open);
@@ -261,7 +279,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: "1rem",
+          // p: "1rem",
           backgroundColor: "rgb(255, 255, 255)",
           marginRight: isMobile ? 0 : `${sidebarWidth}px`,
           transition: "margin-right 0.3s ease-in-out",

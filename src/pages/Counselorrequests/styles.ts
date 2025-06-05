@@ -1,4 +1,4 @@
-import { SxProps, Theme } from '@mui/material';
+import { SxProps, Theme } from "@mui/material";
 
 export const styles: Record<string, SxProps<Theme>> = {
   container: {
@@ -31,7 +31,7 @@ export const styles: Record<string, SxProps<Theme>> = {
       color: '#057abe',
       '&.Mui-selected': { color: '#057abe', fontWeight: 'bold' },
     },
-    '& .MuiTabs-indicator': { backgroundColor: '#057abe' },
+    "& .MuiTabs-indicator": { backgroundColor: "#057abe" },
   },
   filterSection: {
     display: 'flex',
@@ -59,6 +59,7 @@ export const styles: Record<string, SxProps<Theme>> = {
   },
   tableContainer: {
     boxShadow: 3,
+
     maxHeight: { xs: '65vh', sm: '70vh' }, // Slightly taller on mobile
     overflowY: 'auto',
     overflowX: 'hidden', // Prevent horizontal overflow
@@ -75,9 +76,10 @@ export const styles: Record<string, SxProps<Theme>> = {
     },
   },
   tableRow: {
-    '&:hover': { bgcolor: 'grey.50' },
+    "&:hover": { bgcolor: "grey.50" },
   },
   tableCell: {
+
     padding: { xs: '6px', sm: '8px' }, // Reduced padding for mobile
     textAlign: 'center',
     verticalAlign: 'middle',

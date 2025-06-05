@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -14,7 +15,7 @@ import ContactsItem from "@/components/Chat/ContactsItem";
 const contactsData = [
   {
     id: 1,
-    name: "علی رضایی",
+    name: "هومن متین",
     lastMessage: "سلام چطوری شما چه خبرا",
     avatar: "",
     online: true,
@@ -22,7 +23,7 @@ const contactsData = [
   },
   {
     id: 2,
-    name: "مریم احمدی",
+    name: "مهیار نیاوند",
     lastMessage: "دوره خوبی رو با هم گذروندیم",
     avatar: "",
     online: false,
@@ -31,6 +32,8 @@ const contactsData = [
 ];
 
 const ContactPage: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [search, setSearch] = useState("");
   const [contacts] = useState(contactsData);
 
@@ -42,15 +45,27 @@ const ContactPage: React.FC = () => {
     <Box
       sx={{
         width: "100%",
-        height: "100%",
-        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
-        p: 2,
+        padding: "20px",
         boxSizing: "border-box",
+        animation: "slideLeft 0.5s cubic-bezier(0.4,0,0.2,1)",
+        "@keyframes slideLeft": {
+          from: {
+            opacity: 0,
+            transform: "translateX(70px)",
+          },
+          to: {
+            opacity: 1,
+            transform: "translateX(0)",
+          },
+        },
       }}
     >
-      <Typography variant="h6" sx={{ mb: 2, textAlign: "center" }}>
+      <Typography
+        variant="h6"
+        sx={{ marginBottom: "16px", textAlign: "center" }}
+      >
         مشاوران من
       </Typography>
       <TextField
@@ -59,27 +74,46 @@ const ContactPage: React.FC = () => {
         value={search}
         dir="rtl"
         onChange={(e) => setSearch(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <IconButton>
-                <SearchIcon />
-              </IconButton>
-            </InputAdornment>
-          ),
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <IconButton>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          },
         }}
-        sx={{ mb: 2 }}
+        sx={{ marginBottom: "16px" }}
       />
-      <Divider sx={{ mb: 2 }} />
-      <Box sx={{ flex: 1, overflowY: "auto" }}>
+      <Divider sx={{ marginBottom: "16px" }} />
+      <Box
+        sx={{
+          maxHeight: 400,
+          overflowY: "auto",
+        }}
+      >
         <List>
           {filteredContacts.length === 0 ? (
-            <Typography sx={{ textAlign: "center", mt: 2 }}>
-              مخاطبی یافت نشد.
+            <Typography sx={{ textAlign: "center", marginTop: "16px" }}>
+              هیچ مشاوری ندارید.
             </Typography>
           ) : (
             filteredContacts.map((contact) => (
-              <ContactsItem key={contact.id} {...contact} onClick={() => {}} />
+              <ContactsItem
+                key={contact.id}
+                {...contact}
+                onClick={() => {
+                  if (location.pathname === "/dashboard/student-contacts") {
+                    navigate(`/dashboard/student-chat/${contact.id}`);
+                  } else if (
+                    location.pathname === "/dashboard/counselor-contacts"
+                  ) {
+                    navigate(`/dashboard/counselor-chat/${contact.id}`);
+                  }
+                }}
+              />
             ))
           )}
         </List>

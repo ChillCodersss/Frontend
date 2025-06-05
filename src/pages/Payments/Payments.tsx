@@ -17,7 +17,6 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import { ToastContainer } from "react-toastify";
 import PaymentsItem, {
   PaymentsItemProps,
 } from "../../components/Payments/PaymentsItem";
@@ -25,6 +24,8 @@ import { useEffect, useState, useCallback } from "react";
 import { PaymentsHistory, cancelRequestCounselor } from "@/services/payments";
 import { getToken } from "@/services/auth";
 import {
+  PContainerStyle,
+  PTitleStyle,
   PTableHeadRowStyle,
   PTableHeadCellStyle,
   PITableContainerStyle,
@@ -116,119 +117,85 @@ const Payments = () => {
 
   return (
     <>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={true}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        toastStyle={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "right",
-          width: "220px",
-          padding: "5px 10px",
-          gap: "2px",
-          fontSize: "0.9rem",
-          textAlign: "right",
-        }}
-      />
-      <Box>
-        {/* Add the title here */}
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: "bold",
-            textAlign: "right",
-            margin: "16px 16px 24px 16px",
-            color: "#333",
-          }}
-        >
+      <Box sx={PContainerStyle}>
+        <Typography variant="h5" sx={PTitleStyle}>
           پرداخت‌های من
         </Typography>
         {loading ? (
           <Typography sx={PTextStyle}>در حال بارگزاری</Typography>
         ) : (
-          <Box>
-            <Box sx={PMainBoxStyle}>
-              {payments.length === 0 ? (
-                <Typography sx={PTextStyle}>شما پرداختی ندارید</Typography>
-              ) : (
-                <Box sx={PTableBoxStyle}>
-                  <TableContainer sx={PITableContainerStyle}>
-                    <Table>
-                      <TableHead>
-                        <TableRow sx={PTableHeadRowStyle}>
-                          <TableCell
-                            sx={{ ...PTableHeadCellStyle, width: "20%" }}
-                          >
-                            مبلغ
-                          </TableCell>
-                          <TableCell
-                            sx={{ ...PTableHeadCellStyle, width: "15%" }}
-                          >
-                            مشاور
-                          </TableCell>
-                          <TableCell
-                            sx={{ ...PTableHeadCellStyle, width: "15%" }}
-                          >
-                            طول دوره
-                          </TableCell>
-                          <TableCell
-                            sx={{ ...PTableHeadCellStyle, width: "15%" }}
-                          >
-                            تاریخ
-                          </TableCell>
-                          <TableCell
-                            sx={{ ...PTableHeadCellStyle, width: "35%" }}
-                          >
-                            عملیات
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {payments
-                          .filter((payment) => !payment.isPaid)
-                          .map((payment) => (
-                            <NotificationItem
-                              key={payment.id}
-                              {...payment}
-                              operation={fetchPayments}
-                              onCancelClick={handleCancelClick}
-                            />
-                          ))}
-                        {payments
-                          .filter((payment) => payment.isPaid)
-                          .map((payment) => (
-                            <PaymentsItem
-                              key={payment.id}
-                              {...payment}
-                              operation={showMoreDetails}
-                            />
-                          ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                  <Box
-                    sx={{ display: "flex", justifyContent: "center", mt: 2 }}
-                  >
-                    <Pagination
-                      count={totalPages}
-                      page={currentPage}
-                      onChange={handlePageChange}
-                      color="primary"
-                      dir="rtl"
-                      size={isSmallScreen ? "small" : "medium"}
-                      sx={PPaginationStyle}
-                    />
-                  </Box>
+          <Box sx={PMainBoxStyle}>
+            {payments.length === 0 ? (
+              <Typography sx={PTextStyle}>شما پرداختی ندارید</Typography>
+            ) : (
+              <Box sx={PTableBoxStyle}>
+                <TableContainer sx={PITableContainerStyle}>
+                  <Table>
+                    <TableHead>
+                      <TableRow sx={PTableHeadRowStyle}>
+                        <TableCell
+                          sx={{ ...PTableHeadCellStyle, width: "20%" }}
+                        >
+                          مبلغ
+                        </TableCell>
+                        <TableCell
+                          sx={{ ...PTableHeadCellStyle, width: "15%" }}
+                        >
+                          مشاور
+                        </TableCell>
+                        <TableCell
+                          sx={{ ...PTableHeadCellStyle, width: "15%" }}
+                        >
+                          طول دوره
+                        </TableCell>
+                        <TableCell
+                          sx={{ ...PTableHeadCellStyle, width: "15%" }}
+                        >
+                          تاریخ
+                        </TableCell>
+                        <TableCell
+                          sx={{ ...PTableHeadCellStyle, width: "35%" }}
+                        >
+                          عملیات
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {payments
+                        .filter((payment) => !payment.isPaid)
+                        .map((payment) => (
+                          <NotificationItem
+                            key={payment.id}
+                            {...payment}
+                            operation={fetchPayments}
+                            onCancelClick={handleCancelClick}
+                          />
+                        ))}
+                      {payments
+                        .filter((payment) => payment.isPaid)
+                        .map((payment) => (
+                          <PaymentsItem
+                            key={payment.id}
+                            {...payment}
+                            operation={showMoreDetails}
+                          />
+                        ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                    dir="rtl"
+                    size={isSmallScreen ? "small" : "medium"}
+                    sx={PPaginationStyle}
+                  />
                 </Box>
-              )}
-            </Box>
+              </Box>
+            )}
           </Box>
         )}
         <Dialog
