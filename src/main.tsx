@@ -28,6 +28,7 @@ import HLayout from "./layouts/HLayout";
 import AboutUs from "./pages/AboutUs/AboutUs";
 import ContactPage from "./pages/Chat/ContactPage";
 import ChatPage from "./pages/Chat/ChatPage";
+import CounselorPayments from "./pages/CounselorPayments/CounselorPayments";
 
 createRoot(document.getElementById("root")!).render(
   <>

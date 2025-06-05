@@ -63,7 +63,6 @@
     opacity: 10%;
 }
 
-
 .l-banner-h {
     direction: rtl;
     font-size: 2.5rem;
@@ -148,7 +147,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #e6e6e6;
+    background-image: radial-gradient(circle at bottom right, #E6E6E6 10%, #F4F4F4);
     /* background-image: linear-gradient(to left, #ffe78f, #fff3ca); */
     /* background-image: linear-gradient(to left, #ffad42, #ffda54); */
 }
@@ -227,43 +226,34 @@
 
 .l-row3-img-wrapper {
     position: relative;
-    width: 275px;
-    height: 340px;
+    width: 197.44px;
+    height: 320px;
     margin-left: 10.41667vw;
     margin-top: -62px;
     margin-bottom: 41px;
     margin-right: 10.41667vw;
-    border-radius: 13px;
-    background-color: #e6e6e6;
+    align-self: end;
 }
 
-.l-row3-img {
+.l-row-img {
     position: absolute;
     width: 100%;
     height: auto;
     top: 0;
     left: 0;
     border-radius: 13px;
+    border: 1px solid black;
+    box-sizing: border-box;
 }
 
 .l-row4-img-wrapper {
     position: relative;
-    width: 580px;
-    height: 340px;
+    width: 472.5px;
+    height: 315px;
     margin-left: -300px;
     margin-top: -60px;
-    margin-bottom: 60px;
-    border-radius: 13px;
-    background-color: #e6e6e6;
-}
-
-.l-row4-img {
-    position: absolute;
-    width: 100%;
-    height: auto;
-    top: 0;
-    left: 0;
-    border-radius: 13px;
+    margin-bottom: 41px;
+    align-self: end;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -393,41 +383,27 @@
 
     .l-row3-img-wrapper {
         position: relative;
-        width: 29.7vw;
-        height: 42.2vw;
+        width: 24.68vw;
+        height: 40vw;
         margin-left: 10.41667vw;
         margin-top: 4.5rem;
         margin-bottom: 4.5rem;
         margin-right: 10.41667vw;
-        border-radius: 13px;
-        background-color: #e6e6e6;
+        align-self: unset;
     }
-    
-    .l-row3-img {
-        position: absolute;
-        width: 100%;
-        height: auto;
-        top: 0;
-        left: 0;
+
+    .l-row-img {
+        border: unset;
     }
 
     .l-row4-img-wrapper {
         position: relative;
-        width: 55vw;
+        width: 50.25vw;
         height: 33.5vw;
         margin-left: -17.3vw;
         margin-top: 4rem;
         margin-bottom: 4rem;
-        border-radius: 13px;
-        background-color: #e6e6e6;
-    }
-    
-    .l-row4-img {
-        position: absolute;
-        width: 100%;
-        height: auto;
-        top: 0;
-        left: 0;
+        align-self: unset;
     }
 
     .l-text-box-h {

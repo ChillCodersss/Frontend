@@ -44,26 +44,11 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 
   // Define sidebar items for each role
   const counselorSidebarItems: SidebarItem[] = [
-    {
-      label: "درخواست های من",
-      icon: <EmailIcon />,
-      path: "/dashboard/counselorrequests",
-    },
-    {
-      label: "دانش آموزان من",
-      icon: <PeopleIcon />,
-      path: "/dashboard/students",
-    },
-    {
-      label: "چت های من ",
-      icon: <MessageIcon />,
-      path: "/dashboard/counselor-contacts",
-    },
-    {
-      label: "پرداختی ها",
-      icon: <AttachMoneyIcon />,
-      path: "/dashboard/incoms",
-    },
+
+    { label: "دانش آموزان من", icon: <PeopleIcon />, path: "/dashboard/students" },
+    { label: "درخواست های من", icon: <EmailIcon  />, path: "/dashboard/counselorrequests" },
+    { label: "چت های من ", icon: <MessageIcon />, path: "/dashboard/chat-student" },
+    { label: "پرداختی ها", icon: <AttachMoneyIcon />, path: "/dashboard/incoms" },
   ];
 
   const studentSidebarItems: SidebarItem[] = [
@@ -303,17 +288,17 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         }}
       >
         {/* Mobile Toggle Button */}
-        {isMobile && (
+        {isMobile && !open && (
           <IconButton
             onClick={handleDrawerToggle}
             sx={{
-              position: "absolute",
-              top: "1rem",
-              right: "1rem",
+              position: "fixed",
+              top: "4rem",
+              right: "0.75rem",
               color: "#057abe",
-              backgroundColor: "rgb(111, 189, 234)",
-              "&:hover": { backgroundColor: " #e0e0e0" },
-              zIndex: 1200,
+              backgroundColor: "rgba(183, 178, 178, 0.45)",
+              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0)" },
+              zIndex: 1300,
             }}
           >
             <MenuIcon />

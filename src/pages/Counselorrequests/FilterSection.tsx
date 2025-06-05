@@ -19,7 +19,7 @@ const FilterSection: React.FC<FilterSectionProps> = ({
   handleStatusFilterChange,
   handleMajorFilterChange,
   handleGradeFilterChange,
-  isSmallScreen,
+  // isSmallScreen,
 }) => {
   return (
     <Box>
@@ -27,17 +27,19 @@ const FilterSection: React.FC<FilterSectionProps> = ({
         value={statusFilter}
         onChange={handleStatusFilterChange}
         centered
+        variant="scrollable"
+        scrollButtons="auto"
         sx={styles.tabs}
       >
-        <Tab label="همه" value="همه" />
         <Tab label="فعال" value="فعال" />
         <Tab label="رد شده" value="رد شده" />
         <Tab label="تایید شده" value="تایید شده" />
         <Tab label="لغو شده" value="لغو شده" />
+        <Tab label="همه" value="همه" />
       </Tabs>
       <Box sx={styles.filterSection}>
-        <Box sx={{ marginLeft: isSmallScreen ? 1 : 5 }}>
-          <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', textAlign: 'right' }}>
+        <Box sx={{ width: { xs: '100%', sm: 'auto' } }}>
+          <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', textAlign: 'right', fontSize: '0.9rem' }}>
             رشته
           </Typography>
           <ToggleButtonGroup
@@ -46,14 +48,14 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             onChange={handleMajorFilterChange}
             sx={styles.toggleButtonGroup}
           >
-            <ToggleButton value="همه">همه</ToggleButton>
-            <ToggleButton value="ریاضی">ریاضی</ToggleButton>
-            <ToggleButton value="تجربی">تجربی</ToggleButton>
-            <ToggleButton value="انسانی">انسانی</ToggleButton>
+            <ToggleButton value="همه" aria-label="همه رشته‌ها">همه</ToggleButton>
+            <ToggleButton value="ریاضی" aria-label="رشته ریاضی">ریاضی</ToggleButton>
+            <ToggleButton value="تجربی" aria-label="رشته تجربی">تجربی</ToggleButton>
+            <ToggleButton value="انسانی" aria-label="رشته انسانی">انسانی</ToggleButton>
           </ToggleButtonGroup>
         </Box>
-        <Box sx={{ marginLeft: isSmallScreen ? 1 : 2 }}>
-          <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', textAlign: 'right' }}>
+        <Box sx={{ width: { xs: '100%', sm: 'auto' }, mt: { xs: 2, sm: 0 } }}>
+          <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', textAlign: 'right', fontSize: '0.9rem' }}>
             پایه
           </Typography>
           <ToggleButtonGroup
@@ -62,10 +64,10 @@ const FilterSection: React.FC<FilterSectionProps> = ({
             onChange={handleGradeFilterChange}
             sx={styles.toggleButtonGroup}
           >
-            <ToggleButton value="همه">همه</ToggleButton>
-            <ToggleButton value="پایه دهم">پایه دهم</ToggleButton>
-            <ToggleButton value="پایه یازدهم">پایه یازدهم</ToggleButton>
-            <ToggleButton value="پایه دوازدهم">پایه دوازدهم</ToggleButton>
+            <ToggleButton value="همه" aria-label="همه پایه‌ها">همه</ToggleButton>
+            <ToggleButton value="پایه دهم" aria-label="پایه دهم">پایه دهم</ToggleButton>
+            <ToggleButton value="پایه یازدهم" aria-label="پایه یازدهم">پایه یازدهم</ToggleButton>
+            <ToggleButton value="پایه دوازدهم" aria-label="پایه دوازدهم">پایه دوازدهم</ToggleButton>
           </ToggleButtonGroup>
         </Box>
       </Box>
