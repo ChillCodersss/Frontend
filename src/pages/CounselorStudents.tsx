@@ -346,7 +346,7 @@ const Students: React.FC = () => {
         direction: "rtl",
         padding: 1,
         maxWidth: 1200,
-        margin: "16px",
+        margin: "auto",
         overflowX: "auto",
       }}
     >

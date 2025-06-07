@@ -44,11 +44,26 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
 
   // Define sidebar items for each role
   const counselorSidebarItems: SidebarItem[] = [
-
-    { label: "دانش آموزان من", icon: <PeopleIcon />, path: "/dashboard/students" },
-    { label: "درخواست های من", icon: <EmailIcon  />, path: "/dashboard/counselorrequests" },
-    { label: "چت های من ", icon: <MessageIcon />, path: "/dashboard/chat-student" },
-    { label: "پرداختی ها", icon: <AttachMoneyIcon />, path: "/dashboard/incoms" },
+    {
+      label: "دانش آموزان من",
+      icon: <PeopleIcon />,
+      path: "/dashboard/students",
+    },
+    {
+      label: "درخواست های من",
+      icon: <EmailIcon />,
+      path: "/dashboard/counselorrequests",
+    },
+    {
+      label: "چت های من ",
+      icon: <MessageIcon />,
+      path: "/dashboard/chat-student",
+    },
+    {
+      label: "پرداختی ها",
+      icon: <AttachMoneyIcon />,
+      path: "/dashboard/incoms",
+    },
   ];
 
   const studentSidebarItems: SidebarItem[] = [
@@ -279,7 +294,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          // p: "1rem",
+          p: "1rem",
           backgroundColor: "rgb(255, 255, 255)",
           marginRight: isMobile ? 0 : `${sidebarWidth}px`,
           transition: "margin-right 0.3s ease-in-out",

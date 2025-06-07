@@ -1,17 +1,8 @@
 import { SxProps } from "@mui/material";
 
-export const PContainerStyle: SxProps = {
-  minHeight: "100vh",
-  overflow: "hidden",
-  padding: "8px",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-start",
-  alignItems: "center",
-};
 export const PTitleStyle: SxProps = {
   fontWeight: "bold",
-  textAlign: "right",
+  textAlign: "center",
   margin: "16px 16px 24px 16px",
   color: "#333",
 };
