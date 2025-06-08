@@ -211,6 +211,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
                   horizontal: "left",
                 }}
                 keepMounted
+                disableScrollLock
                 transformOrigin={{
                   vertical: "top",
                   horizontal: "left",

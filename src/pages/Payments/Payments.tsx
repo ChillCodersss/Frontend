@@ -24,7 +24,6 @@ import { useEffect, useState, useCallback } from "react";
 import { PaymentsHistory, cancelRequestCounselor } from "@/services/payments";
 import { getToken } from "@/services/auth";
 import {
-  PContainerStyle,
   PTitleStyle,
   PTableHeadRowStyle,
   PTableHeadCellStyle,
@@ -117,7 +116,7 @@ const Payments = () => {
 
   return (
     <>
-      <Box sx={PContainerStyle}>
+      <Box>
         <Typography variant="h5" sx={PTitleStyle}>
           پرداخت‌های من
         </Typography>
