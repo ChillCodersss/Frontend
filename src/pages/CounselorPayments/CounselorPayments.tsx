@@ -45,6 +45,7 @@ const CounselorPayments = () => {
 
   const handlePageChange = useCallback(
     (_: React.ChangeEvent<unknown>, page: number) => {
+      fetchPayments(page);
       setCurrentPage(page);
     },
     []
@@ -58,7 +59,7 @@ const CounselorPayments = () => {
     setMoreDetails(null);
   }, []);
 
-  const fetchPayments = async () => {
+  const fetchPayments = async (pageIndex: number) => {
     try {
       const token = getToken();
       if (!token) {
@@ -66,10 +67,10 @@ const CounselorPayments = () => {
         return;
       }
       setLoading(true);
-      const data = await CounselorPaymentsHistory(token, 10, 1);
+      const data = await CounselorPaymentsHistory(token, 6, pageIndex);
       if (data.isSuccess) {
         setPayments(data.value.items);
-        setTotalPages(data.totalPages);
+        setTotalPages(data.value.totalPages);
         setLoading(false);
       } else {
         console.error("خطا در ارتباط با سرور");
@@ -79,7 +80,7 @@ const CounselorPayments = () => {
     }
   };
   useEffect(() => {
-    fetchPayments();
+    fetchPayments(1);
   }, []);
 
   return (
