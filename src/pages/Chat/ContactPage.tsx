@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -8,38 +8,62 @@ import {
   InputAdornment,
   IconButton,
   Divider,
+  Pagination,
+  CircularProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import ContactsItem from "@/components/Chat/ContactsItem";
+import ContactsItem, {
+  ContactsItemProps,
+} from "@/components/Chat/ContactsItem";
+import { getContacts } from "@/services/chat";
+import { getUserInfo, getToken } from "@/services/auth";
 
-const contactsData = [
-  {
-    id: 1,
-    name: "هومن متین",
-    lastMessage: "سلام چطوری شما چه خبرا",
-    avatar: "",
-    online: true,
-    active: true,
-  },
-  {
-    id: 2,
-    name: "مهیار نیاوند",
-    lastMessage: "دوره خوبی رو با هم گذروندیم",
-    avatar: "",
-    online: false,
-    active: false,
-  },
-];
+const PAGE_SIZE = 10;
 
 const ContactPage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [search, setSearch] = useState("");
-  const [contacts] = useState(contactsData);
+  const [contacts, setContacts] = useState<ContactsItemProps[]>([]);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.includes(search)
-  );
+  const fetchContacts = async (page = 1, searchValue = "") => {
+    setLoading(true);
+    try {
+      const token = String(getToken());
+      const response = await getContacts(token, PAGE_SIZE, page);
+
+      if (response.isSuccess && response.value) {
+        let items = response.value.items || [];
+
+        if (searchValue) {
+          items = items.filter((c: ContactsItemProps) =>
+            c.contactName.includes(searchValue)
+          );
+        }
+        setContacts(items);
+        setTotalPages(response.value.totalPages || 1);
+      } else {
+        setContacts([]);
+        setTotalPages(1);
+      }
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+      setContacts([]);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchContacts(pageIndex, search);
+  }, [pageIndex, search]);
+
+  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
+    setPageIndex(value);
+  };
 
   return (
     <Box
@@ -73,7 +97,10 @@ const ContactPage: React.FC = () => {
         placeholder="جستجو..."
         value={search}
         dir="rtl"
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setPageIndex(1); // Reset to first page on search
+        }}
         slotProps={{
           input: {
             startAdornment: (
@@ -95,22 +122,28 @@ const ContactPage: React.FC = () => {
         }}
       >
         <List>
-          {filteredContacts.length === 0 ? (
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+              <CircularProgress size={24} />
+            </Box>
+          ) : contacts.length === 0 ? (
             <Typography sx={{ textAlign: "center", marginTop: "16px" }}>
-              هیچ مشاوری ندارید.
+              هیچ مخاطبی ندارید.
             </Typography>
           ) : (
-            filteredContacts.map((contact) => (
+            contacts.map((contact) => (
               <ContactsItem
-                key={contact.id}
-                {...contact}
+                key={contact.contactId}
+                contactId={contact.contactId}
+                contactName={contact.contactName}
+                lastMessage={contact.lastMessage}
+                picName={contact.picName}
+                contactProfilePicUrl={contact.contactProfilePicUrl}
                 onClick={() => {
-                  if (location.pathname === "/dashboard/student-contacts") {
-                    navigate(`/dashboard/student-chat/${contact.id}`);
-                  } else if (
-                    location.pathname === "/dashboard/counselor-contacts"
-                  ) {
-                    navigate(`/dashboard/counselor-chat/${contact.id}`);
+                  if (getUserInfo()?.role === "Counselor") {
+                    navigate(`/dashboard/counselor-chat/${contact.contactId}`);
+                  } else if (getUserInfo()?.role === "Student") {
+                    navigate(`/dashboard/student-chat/${contact.contactId}`);
                   }
                 }}
               />
@@ -118,6 +151,13 @@ const ContactPage: React.FC = () => {
           )}
         </List>
       </Box>
+      <Pagination
+        count={totalPages}
+        page={pageIndex}
+        onChange={handlePageChange}
+        sx={{ mt: 2, alignSelf: "center" }}
+        color="primary"
+      />
     </Box>
   );
 };
