@@ -46,31 +46,83 @@ export class ChatService {
   private connection: signalR.HubConnection;
   private jwtToken: string;
 
+  // Handlers for events
+  private onReceivePrivateMessageHandler?: (
+    text: string,
+    senderName: string,
+    senderId: number
+  ) => void;
+  private onSeenMessageHandler?: (
+    messageIds: number[],
+    isSeen: boolean
+  ) => void;
+  private onReceiveOnlineContactsHandler?: (onlineContactIds: number[]) => void;
+  private onReceiveUserStatusChangeHandler?: (
+    userId: number,
+    isOnline: boolean
+  ) => void;
+
   public constructor(token: string) {
     this.jwtToken = token;
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(`http://${baseURL}/chat/access_token=${token}`, {})
       .configureLogging(signalR.LogLevel.Information) // for debugging
       .build();
-    this.connection.start();
-    this.connection.on("ReceivePrivateMessage", () => {
-      console.log("receiving message need to be handled");
+
+    this.connection.on(
+      "ReceivePrivateMessage",
+      (text, senderName, senderId) => {
+        if (this.onReceivePrivateMessageHandler) {
+          this.onReceivePrivateMessageHandler(text, senderName, senderId);
+        }
+      }
+    );
+
+    this.connection.on("SeenMessage", (messageIds, isSeen) => {
+      if (this.onSeenMessageHandler) {
+        this.onSeenMessageHandler(messageIds, isSeen);
+      }
     });
 
-    this.connection.on("ReceiveOnlineContacts", () => {
-      console.log("need to be handled");
+    this.connection.on("ReceiveOnlineContacts", (onlineContactIds) => {
+      if (this.onReceiveOnlineContactsHandler) {
+        this.onReceiveOnlineContactsHandler(onlineContactIds);
+      }
     });
 
-    this.connection.on("SeenMessage", () => {
-      console.log("we should handle here");
+    this.connection.on("ReceiveUserStatusChange", (userId, isOnline) => {
+      if (this.onReceiveUserStatusChangeHandler) {
+        this.onReceiveUserStatusChangeHandler(userId, isOnline);
+      }
     });
 
-    this.connection.on("ReceiveUserStatusChange", () => {
-      console.log("User status changing need to be handled");
-    });
     this.connection.onclose(() => {
       console.log("Connection closed");
     });
+  }
+
+  public onReceivePrivateMessage(
+    handler: (text: string, senderName: string, senderId: number) => void
+  ) {
+    this.onReceivePrivateMessageHandler = handler;
+  }
+
+  public onSeenMessage(
+    handler: (messageIds: number[], isSeen: boolean) => void
+  ) {
+    this.onSeenMessageHandler = handler;
+  }
+
+  public onReceiveOnlineContacts(
+    handler: (onlineContactIds: number[]) => void
+  ) {
+    this.onReceiveOnlineContactsHandler = handler;
+  }
+
+  public onReceiveUserStatusChange(
+    handler: (userId: number, isOnline: boolean) => void
+  ) {
+    this.onReceiveUserStatusChangeHandler = handler;
   }
 
   private async uploadMessageFile(token: string, file: File): Promise<string> {

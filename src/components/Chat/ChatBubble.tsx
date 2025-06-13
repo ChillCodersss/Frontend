@@ -2,20 +2,23 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 
 export interface ChatBubbleProps {
-  message: string;
+  id: number;
+  text: string;
   isOwn?: boolean;
   isStudent?: boolean;
   time?: string;
 }
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({
-  message,
+  id,
+  text,
   isOwn = false,
   isStudent = false,
   time,
 }) => {
   return (
     <Box
+      key={id}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -44,7 +47,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
           variant="body1"
           sx={{ fontSize: "1rem", textAlign: "right" }}
         >
-          {message}
+          {text}
         </Typography>
       </Box>
       {time && (

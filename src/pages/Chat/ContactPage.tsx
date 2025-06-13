@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -16,6 +16,7 @@ import ContactsItem, {
 } from "@/components/Chat/ContactsItem";
 import { getContacts } from "@/services/chat";
 import { getUserInfo, getToken } from "@/services/auth";
+import { ChatService } from "@/services/chat";
 import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
 import {
@@ -37,6 +38,37 @@ const ContactPage: React.FC = () => {
   const [pageIndex, setPageIndex] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [onlineContactIds, setOnlineContactIds] = useState<number[]>([]);
+  const chatServiceRef = useRef<ChatService | null>(null);
+
+  // Setup ChatService and handlers for online contacts and status changes
+  useEffect(() => {
+    const token = String(getToken());
+    const chatService = new ChatService(token);
+    chatServiceRef.current = chatService;
+
+    chatService.onReceiveOnlineContacts((ids) => {
+      setOnlineContactIds(ids);
+    });
+
+    chatService.onReceiveUserStatusChange((userId, isOnline) => {
+      setOnlineContactIds((prev) => {
+        if (isOnline) {
+          return prev.includes(userId) ? prev : [...prev, userId];
+        } else {
+          return prev.filter((id) => id !== userId);
+        }
+      });
+    });
+
+    chatService["connection"].start().catch(console.error);
+    // Request the current online contacts
+    chatService["connection"].invoke("RequestOnlineContacts").catch(() => {});
+
+    return () => {
+      chatService["connection"].stop();
+    };
+  }, []);
 
   const fetchContacts = async (page = 1, searchValue = "") => {
     setLoading(true);
@@ -126,6 +158,7 @@ const ContactPage: React.FC = () => {
                 lastMessage={contact.lastMessage}
                 picName={contact.picName}
                 contactProfilePicUrl={contact.contactProfilePicUrl}
+                online={onlineContactIds.includes(contact.contactId)}
                 onClick={() => {
                   if (getUserInfo()?.role === "Counselor") {
                     navigate(`/dashboard/counselor-chat/${contact.contactId}`);

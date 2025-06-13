@@ -1,44 +1,57 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import ChatHeader from "@/components/Chat/ChatHeader";
-import { ChatBubbleProps } from "@/components/Chat/ChatBubble";
 import MainChat from "../../components/Chat/MainChat";
+import { ChatService } from "@/services/chat";
+import { ChatBubbleProps } from "@/components/Chat/ChatBubble";
+import { getToken, getUserInfo } from "@/services/auth";
+import { useParams } from "react-router-dom";
 
 const ChatPage = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const [messages, setMessages] = useState<ChatBubbleProps[]>([
-    {
-      message: "سلام! چطور می‌تونم کمکتون کنم؟",
-      isOwn: false,
-      isStudent: false,
-    },
-    {
-      message: "سلام، من برای هفته آینده درخواستی دارم.",
-      isOwn: true,
-      isStudent: true,
-    },
-    { message: "بفرمایید، در خدمتم.", isOwn: false, isStudent: false },
-    {
-      message: "چه زمانی می تونم تایم مشاوره حضوری با شما داشته باشم؟",
-      isOwn: true,
-      isStudent: true,
-    },
-    {
-      message: "بنده روز های زوج تایم خالی برای این کار دارم",
-      isOwn: false,
-      isStudent: false,
-    },
-  ]);
+  const token = String(getToken());
+  const { contactId } = useParams<{ contactId: string }>();
 
-  // mocking shi*
-  const handleSend = (msg: string) => {
-    if (msg.trim()) {
+  const [messages, setMessages] = useState<ChatBubbleProps[]>([]);
+  const chatServiceRef = useRef<ChatService | null>(null);
+  const messageIdRef = useRef(0);
+
+  useEffect(() => {
+    if (!contactId) return;
+    const chatService = new ChatService(token);
+    chatServiceRef.current = chatService;
+
+    chatService.onReceivePrivateMessage((text, senderName, senderId) => {
       setMessages((prev) => [
         ...prev,
-        { message: msg, isOwn: true, isStudent: true },
+        {
+          // here we should handle if the message is file or text
+          id: messageIdRef.current++,
+          text,
+          isOwn: getUserInfo()?.id === senderId,
+          isStudent: getUserInfo()?.role === "Student",
+        },
       ]);
+    });
+
+    // Optionally handle other events:
+    // chatService.onSeenMessage(...)
+    // chatService.onReceiveOnlineContacts(...)
+    // chatService.onReceiveUserStatusChange(...)
+
+    // Optionally: connect/start the SignalR connection if needed
+    chatService["connection"].start().catch(console.error);
+
+    return () => {
+      chatService["connection"].stop();
+    };
+  }, [token, contactId]);
+
+  const handleSend = async (msg: string) => {
+    if (msg.trim() && chatServiceRef.current && contactId) {
+      await chatServiceRef.current.sendMessage(msg, contactId);
     }
   };
 
