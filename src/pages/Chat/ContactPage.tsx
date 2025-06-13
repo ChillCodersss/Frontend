@@ -8,7 +8,6 @@ import {
   InputAdornment,
   IconButton,
   Divider,
-  Pagination,
   CircularProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -17,6 +16,8 @@ import ContactsItem, {
 } from "@/components/Chat/ContactsItem";
 import { getContacts } from "@/services/chat";
 import { getUserInfo, getToken } from "@/services/auth";
+import Pagination from "@mui/material/Pagination";
+import PaginationItem from "@mui/material/PaginationItem";
 
 const PAGE_SIZE = 10;
 
@@ -61,9 +62,13 @@ const ContactPage: React.FC = () => {
     fetchContacts(pageIndex, search);
   }, [pageIndex, search]);
 
-  const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
-    setPageIndex(value);
-  };
+  // const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
+  //   setPageIndex(value);
+  // };
+
+  function toPersianNumber(num: number | string) {
+    return String(num).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d, 10)]);
+  }
 
   return (
     <Box
@@ -151,13 +156,41 @@ const ContactPage: React.FC = () => {
           )}
         </List>
       </Box>
-      <Pagination
-        count={totalPages}
-        page={pageIndex}
-        onChange={handlePageChange}
-        sx={{ mt: 2, alignSelf: "center" }}
-        color="primary"
-      />
+      <Box
+        sx={{
+          direction: "rtl",
+          mt: 2,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <Pagination
+          dir="rtl"
+          count={totalPages}
+          page={pageIndex}
+          onChange={(_, value) => setPageIndex(value)}
+          renderItem={(item) => (
+            <PaginationItem
+              {...item}
+              page={item.page ? toPersianNumber(item.page) : undefined}
+            />
+          )}
+          sx={{
+            marginBottom: "40px",
+            "& .MuiPaginationItem-root": {
+              color: "rgb(8, 57, 136)",
+              "&.Mui-selected": {
+                backgroundColor: "rgb(8, 57, 136)",
+                color: "white",
+              },
+              "&.MuiPaginationItem-previousNext": {
+                transform: "rotate(180deg)",
+              },
+            },
+          }}
+          color="primary"
+        />
+      </Box>
     </Box>
   );
 };
