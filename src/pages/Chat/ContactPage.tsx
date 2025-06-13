@@ -18,6 +18,15 @@ import { getContacts } from "@/services/chat";
 import { getUserInfo, getToken } from "@/services/auth";
 import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
+import {
+  contactPageBoxStyle,
+  contactPageTitleStyle,
+  contactPageTextFieldStyle,
+  contactPageDividerStyle,
+  contactPageListBoxStyle,
+  contactPagePaginationBoxStyle,
+  contactPagePaginationStyle,
+} from "./ContactPageStyles";
 
 const PAGE_SIZE = 10;
 
@@ -71,30 +80,8 @@ const ContactPage: React.FC = () => {
   }
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        padding: "20px",
-        boxSizing: "border-box",
-        animation: "slideLeft 0.5s cubic-bezier(0.4,0,0.2,1)",
-        "@keyframes slideLeft": {
-          from: {
-            opacity: 0,
-            transform: "translateX(70px)",
-          },
-          to: {
-            opacity: 1,
-            transform: "translateX(0)",
-          },
-        },
-      }}
-    >
-      <Typography
-        variant="h6"
-        sx={{ marginBottom: "16px", textAlign: "center" }}
-      >
+    <Box sx={contactPageBoxStyle}>
+      <Typography variant="h6" sx={contactPageTitleStyle}>
         مشاوران من
       </Typography>
       <TextField
@@ -117,15 +104,10 @@ const ContactPage: React.FC = () => {
             ),
           },
         }}
-        sx={{ marginBottom: "16px" }}
+        sx={contactPageTextFieldStyle}
       />
-      <Divider sx={{ marginBottom: "16px" }} />
-      <Box
-        sx={{
-          maxHeight: 400,
-          overflowY: "auto",
-        }}
-      >
+      <Divider sx={contactPageDividerStyle} />
+      <Box sx={contactPageListBoxStyle}>
         <List>
           {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
@@ -156,14 +138,7 @@ const ContactPage: React.FC = () => {
           )}
         </List>
       </Box>
-      <Box
-        sx={{
-          direction: "rtl",
-          mt: 2,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
+      <Box sx={contactPagePaginationBoxStyle}>
         <Pagination
           dir="rtl"
           count={totalPages}
@@ -175,19 +150,7 @@ const ContactPage: React.FC = () => {
               page={item.page ? toPersianNumber(item.page) : undefined}
             />
           )}
-          sx={{
-            marginBottom: "40px",
-            "& .MuiPaginationItem-root": {
-              color: "rgb(8, 57, 136)",
-              "&.Mui-selected": {
-                backgroundColor: "rgb(8, 57, 136)",
-                color: "white",
-              },
-              "&.MuiPaginationItem-previousNext": {
-                transform: "rotate(180deg)",
-              },
-            },
-          }}
+          sx={contactPagePaginationStyle}
           color="primary"
         />
       </Box>
