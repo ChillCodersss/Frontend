@@ -17,7 +17,12 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import InfoIcon from "@mui/icons-material/Info";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-const ChatHeader: React.FC = () => {
+interface ChatHeaderProps {
+  contactName: string;
+  avatarUrl?: string;
+}
+
+const ChatHeader: React.FC<ChatHeaderProps> = ({ contactName, avatarUrl }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [open, setOpen] = React.useState(false);
@@ -59,7 +64,7 @@ const ChatHeader: React.FC = () => {
           <ArrowForwardIcon />
         </IconButton>
         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Avatar />
+          <Avatar src={avatarUrl} />
           <Typography
             sx={{
               fontWeight: "bold",
@@ -67,7 +72,7 @@ const ChatHeader: React.FC = () => {
               marginLeft: "8px",
             }}
           >
-            هومن متین
+            {contactName}
           </Typography>
         </Box>
       </Box>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -14,9 +14,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import ContactsItem, {
   ContactsItemProps,
 } from "@/components/Chat/ContactsItem";
-import { getContacts } from "@/services/chat";
-import { getUserInfo, getToken } from "@/services/auth";
-import { ChatService } from "@/services/chat";
+import { getUserInfo } from "@/services/auth";
 import Pagination from "@mui/material/Pagination";
 import PaginationItem from "@mui/material/PaginationItem";
 import {
@@ -28,23 +26,26 @@ import {
   contactPagePaginationBoxStyle,
   contactPagePaginationStyle,
 } from "./ContactPageStyles";
-
-const PAGE_SIZE = 10;
+import { useChatService } from "@/contexts/ChatServiceContext";
+import { useContacts } from "@/contexts/ContactsContext";
 
 const ContactPage: React.FC = () => {
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [contacts, setContacts] = useState<ContactsItemProps[]>([]);
-  const [pageIndex, setPageIndex] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [onlineContactIds, setOnlineContactIds] = useState<number[]>([]);
-  const chatServiceRef = useRef<ChatService | null>(null);
+  const chatService = useChatService();
+  const chatServiceRef = useRef(chatService);
+  const {
+    contacts,
+    loading,
+    pageIndex,
+    setPageIndex,
+    totalPages,
+    search,
+    setSearch,
+  } = useContacts();
 
   // Setup ChatService and handlers for online contacts and status changes
   useEffect(() => {
-    const token = String(getToken());
-    const chatService = new ChatService(token);
     chatServiceRef.current = chatService;
 
     chatService.onReceiveOnlineContacts((ids) => {
@@ -68,44 +69,7 @@ const ContactPage: React.FC = () => {
     return () => {
       chatService["connection"].stop();
     };
-  }, []);
-
-  const fetchContacts = async (page = 1, searchValue = "") => {
-    setLoading(true);
-    try {
-      const token = String(getToken());
-      const response = await getContacts(token, PAGE_SIZE, page);
-
-      if (response.isSuccess && response.value) {
-        let items = response.value.items || [];
-
-        if (searchValue) {
-          items = items.filter((c: ContactsItemProps) =>
-            c.contactName.includes(searchValue)
-          );
-        }
-        setContacts(items);
-        setTotalPages(response.value.totalPages || 1);
-      } else {
-        setContacts([]);
-        setTotalPages(1);
-      }
-    } catch (error) {
-      console.error("Error fetching contacts:", error);
-      setContacts([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchContacts(pageIndex, search);
-  }, [pageIndex, search]);
-
-  // const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
-  //   setPageIndex(value);
-  // };
+  }, [chatService]);
 
   function toPersianNumber(num: number | string) {
     return String(num).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d, 10)]);
@@ -150,7 +114,7 @@ const ContactPage: React.FC = () => {
               هیچ مخاطبی ندارید.
             </Typography>
           ) : (
-            contacts.map((contact) => (
+            contacts.map((contact: ContactsItemProps) => (
               <ContactsItem
                 key={contact.contactId}
                 contactId={contact.contactId}

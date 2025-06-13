@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import ChatHeader from "@/components/Chat/ChatHeader";
 import MainChat from "../../components/Chat/MainChat";
-import { ChatService } from "@/services/chat";
+import { useChatService } from "@/contexts/ChatServiceContext";
 import { ChatBubbleProps } from "@/components/Chat/ChatBubble";
 import { getToken, getUserInfo } from "@/services/auth";
 import { useParams } from "react-router-dom";
+import type { ChatService } from "@/services/chat";
+import { useContacts } from "@/contexts/ContactsContext";
 
 const ChatPage = () => {
   const theme = useTheme();
@@ -14,15 +16,37 @@ const ChatPage = () => {
   const token = String(getToken());
   const { contactId } = useParams<{ contactId: string }>();
 
+  const { contacts } = useContacts();
   const [messages, setMessages] = useState<ChatBubbleProps[]>([]);
-  const chatServiceRef = useRef<ChatService | null>(null);
+  const [contactInfo, setContactInfo] = useState<{
+    name: string;
+    avatarUrl?: string;
+  }>({
+    name: "",
+    avatarUrl: "",
+  });
+  const chatService = useChatService();
+  const chatServiceRef = useRef<ChatService | null>(chatService);
   const messageIdRef = useRef(0);
 
   useEffect(() => {
     if (!contactId) return;
-    const chatService = new ChatService(token);
-    chatServiceRef.current = chatService;
+    const found = contacts.find(
+      (c) => String(c.contactId) === String(contactId)
+    );
+    if (found) {
+      setContactInfo({
+        name: found.contactName,
+        avatarUrl: found.contactProfilePicUrl,
+      });
+    } else {
+      setContactInfo({ name: "", avatarUrl: "" });
+    }
+  }, [contactId, contacts]);
 
+  useEffect(() => {
+    chatServiceRef.current = chatService;
+    if (!contactId) return;
     chatService.onReceivePrivateMessage((text, senderName, senderId) => {
       setMessages((prev) => [
         ...prev,
@@ -43,11 +67,10 @@ const ChatPage = () => {
 
     // Optionally: connect/start the SignalR connection if needed
     chatService["connection"].start().catch(console.error);
-
     return () => {
       chatService["connection"].stop();
     };
-  }, [token, contactId]);
+  }, [token, contactId, chatService]);
 
   const handleSend = async (msg: string) => {
     if (msg.trim() && chatServiceRef.current && contactId) {
@@ -77,7 +100,10 @@ const ChatPage = () => {
         },
       }}
     >
-      <ChatHeader />
+      <ChatHeader
+        contactName={contactInfo.name}
+        avatarUrl={contactInfo.avatarUrl}
+      />
       <MainChat messages={messages} handleSend={handleSend} />
     </Box>
   );

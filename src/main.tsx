@@ -81,10 +81,7 @@ createRoot(document.getElementById("root")!).render(
         </Route>
         <Route path="/dashboard" element={<HLayout />}>
           <Route path="student-chat/:id" element={<ChatPage />} />
-          <Route
-            path="counselor-chat/:id"
-            element={<div>counselor chat</div>}
-          />
+          <Route path="counselor-chat/:id" element={<ChatPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
