@@ -201,6 +201,7 @@ const Landing: React.FC = () => {
                                         backgroundColor="primary"
                                         fontSize="1rem"
                                         width={"150px"}
+                                        onClick={() => {navigate('./services')}}
                                     />
                                 </Box>
                             </Fade>

@@ -12,7 +12,7 @@ function Footer() {
 
     const footerLinkItems = [
         {href: "./OurCounselor", text: "مشاوران ما"},
-        {href: "./", text: "خدمات"},
+        {href: "./services", text: "خدمات"},
         {href: "./recruitment", text: "استخدام"},
         {href: "./about-us", text: "درباره ما"},
     ];
