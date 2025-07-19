@@ -1,13 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import ChatHeader from "@/components/Chat/ChatHeader";
 import MainChat from "../../components/Chat/MainChat";
 import { useChatService } from "@/contexts/ChatServiceContext";
-import { ChatBubbleProps } from "@/components/Chat/ChatBubble";
-import { getToken, getUserInfo } from "@/services/auth";
+import { getToken } from "@/services/auth";
 import { useParams } from "react-router-dom";
-import type { ChatService } from "@/services/chat";
 import { useContacts } from "@/contexts/ContactsContext";
+import { getMessages } from "@/services/chat";
+
+// Define the API message type
+interface ApiMessage {
+  id: number;
+  receiverId: number;
+  senderId: number;
+  seen: boolean;
+  text: string;
+  sendDate: string;
+}
 
 const ChatPage = () => {
   const theme = useTheme();
@@ -17,7 +26,7 @@ const ChatPage = () => {
   const { contactId } = useParams<{ contactId: string }>();
 
   const { contacts } = useContacts();
-  const [messages, setMessages] = useState<ChatBubbleProps[]>([]);
+  const [messages, setMessages] = useState<ApiMessage[]>([]);
   const [contactInfo, setContactInfo] = useState<{
     name: string;
     avatarUrl?: string;
@@ -26,8 +35,7 @@ const ChatPage = () => {
     avatarUrl: "",
   });
   const chatService = useChatService();
-  const chatServiceRef = useRef<ChatService | null>(chatService);
-  const messageIdRef = useRef(0);
+  // const messageIdRef = useRef(0);
 
   useEffect(() => {
     if (!contactId) return;
@@ -45,23 +53,37 @@ const ChatPage = () => {
   }, [contactId, contacts]);
 
   useEffect(() => {
-    chatServiceRef.current = chatService;
     if (!contactId) return;
-    chatService.onReceivePrivateMessage((text, senderName, senderId) => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          // here we should handle if the message is file or text
-          id: messageIdRef.current++,
-          text,
-          isOwn: getUserInfo()?.id === senderId,
-          isStudent: getUserInfo()?.role === "Student",
-        },
-      ]);
+    // Fetch previous messages when contactId changes
+    (async () => {
+      try {
+        const response = await getMessages(token, Number(contactId));
+        if (response.isSuccess && Array.isArray(response.value)) {
+          setMessages(response.value);
+        } else {
+          setMessages([]);
+        }
+      } catch {
+        setMessages([]);
+      }
+    })();
+  }, [token, contactId]);
+
+  useEffect(() => {
+    if (!contactId) return;
+    chatService.onReceivePrivateMessage((msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
+    chatService.onSeenMessage((messageIds, isSeen) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          messageIds.includes(msg.id) ? { ...msg, seen: isSeen } : msg
+        )
+      );
     });
 
     // Optionally handle other events:
-    // chatService.onSeenMessage(...)
     // chatService.onReceiveOnlineContacts(...)
     // chatService.onReceiveUserStatusChange(...)
 
@@ -73,8 +95,8 @@ const ChatPage = () => {
   }, [token, contactId, chatService]);
 
   const handleSend = async (msg: string) => {
-    if (msg.trim() && chatServiceRef.current && contactId) {
-      await chatServiceRef.current.sendMessage(msg, contactId);
+    if (msg.trim() && contactId) {
+      await chatService.sendMessage(msg, contactId);
     }
   };
 

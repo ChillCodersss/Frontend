@@ -1,12 +1,15 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
+import DoneIcon from "@mui/icons-material/Done";
+import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 
 export interface ChatBubbleProps {
   id: number;
   text: string;
   isOwn?: boolean;
   isStudent?: boolean;
-  time?: string;
+  seen?: boolean;
+  sendDate?: string; // Only use sendDate
 }
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({
@@ -14,7 +17,8 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
   text,
   isOwn = false,
   isStudent = false,
-  time,
+  seen,
+  sendDate,
 }) => {
   return (
     <Box
@@ -41,6 +45,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
           marginLeft: !isOwn ? "8px" : "0",
           marginRight: !isOwn ? "0" : "8px",
           wordBreak: "break-word",
+          position: "relative",
         }}
       >
         <Typography
@@ -49,8 +54,34 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
         >
           {text}
         </Typography>
+        {/* Seen/Delivered Icon */}
+        {isOwn && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              position: "absolute",
+              bottom: 4,
+              left: 8,
+            }}
+          >
+            {seen ? (
+              <DoneIcon
+                fontSize="small"
+                sx={{ color: "green" }}
+                titleAccess="Seen"
+              />
+            ) : (
+              <DoneOutlineIcon
+                fontSize="small"
+                sx={{ color: "green" }}
+                titleAccess="Delivered"
+              />
+            )}
+          </Box>
+        )}
       </Box>
-      {time && (
+      {sendDate && (
         <Typography
           variant="caption"
           sx={{
@@ -62,7 +93,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
             paddingLeft: isOwn ? "0" : "4px",
           }}
         >
-          {time}
+          {sendDate}
         </Typography>
       )}
     </Box>

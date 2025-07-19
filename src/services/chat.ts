@@ -47,11 +47,14 @@ export class ChatService {
   private jwtToken: string;
 
   // Handlers for events
-  private onReceivePrivateMessageHandler?: (
-    text: string,
-    senderName: string,
-    senderId: number
-  ) => void;
+  private onReceivePrivateMessageHandler?: (message: {
+    id: number;
+    receiverId: number;
+    senderId: number;
+    seen: boolean;
+    text: string;
+    sendDate: string;
+  }) => void;
   private onSeenMessageHandler?: (
     messageIds: number[],
     isSeen: boolean
@@ -65,15 +68,22 @@ export class ChatService {
   public constructor(token: string) {
     this.jwtToken = token;
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(`http://${baseURL}/chat/access_token=${token}`, {})
+      .withUrl(`http://${baseURL}/chat?access_token=${token}`, {})
       .configureLogging(signalR.LogLevel.Information) // for debugging
       .build();
 
     this.connection.on(
       "ReceivePrivateMessage",
-      (text, senderName, senderId) => {
+      (text, senderName, senderId, messageId, receiverId, seen, sendDate) => {
         if (this.onReceivePrivateMessageHandler) {
-          this.onReceivePrivateMessageHandler(text, senderName, senderId);
+          this.onReceivePrivateMessageHandler({
+            id: messageId ?? 0,
+            receiverId: receiverId ?? 0,
+            senderId: senderId ?? 0,
+            seen: seen ?? false,
+            text: text ?? "",
+            sendDate: sendDate ?? new Date().toISOString(),
+          });
         }
       }
     );
@@ -102,7 +112,14 @@ export class ChatService {
   }
 
   public onReceivePrivateMessage(
-    handler: (text: string, senderName: string, senderId: number) => void
+    handler: (message: {
+      id: number;
+      receiverId: number;
+      senderId: number;
+      seen: boolean;
+      text: string;
+      sendDate: string;
+    }) => void
   ) {
     this.onReceivePrivateMessageHandler = handler;
   }

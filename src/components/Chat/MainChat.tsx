@@ -2,65 +2,86 @@ import { Box } from "@mui/material";
 import chatBackGround from "@/assets/chatBackGround.png";
 import ChatBubble, { ChatBubbleProps } from "./ChatBubble";
 import ChatInput from "./ChatInput";
+import { getUserInfo } from "@/services/auth";
+
+interface ApiMessage {
+  id: number;
+  receiverId: number;
+  senderId: number;
+  seen: boolean;
+  text: string;
+  sendDate: string;
+}
 
 interface MainChatProps {
-  messages: ChatBubbleProps[];
+  messages: ApiMessage[];
   handleSend: (message: string) => void;
 }
 
-const MainChat = ({ messages, handleSend }: MainChatProps) => (
-  <Box
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      height: "100vh",
-      width: "100%",
-      position: "relative",
-      backgroundImage: `url(${chatBackGround})`,
-      backgroundSize: "200px",
-      backgroundRepeat: "repeat",
-      backgroundPosition: "center",
-    }}
-  >
-    {/* overlay */}
-    <Box
-      sx={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(255,255,255,0.8)",
-        zIndex: 1,
-        pointerEvents: "none",
-      }}
-    />
+const MainChat = ({ messages, handleSend }: MainChatProps) => {
+  const currentUserId = getUserInfo()?.id;
+  const mappedMessages: ChatBubbleProps[] = messages.map((msg) => ({
+    id: msg.id,
+    text: msg.text,
+    isOwn: msg.senderId === currentUserId,
+    seen: msg.seen,
+    sendDate: msg.sendDate,
+  }));
 
-    {/* chat bubbles */}
+  return (
     <Box
       sx={{
-        flex: 1,
-        overflowY: "auto",
-        zIndex: 2,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "flex-end",
+        height: "100vh",
+        width: "100%",
+        position: "relative",
+        backgroundImage: `url(${chatBackGround})`,
+        backgroundSize: "200px",
+        backgroundRepeat: "repeat",
+        backgroundPosition: "center",
       }}
     >
-      {messages.map((msg, idx) => (
-        <ChatBubble key={idx} {...msg} />
-      ))}
+      {/* overlay */}
+      <Box
+        sx={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(255,255,255,0.8)",
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
+      />
+
+      {/* chat bubbles */}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+        }}
+      >
+        {mappedMessages.map((msg) => (
+          <ChatBubble key={msg.id} {...msg} />
+        ))}
+      </Box>
+      <Box
+        sx={{
+          position: "sticky",
+          bottom: 0,
+          zIndex: 5,
+          backgroundColor: "#fff",
+        }}
+      >
+        <ChatInput onSend={handleSend} />
+      </Box>
     </Box>
-    <Box
-      sx={{
-        position: "sticky",
-        bottom: 0,
-        zIndex: 5,
-        backgroundColor: "#fff",
-      }}
-    >
-      <ChatInput onSend={handleSend} />
-    </Box>
-  </Box>
-);
+  );
+};
 
 export default MainChat;
