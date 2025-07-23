@@ -111,8 +111,8 @@ const CounselorPayments = () => {
           variant="h5"
           sx={{
             fontWeight: "bold",
-            textAlign: "right",
-            margin: "16px 16px 24px 16px",
+            textAlign: "center",
+            margin: "16px 16px 0px 16px",
             color: "#333",
           }}
         >
