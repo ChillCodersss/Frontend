@@ -63,12 +63,27 @@ const MainChat = ({ messages, handleSend }: MainChatProps) => {
           zIndex: 2,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "flex-end",
+          justifyContent: mappedMessages.length === 0 ? "center" : "flex-end",
+          alignItems: mappedMessages.length === 0 ? "center" : "stretch",
         }}
       >
-        {mappedMessages.map((msg) => (
-          <ChatBubble key={msg.id} {...msg} />
-        ))}
+        {mappedMessages.length === 0 ? (
+          <Box
+            sx={{
+              zIndex: 3,
+              color: "#888",
+              fontSize: "1.2rem",
+              background: "rgba(255,255,255,0.9)",
+              borderRadius: 2,
+              padding: "16px 32px",
+              boxShadow: 1,
+            }}
+          >
+            شما پیامی ندارید
+          </Box>
+        ) : (
+          mappedMessages.map((msg) => <ChatBubble key={msg.id} {...msg} />)
+        )}
       </Box>
       <Box
         sx={{

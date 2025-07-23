@@ -3,9 +3,9 @@ import { Box, useMediaQuery, useTheme } from "@mui/material";
 import ChatHeader from "@/components/Chat/ChatHeader";
 import MainChat from "../../components/Chat/MainChat";
 import { useChatService } from "@/contexts/ChatServiceContext";
+import { useContacts } from "@/contexts/ContactsContext";
 import { getToken } from "@/services/auth";
 import { useParams } from "react-router-dom";
-import { useContacts } from "@/contexts/ContactsContext";
 import { getMessages } from "@/services/chat";
 
 // Define the API message type
@@ -82,16 +82,6 @@ const ChatPage = () => {
         )
       );
     });
-
-    // Optionally handle other events:
-    // chatService.onReceiveOnlineContacts(...)
-    // chatService.onReceiveUserStatusChange(...)
-
-    // Optionally: connect/start the SignalR connection if needed
-    chatService["connection"].start().catch(console.error);
-    return () => {
-      chatService["connection"].stop();
-    };
   }, [token, contactId, chatService]);
 
   const handleSend = async (msg: string) => {

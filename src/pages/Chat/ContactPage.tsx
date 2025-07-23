@@ -61,14 +61,6 @@ const ContactPage: React.FC = () => {
         }
       });
     });
-
-    chatService["connection"].start().catch(console.error);
-    // Request the current online contacts
-    chatService["connection"].invoke("RequestOnlineContacts").catch(() => {});
-
-    return () => {
-      chatService["connection"].stop();
-    };
   }, [chatService]);
 
   function toPersianNumber(num: number | string) {

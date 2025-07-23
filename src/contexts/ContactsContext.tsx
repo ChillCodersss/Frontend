@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { getContacts } from "@/services/chat";
 import { getToken } from "@/services/auth";
 import type { ContactsItemProps } from "@/components/Chat/ContactsItem";
@@ -36,35 +42,38 @@ export const ContactsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
 
-  const fetchContacts = async (page = pageIndex, searchValue = search) => {
-    setLoading(true);
-    try {
-      const token = String(getToken());
-      const response = await getContacts(token, PAGE_SIZE, page);
-      if (response.isSuccess && response.value) {
-        let items = response.value.items || [];
-        if (searchValue) {
-          items = items.filter((c: ContactsItemProps) =>
-            c.contactName.includes(searchValue)
-          );
+  const fetchContacts = useCallback(
+    async (page = pageIndex, searchValue = search) => {
+      setLoading(true);
+      try {
+        const token = String(getToken());
+        const response = await getContacts(token, PAGE_SIZE, page);
+        if (response.isSuccess && response.value) {
+          let items = response.value.items || [];
+          if (searchValue) {
+            items = items.filter((c: ContactsItemProps) =>
+              c.contactName.includes(searchValue)
+            );
+          }
+          setContacts(items);
+          setTotalPages(response.value.totalPages || 1);
+        } else {
+          setContacts([]);
+          setTotalPages(1);
         }
-        setContacts(items);
-        setTotalPages(response.value.totalPages || 1);
-      } else {
+      } catch {
         setContacts([]);
         setTotalPages(1);
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      setContacts([]);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [pageIndex, search]
+  );
 
   useEffect(() => {
     fetchContacts(pageIndex, search);
-  }, [pageIndex, search]);
+  }, [pageIndex, search, fetchContacts]);
 
   return (
     <ContactsContext.Provider

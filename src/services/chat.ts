@@ -1,6 +1,6 @@
 import * as signalR from "@microsoft/signalr";
 
-const baseURL = "62.60.213.13";
+const baseURL = "62.60.213.13:8080";
 
 export const getContacts = async (
   token: string,
@@ -74,7 +74,7 @@ export class ChatService {
 
     this.connection.on(
       "ReceivePrivateMessage",
-      (text, senderName, senderId, messageId, receiverId, seen, sendDate) => {
+      (text, senderId, messageId, receiverId, seen, sendDate) => {
         if (this.onReceivePrivateMessageHandler) {
           this.onReceivePrivateMessageHandler({
             id: messageId ?? 0,
