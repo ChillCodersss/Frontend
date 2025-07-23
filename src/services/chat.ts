@@ -167,7 +167,7 @@ export class ChatService {
       await this.connection.invoke(
         "SendPrivateMessage",
         message,
-        receiverId,
+        Number(receiverId),
         false,
         ""
       );
@@ -182,7 +182,7 @@ export class ChatService {
       await this.connection.invoke(
         "SendPrivateMessage",
         `${file.name}`,
-        receiverId,
+        Number(receiverId),
         true,
         `${filePath}`
       );
