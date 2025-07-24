@@ -67,16 +67,6 @@ createRoot(document.getElementById("root")!).render(
           <Route path="counselorrequests" element={<CounselorRequests />} />
           <Route path="students" element={<Students />} />
           <Route
-            path="contacts"
-            element={
-              <ChatServiceProvider>
-                <ContactsProvider>
-                  <ContactPage />
-                </ContactsProvider>
-              </ChatServiceProvider>
-            }
-          />
-          <Route
             path="counseling-files"
             element={<div>Counseling Stats</div>}
           />
@@ -84,40 +74,33 @@ createRoot(document.getElementById("root")!).render(
 
           {/* Student-specific routes */}
           <Route path="studentscounselors" element={<StudentsCounselors />} />
-          <Route
-            path="contacts"
-            element={
-              <ChatServiceProvider>
-                <ContactsProvider>
-                  <ContactPage />
-                </ContactsProvider>
-              </ChatServiceProvider>
-            }
-          />
           <Route path="payments" element={<Payments />} />
         </Route>
-        {/* Chat page routes */}
-        <Route path="/dashboard" element={<HLayout />}>
-          <Route
-            path="counselor-chat/:contactId"
-            element={
-              <ChatServiceProvider>
-                <ContactsProvider>
-                  <ChatPage />
-                </ContactsProvider>
-              </ChatServiceProvider>
-            }
-          />
-          <Route
-            path="student-chat/:contactId"
-            element={
-              <ChatServiceProvider>
-                <ContactsProvider>
-                  <ChatPage />
-                </ContactsProvider>
-              </ChatServiceProvider>
-            }
-          />
+        {/* Provider-wrapped dashboard routes for contacts and chat */}
+        <Route
+          path="/dashboard"
+          element={
+            <ChatServiceProvider>
+              <ContactsProvider>
+                <HSLayout />
+              </ContactsProvider>
+            </ChatServiceProvider>
+          }
+        >
+          <Route path="contacts" element={<ContactPage />} />
+        </Route>
+        <Route
+          path="/dashboard"
+          element={
+            <ChatServiceProvider>
+              <ContactsProvider>
+                <HLayout />
+              </ContactsProvider>
+            </ChatServiceProvider>
+          }
+        >
+          <Route path="counselor-chat/:contactId" element={<ChatPage />} />
+          <Route path="student-chat/:contactId" element={<ChatPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
