@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
-import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 
 export interface ChatBubbleProps {
   id: number;
@@ -10,6 +10,11 @@ export interface ChatBubbleProps {
   isStudent?: boolean;
   seen?: boolean;
   sendDate?: string; // Only use sendDate
+}
+
+// Utility to convert Western digits to Persian digits
+function toPersianDigits(str: string) {
+  return str.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d)]);
 }
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({
@@ -54,48 +59,56 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
         >
           {text}
         </Typography>
-        {/* Seen/Delivered Icon */}
-        {isOwn && (
+
+        {(sendDate || isOwn) && (
           <Box
             sx={{
               display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
               alignItems: "center",
-              position: "absolute",
-              bottom: 4,
-              left: 8,
+              width: "100%",
+              marginTop: "4px",
+              gap: "12px",
             }}
           >
-            {seen ? (
-              <DoneIcon
-                fontSize="small"
-                sx={{ color: "green" }}
-                titleAccess="Seen"
-              />
+            {sendDate ? (
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "rgb(64, 64, 64)",
+                  fontSize: "0.75rem",
+                  textAlign: "left",
+                  paddingLeft: 0,
+                  paddingRight: 0,
+                }}
+              >
+                {toPersianDigits(sendDate)}
+              </Typography>
             ) : (
-              <DoneOutlineIcon
-                fontSize="small"
-                sx={{ color: "green" }}
-                titleAccess="Delivered"
-              />
+              <span />
+            )}
+
+            {isOwn ? (
+              seen ? (
+                <DoneAllIcon
+                  fontSize="small"
+                  sx={{ color: "green" }}
+                  titleAccess="Seen"
+                />
+              ) : (
+                <DoneIcon
+                  fontSize="small"
+                  sx={{ color: "green" }}
+                  titleAccess="Delivered"
+                />
+              )
+            ) : (
+              <span />
             )}
           </Box>
         )}
       </Box>
-      {sendDate && (
-        <Typography
-          variant="caption"
-          sx={{
-            color: "rgb(64, 64, 64)",
-            marginTop: "4px",
-            fontSize: "0.75rem",
-            textAlign: isOwn ? "right" : "left",
-            paddingRight: isOwn ? "4px" : "0",
-            paddingLeft: isOwn ? "0" : "4px",
-          }}
-        >
-          {sendDate}
-        </Typography>
-      )}
     </Box>
   );
 };
