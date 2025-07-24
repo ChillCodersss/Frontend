@@ -7,6 +7,7 @@ import { useContacts } from "@/contexts/ContactsContext";
 import { getToken } from "@/services/auth";
 import { useParams } from "react-router-dom";
 import { getMessages } from "@/services/chat";
+import { getUserInfo } from "@/services/auth";
 
 // Define the API message type
 interface ApiMessage {
@@ -16,6 +17,21 @@ interface ApiMessage {
   seen: boolean;
   text: string;
   sendDate: string;
+}
+
+// Helper to format date as Jalali (Persian) date string
+function formatJalaliDate(date: Date): string {
+  return new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  })
+    .format(date)
+    .replace(/\u200e/g, "")
+    .replace(/,/g, " ");
 }
 
 const ChatPage = () => {
@@ -86,6 +102,19 @@ const ChatPage = () => {
 
   const handleSend = async (msg: string) => {
     if (msg.trim() && contactId) {
+      const tempId = -Date.now();
+      const currentUserId = getToken() ? getUserInfo()?.id ?? 0 : 0;
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: tempId,
+          receiverId: Number(contactId),
+          senderId: Number(currentUserId),
+          seen: false,
+          text: msg,
+          sendDate: formatJalaliDate(new Date()),
+        },
+      ]);
       await chatService.sendMessage(msg, contactId);
     }
   };
