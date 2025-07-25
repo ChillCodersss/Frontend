@@ -74,7 +74,7 @@ export class ChatService {
 
     this.connection.on(
       "ReceivePrivateMessage",
-      (text, senderId, messageId, receiverId, seen, sendDate) => {
+      (text, senderId, messageId, sendDate, receiverId, seen) => {
         if (this.onReceivePrivateMessageHandler) {
           this.onReceivePrivateMessageHandler({
             id: messageId ?? 0,
@@ -82,7 +82,7 @@ export class ChatService {
             senderId: senderId ?? 0,
             seen: seen ?? false,
             text: text ?? "",
-            sendDate: sendDate ?? new Date().toISOString(),
+            sendDate: sendDate,
           });
         }
       }
