@@ -103,6 +103,14 @@ const ChatPage = () => {
     });
   }, [token, contactId, chatService]);
 
+  useEffect(() => {
+    if (!contactId) return;
+    chatService.openPrivateChat(Number(contactId));
+    return () => {
+      chatService.closePrivateChat(Number(contactId));
+    };
+  }, [contactId, chatService]);
+
   const handleSend = async (msg: string) => {
     if (msg.trim() && contactId) {
       const tempId = -Date.now();
