@@ -1,8 +1,8 @@
 import { Box } from "@mui/material";
 import chatBackGround from "@/assets/chatBackGround.png";
 import ChatBubble, { ChatBubbleProps } from "./ChatBubble";
-import ChatInput from "./ChatInput";
 import { getUserInfo } from "@/services/auth";
+import { useEffect, useRef } from "react";
 
 interface ApiMessage {
   id: number;
@@ -15,14 +15,35 @@ interface ApiMessage {
 
 interface MainChatProps {
   messages: ApiMessage[];
-  handleSend: (message: string) => void;
   loading?: boolean;
 }
 
-const MainChat = ({ messages, handleSend, loading }: MainChatProps) => {
+const MainChat = ({ messages, loading }: MainChatProps) => {
   const currentUser = getUserInfo();
   const currentUserId = currentUser?.id;
   const isStudent = currentUser?.role === "Student";
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = (smooth = false) => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({
+        behavior: smooth ? "smooth" : "auto",
+      });
+    }
+  };
+
+  // Scroll to bottom on initial load (without animation)
+  useEffect(() => {
+    scrollToBottom(false);
+  }, []); // Only run once on mount
+
+  // Scroll to bottom when new messages arrive (with smooth animation)
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom(true);
+    }
+  }, [messages.length]); // Only when message count changes
+
   const mappedMessages: ChatBubbleProps[] = messages.map((msg) => ({
     id: msg.id,
     text: msg.text,
@@ -37,13 +58,14 @@ const MainChat = ({ messages, handleSend, loading }: MainChatProps) => {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
         width: "100%",
         position: "relative",
         backgroundImage: `url(${chatBackGround})`,
         backgroundSize: "200px",
         backgroundRepeat: "repeat",
         backgroundPosition: "center",
+        flex: 1,
+        minHeight: 0,
       }}
     >
       {/* overlay */}
@@ -67,8 +89,10 @@ const MainChat = ({ messages, handleSend, loading }: MainChatProps) => {
           zIndex: 2,
           display: "flex",
           flexDirection: "column",
-          justifyContent: mappedMessages.length === 0 ? "center" : "flex-end",
+          justifyContent: mappedMessages.length === 0 ? "center" : "flex-start",
           alignItems: mappedMessages.length === 0 ? "center" : "stretch",
+          paddingBottom: "16px",
+          scrollBehavior: "smooth",
         }}
       >
         {loading ? (
@@ -117,16 +141,7 @@ const MainChat = ({ messages, handleSend, loading }: MainChatProps) => {
             </Box>
           ))
         )}
-      </Box>
-      <Box
-        sx={{
-          position: "sticky",
-          bottom: 0,
-          zIndex: 5,
-          backgroundColor: "#fff",
-        }}
-      >
-        <ChatInput onSend={handleSend} />
+        <div ref={messagesEndRef} />
       </Box>
     </Box>
   );

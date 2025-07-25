@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { Box } from "@mui/material";
 import ChatHeader from "@/components/Chat/ChatHeader";
 import MainChat from "../../components/Chat/MainChat";
 import { useChatService } from "@/contexts/ChatServiceContext";
@@ -8,6 +8,7 @@ import { getToken } from "@/services/auth";
 import { useParams } from "react-router-dom";
 import { getMessages } from "@/services/chat";
 import { getUserInfo } from "@/services/auth";
+import ChatInput from "@/components/Chat/ChatInput";
 
 // Define the API message type
 interface ApiMessage {
@@ -35,9 +36,6 @@ function formatJalaliDate(date: Date): string {
 }
 
 const ChatPage = () => {
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
   const token = String(getToken());
   const { contactId } = useParams<{ contactId: string }>();
 
@@ -134,7 +132,7 @@ const ChatPage = () => {
     <Box
       sx={{
         width: "100%",
-        height: isSmallScreen ? "calc(100vh - 58px)" : "calc(100vh - 64px)",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         boxSizing: "border-box",
@@ -156,7 +154,10 @@ const ChatPage = () => {
         contactName={contactInfo.name}
         avatarUrl={contactInfo.avatarUrl}
       />
-      <MainChat messages={messages} handleSend={handleSend} loading={loading} />
+      <MainChat messages={messages} loading={loading} />
+      <Box sx={{ position: "relative", zIndex: 5, backgroundColor: "#fff" }}>
+        <ChatInput onSend={handleSend} />
+      </Box>
     </Box>
   );
 };
