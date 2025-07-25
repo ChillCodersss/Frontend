@@ -51,7 +51,7 @@ const ChatPage = () => {
     avatarUrl: "",
   });
   const chatService = useChatService();
-  // const messageIdRef = useRef(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!contactId) return;
@@ -70,6 +70,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (!contactId) return;
+    setLoading(true);
     // Fetch previous messages when contactId changes
     (async () => {
       try {
@@ -81,6 +82,8 @@ const ChatPage = () => {
         }
       } catch {
         setMessages([]);
+      } finally {
+        setLoading(false);
       }
     })();
   }, [token, contactId]);
@@ -145,7 +148,7 @@ const ChatPage = () => {
         contactName={contactInfo.name}
         avatarUrl={contactInfo.avatarUrl}
       />
-      <MainChat messages={messages} handleSend={handleSend} />
+      <MainChat messages={messages} handleSend={handleSend} loading={loading} />
     </Box>
   );
 };

@@ -16,16 +16,20 @@ interface ApiMessage {
 interface MainChatProps {
   messages: ApiMessage[];
   handleSend: (message: string) => void;
+  loading?: boolean;
 }
 
-const MainChat = ({ messages, handleSend }: MainChatProps) => {
-  const currentUserId = getUserInfo()?.id;
+const MainChat = ({ messages, handleSend, loading }: MainChatProps) => {
+  const currentUser = getUserInfo();
+  const currentUserId = currentUser?.id;
+  const isStudent = currentUser?.role === "Student";
   const mappedMessages: ChatBubbleProps[] = messages.map((msg) => ({
     id: msg.id,
     text: msg.text,
-    isOwn: msg.senderId === currentUserId,
+    isOwn: Number(msg.senderId) === Number(currentUserId),
     seen: msg.seen,
     sendDate: msg.sendDate,
+    isStudent,
   }));
 
   return (
@@ -67,7 +71,21 @@ const MainChat = ({ messages, handleSend }: MainChatProps) => {
           alignItems: mappedMessages.length === 0 ? "center" : "stretch",
         }}
       >
-        {mappedMessages.length === 0 ? (
+        {loading ? (
+          <Box
+            sx={{
+              zIndex: 3,
+              color: "#888",
+              fontSize: "1.2rem",
+              background: "rgba(255,255,255,0.9)",
+              borderRadius: 2,
+              padding: "16px 32px",
+              boxShadow: 1,
+            }}
+          >
+            در حال بارگذاری
+          </Box>
+        ) : mappedMessages.length === 0 ? (
           <Box
             sx={{
               zIndex: 3,
@@ -82,7 +100,22 @@ const MainChat = ({ messages, handleSend }: MainChatProps) => {
             شما پیامی ندارید
           </Box>
         ) : (
-          mappedMessages.map((msg) => <ChatBubble key={msg.id} {...msg} />)
+          mappedMessages.map((msg, idx) => (
+            <Box
+              key={msg.id}
+              sx={{
+                "@keyframes fadeIn": {
+                  from: { opacity: 0, transform: "translateY(20px)" },
+                  to: { opacity: 1, transform: "translateY(0)" },
+                },
+                animation: "fadeIn 0.5s cubic-bezier(0.4,0,0.2,1)",
+                animationDelay: `${idx * 40}ms`,
+                animationFillMode: "both",
+              }}
+            >
+              <ChatBubble {...msg} />
+            </Box>
+          ))
         )}
       </Box>
       <Box

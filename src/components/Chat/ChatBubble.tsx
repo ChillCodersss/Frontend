@@ -38,13 +38,17 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
       <Box
         sx={{
           maxWidth: "70%",
-          bgcolor: isStudent ? " #DAEFFE" : " #F6E08F",
+          bgcolor:
+            (isStudent && isOwn) || (!isStudent && !isOwn)
+              ? "#DAEFFE"
+              : "#F6E08F",
           color: "rgb(34, 34, 34)",
           padding: "12px 8px",
           borderRadius: "16px",
-          border: isStudent
-            ? "1px solid rgb(121, 199, 255)"
-            : "1px solid rgb(243, 210, 92)",
+          border:
+            (isStudent && isOwn) || (!isStudent && !isOwn)
+              ? "1px solid rgb(121, 199, 255)"
+              : "1px solid rgb(243, 210, 92)",
           borderTopLeftRadius: isOwn ? "16px" : "0",
           borderTopRightRadius: isOwn ? "0" : "16px",
           marginLeft: !isOwn ? "8px" : "0",
