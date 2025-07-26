@@ -20,6 +20,9 @@ interface ContactsContextType {
   search: string;
   setSearch: (s: string) => void;
   refreshContacts: () => void;
+  onlineContactIds: number[];
+  setOnlineContactIds: (ids: number[]) => void;
+  updateOnlineStatus: (userId: number, isOnline: boolean) => void;
 }
 
 const ContactsContext = createContext<ContactsContextType | undefined>(
@@ -41,6 +44,20 @@ export const ContactsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [pageIndex, setPageIndex] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState("");
+  const [onlineContactIds, setOnlineContactIds] = useState<number[]>([]);
+
+  const updateOnlineStatus = useCallback(
+    (userId: number, isOnline: boolean) => {
+      setOnlineContactIds((prev) => {
+        if (isOnline) {
+          return prev.includes(userId) ? prev : [...prev, userId];
+        } else {
+          return prev.filter((id) => id !== userId);
+        }
+      });
+    },
+    []
+  );
 
   const fetchContacts = useCallback(
     async (page = pageIndex, searchValue = search) => {
@@ -86,6 +103,9 @@ export const ContactsProvider: React.FC<{ children: React.ReactNode }> = ({
         search,
         setSearch,
         refreshContacts: fetchContacts,
+        onlineContactIds,
+        setOnlineContactIds,
+        updateOnlineStatus,
       }}
     >
       {children}

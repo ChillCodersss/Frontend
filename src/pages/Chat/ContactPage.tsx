@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -31,7 +31,6 @@ import { useContacts } from "@/contexts/ContactsContext";
 
 const ContactPage: React.FC = () => {
   const navigate = useNavigate();
-  const [onlineContactIds, setOnlineContactIds] = useState<number[]>([]);
   const chatService = useChatService();
   const chatServiceRef = useRef(chatService);
   const {
@@ -42,6 +41,9 @@ const ContactPage: React.FC = () => {
     totalPages,
     search,
     setSearch,
+    onlineContactIds,
+    setOnlineContactIds,
+    updateOnlineStatus,
   } = useContacts();
 
   // Setup ChatService and handlers for online contacts and status changes
@@ -53,15 +55,9 @@ const ContactPage: React.FC = () => {
     });
 
     chatService.onReceiveUserStatusChange((userId, isOnline) => {
-      setOnlineContactIds((prev) => {
-        if (isOnline) {
-          return prev.includes(userId) ? prev : [...prev, userId];
-        } else {
-          return prev.filter((id) => id !== userId);
-        }
-      });
+      updateOnlineStatus(userId, isOnline);
     });
-  }, [chatService]);
+  }, [chatService, setOnlineContactIds, updateOnlineStatus]);
 
   function toPersianNumber(num: number | string) {
     return String(num).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d, 10)]);
