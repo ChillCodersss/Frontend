@@ -22,6 +22,7 @@ export interface ContactsItemProps {
   online?: boolean;
   active?: boolean;
   onClick?: () => void;
+  requestStatus?: number;
 }
 
 const fetchImage = async (picUrl: string) => {

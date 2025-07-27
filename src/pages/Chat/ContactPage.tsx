@@ -111,6 +111,7 @@ const ContactPage: React.FC = () => {
                 picName={contact.picName}
                 contactProfilePicUrl={contact.contactProfilePicUrl}
                 online={onlineContactIds.includes(contact.contactId)}
+                active={contact.requestStatus === 4}
                 onClick={() => {
                   if (getUserInfo()?.role === "Counselor") {
                     navigate(`/dashboard/counselor-chat/${contact.contactId}`);
