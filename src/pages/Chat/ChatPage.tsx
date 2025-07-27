@@ -189,6 +189,7 @@ const ChatPage = () => {
       <ChatHeader
         contactName={contactInfo.name}
         avatarUrl={contactInfo.avatarUrl}
+        contactId={contactId ? Number(contactId) : undefined}
       />
       <MainChat messages={messages} loading={loading} />
       <Box sx={{ position: "relative", zIndex: 5, backgroundColor: "#fff" }}>
