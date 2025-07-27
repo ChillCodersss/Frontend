@@ -88,8 +88,41 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (!contactId) return;
+
     chatService.onReceivePrivateMessage((msg) => {
-      setMessages((prev) => [...prev, msg]);
+      setMessages((prev) => {
+        // Check if this message matches any pending message by text and sender
+        const currentUserId = getToken() ? getUserInfo()?.id ?? 0 : 0;
+        const isOwnMessage = msg.senderId === currentUserId;
+
+        if (isOwnMessage) {
+          // This is likely a response to our sent message
+          // Find and replace the temporary message with the real one
+          // Look for the most recent temporary message with matching text
+          let tempMessageIndex = -1;
+          for (let i = prev.length - 1; i >= 0; i--) {
+            const existingMsg = prev[i];
+            if (
+              existingMsg.id < 0 &&
+              existingMsg.text === msg.text &&
+              existingMsg.senderId === msg.senderId
+            ) {
+              tempMessageIndex = i;
+              break;
+            }
+          }
+
+          if (tempMessageIndex !== -1) {
+            // Replace the temporary message with the real one
+            const newMessages = [...prev];
+            newMessages[tempMessageIndex] = msg;
+            return newMessages;
+          }
+        }
+
+        // If it's not a replacement, add as new message
+        return [...prev, msg];
+      });
     });
 
     chatService.onSeenMessage((messageIds, isSeen) => {
@@ -113,6 +146,8 @@ const ChatPage = () => {
     if (msg.trim() && contactId) {
       const tempId = -Date.now();
       const currentUserId = getToken() ? getUserInfo()?.id ?? 0 : 0;
+
+      // Add temporary message
       setMessages((prev) => [
         ...prev,
         {
@@ -124,6 +159,7 @@ const ChatPage = () => {
           sendDate: formatJalaliDate(new Date()),
         },
       ]);
+
       await chatService.sendMessage(msg, contactId);
     }
   };
