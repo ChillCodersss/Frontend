@@ -132,8 +132,8 @@ const MainChat = ({ messages, loading }: MainChatProps) => {
                   from: { opacity: 0, transform: "translateY(20px)" },
                   to: { opacity: 1, transform: "translateY(0)" },
                 },
-                animation: "fadeIn 0.5s cubic-bezier(0.4,0,0.2,1)",
-                animationDelay: `${idx * 40}ms`,
+                animation: "fadeIn 0.3s cubic-bezier(0.4,0,0.2,1)",
+                animationDelay: `${idx * 5}ms`,
                 animationFillMode: "both",
               }}
             >
