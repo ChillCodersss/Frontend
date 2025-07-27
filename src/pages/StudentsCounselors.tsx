@@ -39,7 +39,7 @@ interface Counselor {
   requestStatus: number;
   requestStatusTitle: string;
   startDate: string | null;
-  endDate: string | null;
+  persianEndDate: string | null;
   remainingDays: number | null;
   rate: number;
   picName: string;
@@ -503,7 +503,7 @@ const StudentsCounselors: React.FC = () => {
                         تاریخ شروع
                       </TableCell>
                       <TableCell
-                        key="endDate"
+                        key="persianEndDate"
                         sx={{
                           fontWeight: "bold",
                           textAlign: "center",
@@ -681,7 +681,7 @@ const StudentsCounselors: React.FC = () => {
                             : "-"}
                         </TableCell>
                         <TableCell
-                          key={`endDate-${counselor.id}`}
+                          key={`persianEndDate-${counselor.id}`}
                           sx={{
                             textAlign: "center",
                             padding: "8px 16px",
@@ -689,8 +689,8 @@ const StudentsCounselors: React.FC = () => {
                             width: "15%",
                           }}
                         >
-                          {counselor.endDate
-                            ? toPersianDate(counselor.endDate)
+                          {counselor.persianEndDate
+                            ? toPersianDate(counselor.persianEndDate)
                             : "-"}
                         </TableCell>
                         <TableCell
@@ -895,6 +895,16 @@ const StudentsCounselors: React.FC = () => {
                                 borderRadius="8px"
                               />
                             )}
+                            {counselor.requestStatus === 7 && (
+                              <Typography
+                                sx={{
+                                  fontSize: isSmallScreen ? "11px" : "14px",
+                                  color: "#666",
+                                }}
+                              >
+                                -
+                              </Typography>
+                            )}
                           </Box>
                         </TableCell>
                       </>
@@ -1024,6 +1034,16 @@ const StudentsCounselors: React.FC = () => {
                                 onClick={() => navigate("/dashboard/payments")}
                                 borderRadius="4px"
                               />
+                            )}
+                            {counselor.requestStatus === 7 && (
+                              <Typography
+                                sx={{
+                                  fontSize: isSmallScreen ? "11px" : "14px",
+                                  color: "#666",
+                                }}
+                              >
+                                -
+                              </Typography>
                             )}
                           </Box>
                         </TableCell>
@@ -1418,8 +1438,8 @@ const StudentsCounselors: React.FC = () => {
                   تاریخ پایان:
                 </Typography>
                 <Typography>
-                  {selectedCounselorDetails.endDate
-                    ? toPersianDate(selectedCounselorDetails.endDate)
+                  {selectedCounselorDetails.persianEndDate
+                    ? toPersianDate(selectedCounselorDetails.persianEndDate)
                     : "-"}
                 </Typography>
               </Box>
