@@ -11,6 +11,10 @@ interface ApiMessage {
   seen: boolean;
   text: string;
   sendDate: string;
+  isFile?: boolean;
+  filePath?: string;
+  isUploading?: boolean;
+  tempKey?: string;
 }
 
 interface MainChatProps {
@@ -32,17 +36,15 @@ const MainChat = ({ messages, loading }: MainChatProps) => {
     }
   };
 
-  // Scroll to bottom on initial load (without animation)
   useEffect(() => {
     scrollToBottom(false);
-  }, []); // Only run once on mount
+  }, []);
 
-  // Scroll to bottom when new messages arrive (with smooth animation)
   useEffect(() => {
     if (messages.length > 0) {
       scrollToBottom(true);
     }
-  }, [messages.length]); // Only when message count changes
+  }, [messages.length]);
 
   const mappedMessages: ChatBubbleProps[] = messages.map((msg) => ({
     id: msg.id,
@@ -51,7 +53,13 @@ const MainChat = ({ messages, loading }: MainChatProps) => {
     seen: msg.seen,
     sendDate: msg.sendDate,
     isStudent,
+    isFile: msg.isFile,
+    filePath: msg.filePath,
+    isUploading: msg.isUploading,
+    tempKey: msg.tempKey,
   }));
+
+  console.log("MainChat rendering messages:", mappedMessages);
 
   return (
     <Box
@@ -68,7 +76,6 @@ const MainChat = ({ messages, loading }: MainChatProps) => {
         minHeight: 0,
       }}
     >
-      {/* overlay */}
       <Box
         sx={{
           position: "absolute",
@@ -80,8 +87,6 @@ const MainChat = ({ messages, loading }: MainChatProps) => {
           pointerEvents: "none",
         }}
       />
-
-      {/* chat bubbles */}
       <Box
         sx={{
           flex: 1,
@@ -126,7 +131,7 @@ const MainChat = ({ messages, loading }: MainChatProps) => {
         ) : (
           mappedMessages.map((msg, idx) => (
             <Box
-              key={msg.id}
+              key={msg.tempKey || msg.id}
               sx={{
                 "@keyframes fadeIn": {
                   from: { opacity: 0, transform: "translateY(20px)" },

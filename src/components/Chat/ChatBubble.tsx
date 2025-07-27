@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Link, CircularProgress } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 
@@ -9,7 +9,11 @@ export interface ChatBubbleProps {
   isOwn?: boolean;
   isStudent?: boolean;
   seen?: boolean;
-  sendDate?: string; // Only use sendDate
+  sendDate?: string;
+  isFile?: boolean;
+  filePath?: string;
+  isUploading?: boolean;
+  tempKey?: string;
 }
 
 // Utility to convert Western digits to Persian digits
@@ -22,12 +26,18 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
   text,
   isOwn = false,
   isStudent = false,
-  seen,
+  seen = false,
   sendDate,
+  isFile = false,
+  filePath,
+  isUploading = false,
+  tempKey,
 }) => {
+  console.log("Rendering ChatBubble:", { id, text, isFile, filePath, isUploading, tempKey });
+
   return (
     <Box
-      key={id}
+      key={tempKey || id}
       sx={{
         display: "flex",
         flexDirection: "column",
@@ -57,12 +67,48 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
           position: "relative",
         }}
       >
-        <Typography
-          variant="body1"
-          sx={{ fontSize: "1rem", textAlign: "right" }}
-        >
-          {text}
-        </Typography>
+        {isFile && isUploading ? (
+          <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <CircularProgress size={20} />
+            <Typography
+              variant="body1"
+              sx={{ fontSize: "1rem", textAlign: "right" }}
+            >
+              {text} (در حال بارگذاری...)
+            </Typography>
+          </Box>
+        ) : isFile && filePath ? (
+          <Link
+            href={filePath}
+            download={text}
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              color: "rgb(0, 153, 255)",
+              textDecoration: "underline",
+              fontSize: "1rem",
+              textAlign: "right",
+              display: "block",
+            }}
+            onClick={() => console.log("Downloading file:", filePath)}
+          >
+            {text}
+          </Link>
+        ) : isFile ? (
+          <Typography
+            variant="body1"
+            sx={{ fontSize: "1rem", textAlign: "right" }}
+          >
+            {text} (فایل در دسترس نیست)
+          </Typography>
+        ) : (
+          <Typography
+            variant="body1"
+            sx={{ fontSize: "1rem", textAlign: "right" }}
+          >
+            {text}
+          </Typography>
+        )}
 
         {(sendDate || isOwn) && (
           <Box
@@ -76,7 +122,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
               gap: "12px",
             }}
           >
-            {sendDate ? (
+            {sendDate && (
               <Typography
                 variant="caption"
                 sx={{
@@ -89,11 +135,8 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
               >
                 {toPersianDigits(sendDate)}
               </Typography>
-            ) : (
-              <span />
             )}
-
-            {isOwn ? (
+            {isOwn && (
               seen ? (
                 <DoneAllIcon
                   fontSize="small"
@@ -107,8 +150,6 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
                   titleAccess="Delivered"
                 />
               )
-            ) : (
-              <span />
             )}
           </Box>
         )}

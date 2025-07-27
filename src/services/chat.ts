@@ -8,8 +8,8 @@ export const getContacts = async (
   PageIndex: number
 ) => {
   const url = new URL(`http://${baseURL}/api/Messages/contacts`);
-  url.searchParams.append("PageSize", PageSize.toString());
-  url.searchParams.append("PageIndex", PageIndex.toString());
+  url.searchParams.append("PageSize", String(PageSize));
+  url.searchParams.append("PageIndex", String(PageIndex));
   const response = await fetch(url.toString(), {
     method: "GET",
     headers: {
@@ -19,7 +19,8 @@ export const getContacts = async (
   });
 
   if (!response.ok) {
-    console.log("خطا در ارتباط با سرور");
+    console.error("خطا در ارتباط با سرور:", response.statusText);
+    throw new Error("Failed to fetch contacts");
   }
 
   return response.json();
@@ -36,7 +37,8 @@ export const getMessages = async (token: string, contactId: number) => {
   });
 
   if (!response.ok) {
-    console.log("خطا در ارتباط با سرور");
+    console.error("خطا در ارتباط با سرور:", response.statusText);
+    throw new Error("Failed to fetch messages");
   }
 
   return response.json();
@@ -46,7 +48,6 @@ export class ChatService {
   private connection: signalR.HubConnection;
   private jwtToken: string;
 
-  // Handlers for events
   private onReceivePrivateMessageHandler?: (message: {
     id: number;
     receiverId: number;
@@ -54,6 +55,9 @@ export class ChatService {
     seen: boolean;
     text: string;
     sendDate: string;
+    isFile?: boolean;
+    filePath?: string;
+    tempKey?: string;
   }) => void;
   private onSeenMessageHandler?: (
     messageIds: number[],
@@ -69,12 +73,13 @@ export class ChatService {
     this.jwtToken = token;
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(`http://${baseURL}/chat?access_token=${token}`, {})
-      .configureLogging(signalR.LogLevel.Information) // for debugging
+      .configureLogging(signalR.LogLevel.Information)
       .build();
 
     this.connection.on(
       "ReceivePrivateMessage",
-      (text, senderId, messageId, sendDate, receiverId, seen) => {
+      (text, senderId, messageId, sendDate, receiverId, seen, isFile, filePath) => {
+        console.log("Received private message:", { text, senderId, messageId, sendDate, receiverId, seen, isFile, filePath });
         if (this.onReceivePrivateMessageHandler) {
           this.onReceivePrivateMessageHandler({
             id: messageId ?? 0,
@@ -83,6 +88,8 @@ export class ChatService {
             seen: seen ?? false,
             text: text ?? "",
             sendDate: sendDate,
+            isFile: isFile ?? false,
+            filePath: filePath ?? "",
           });
         }
       }
@@ -119,6 +126,9 @@ export class ChatService {
       seen: boolean;
       text: string;
       sendDate: string;
+      isFile?: boolean;
+      filePath?: string;
+      tempKey?: string;
     }) => void
   ) {
     this.onReceivePrivateMessageHandler = handler;
@@ -156,11 +166,22 @@ export class ChatService {
     });
 
     if (!response.ok) {
-      console.log("error in uplaoding file");
+      console.error("خطا در بارگذاری فایل:", response.statusText);
+      throw new Error(`Failed to upload file: ${response.statusText}`);
     }
 
-    return String(response);
+    const filePath = await response.text();
+    console.log("Raw API response:", filePath);
+
+    if (!filePath) {
+      console.error("مسیر فایل در پاسخ سرور یافت نشد");
+      throw new Error("File path not found in server response");
+    }
+
+    return filePath;
   }
+
+
 
   public async sendMessage(message: string, receiverId: string): Promise<void> {
     try {
@@ -176,18 +197,21 @@ export class ChatService {
     }
   }
 
-  public async sendFile(file: File, receiverId: string): Promise<void> {
-    const filePath = await this.uploadMessageFile(this.jwtToken, file);
+    public async sendFile(file: File, receiverId: string): Promise<string> {
     try {
+      const filePath = await this.uploadMessageFile(this.jwtToken, file);
+      console.log("Sending file message:", { fileName: file.name, filePath });
       await this.connection.invoke(
         "SendPrivateMessage",
-        `${file.name}`,
+        file.name,
         Number(receiverId),
         true,
-        `${filePath}`
+        filePath
       );
+      return filePath;
     } catch (error) {
       console.error("Error sending file:", error);
+      throw error;
     }
   }
 
