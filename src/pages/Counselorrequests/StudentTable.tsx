@@ -34,6 +34,14 @@ interface StudentTableProps {
   isSmallScreen: boolean;
 }
 
+// Utility function to convert numbers to Persian digits
+const toPersianDigits = (number: number | string): string => {
+  const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  return number
+    .toString()
+    .replace(/[0-9]/g, (digit) => persianDigits[parseInt(digit)]);
+};
+
 const StudentTable: React.FC<StudentTableProps> = ({
   value,
   loading,
@@ -45,7 +53,7 @@ const StudentTable: React.FC<StudentTableProps> = ({
   isSmallScreen,
 }) => {
   const theme = useTheme();
-  const isVerySmallScreen = useMediaQuery(theme.breakpoints.down(350)); 
+  const isVerySmallScreen = useMediaQuery(theme.breakpoints.down(350));
   const filteredItems = useMemo(() => value?.items || [], [value]);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -240,10 +248,10 @@ const StudentTable: React.FC<StudentTableProps> = ({
                           </TableCell>
                           <TableCell sx={styles.tableCell}>{student.majorTitle || 'ندارد'}</TableCell>
                           <TableCell sx={styles.tableCell}>{student.gradeLevel || 'ندارد'}</TableCell>
-                          <TableCell sx={styles.tableCell}>{student.lastGradeGPA}</TableCell>
+                          <TableCell sx={styles.tableCell}>{toPersianDigits(student.lastGradeGPA)}</TableCell>
                           <TableCell sx={styles.tableCell}>{student.schoolName || 'ندارد'}</TableCell>
                           <TableCell sx={styles.tableCell}>{student.province || 'ندارد'}</TableCell>
-                          <TableCell sx={styles.tableCell}>{student.createDate || 'ندارد'}</TableCell>
+                          <TableCell sx={styles.tableCell}>{student.createDate ? toPersianDigits(student.createDate) : 'ندارد'}</TableCell>
                           <TableCell sx={styles.tableCell}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                               <Typography>{truncateText(student.aboutMe, 20)}</Typography>

@@ -390,7 +390,7 @@ const StudentsCounselors: React.FC = () => {
               textAlign: isSmallScreen ? "center" : "right",
             }}
           >
-            فیلتر وضعیت
+           وضعیت
           </Typography>
           <ToggleButtonGroup
             value={statusFilter}

@@ -34,7 +34,7 @@ interface PostData {
   hsMajorTitle: string;
   content: string;
   profilePic: string;
-  employmentDuration: number | null;
+  employmentDuration: string | null;
   rate: string;
   studentCounselorId: string | null;
   requestStatus: number | null;
@@ -69,6 +69,13 @@ interface ApiResponse {
   } | null;
   value: PaginationData | boolean;
 }
+
+const toPersianDigits = (number: number | string): string => {
+  const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  return number
+    .toString()
+    .replace(/[0-9]/g, (digit) => persianDigits[parseInt(digit)]);
+};
 
 const CounselorDisplay: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
@@ -131,7 +138,7 @@ const CounselorDisplay: React.FC = () => {
         hsMajorTitle: "",
         content: "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
         profilePic: defaultpic,
-        employmentDuration: 0,
+        employmentDuration: "0",
         rate: "",
         studentCounselorId: null,
         requestStatus: null,
@@ -182,14 +189,14 @@ const CounselorDisplay: React.FC = () => {
         setPostData({
           username: userData.fullName || "",
           province: userData.province || "",
-          entranceExamYear: userData.entranceExamYear || "",
+          entranceExamYear: toPersianDigits(userData.entranceExamYear) || "",
           uniMajor: userData.uniMajor || "نامشخص",
           uniName: userData.uniName || "",
           hsMajorTitle: userData.hsMajorTitle || "نامشخص",
           content: userData.aboutMe || "کاربر هنوز توضیحاتی درباره خود اضافه نکرده است.",
           profilePic: profilePicUrl,
-          employmentDuration: userData.employmentDuration || 0,
-          rate: userData.rate || "",
+          employmentDuration: toPersianDigits(userData.employmentDuration) || "0",
+          rate: toPersianDigits(userData.rate) || "",
           studentCounselorId: userData.studentCounselorId ? String(userData.studentCounselorId) : null,
           requestStatus: userData.requestStatus || null,
         });
@@ -924,7 +931,7 @@ const CounselorDisplay: React.FC = () => {
                             fontSize: isMobile ? "0.8rem" : "0.9rem",
                           }}
                         >
-                          {comment.createDate}
+                          {toPersianDigits(comment.createDate)}
                         </Typography>
                       </Box>
                       <Typography
@@ -969,7 +976,7 @@ const CounselorDisplay: React.FC = () => {
                     fontSize: isMobile ? "0.9rem" : "1rem",
                   }}
                 >
-                  صفحه {pageIndex} از {totalPages}
+                  صفحه {toPersianDigits(pageIndex)} از {toPersianDigits(totalPages)}
                 </Typography>
                 <SecondaryButton
                   name="صفحه بعد"

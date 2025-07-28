@@ -35,7 +35,7 @@ interface Counselor {
   uniMajor: string;
   hsMajor: string;
   uniName: string;
-  entranceExamYear: string;
+  entranceExamYear: number;
   employmentDuration: number;
   picName: string | null;
   picUrl: string | null; // This is the MinIO file path
@@ -492,7 +492,7 @@ const OurCounselor = () => {
                       variant="body2"
                       sx={{ color: "rgb(8, 57, 136)", fontWeight: 500 }}
                     >
-                      تجربه کار: {counselor.employmentDuration} سال
+                      تجربه کار: {toPersianNumber(counselor.employmentDuration)} سال
                     </Typography>
                     <Box
                       sx={{
@@ -627,7 +627,7 @@ const OurCounselor = () => {
                             marginLeft: "8px",
                           }}
                         />
-                        کنکور {counselor.entranceExamYear}
+                        کنکور {toPersianNumber(counselor.entranceExamYear)}
                       </Typography>
                     </Box>
                   </Box>
