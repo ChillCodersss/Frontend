@@ -79,8 +79,7 @@ export class ChatService {
 
     this.connection.on(
       "ReceivePrivateMessage",
-
-      (text, senderName, senderId, sendDate) => {
+      (text, senderName, senderId) => {
         const isFile = text.startsWith("http://62.60.213.13");
         let filePath = "";
         let downloadUrl = "";
@@ -88,12 +87,14 @@ export class ChatService {
         if (isFile) {
           try {
             const urlObj = new URL(text);
-            const pathParts = urlObj.pathname.split('/');
+            const pathParts = urlObj.pathname.split("/");
             const fileIndex = pathParts.indexOf("ChatFiles");
             if (fileIndex !== -1 && pathParts.length > fileIndex + 1) {
               filePath = `ChatFiles/${pathParts[fileIndex + 1]}/`;
               downloadUrl = text;
-              messageText = decodeURIComponent(pathParts[pathParts.length - 1].split('?')[0]);
+              messageText = decodeURIComponent(
+                pathParts[pathParts.length - 1].split("?")[0]
+              );
             } else {
               throw new Error("Invalid file path structure");
             }
@@ -104,7 +105,15 @@ export class ChatService {
             messageText = "فایل ارسالی";
           }
         }
-        console.log("Received private message:", { text, senderName, senderId, sendDate, isFile, filePath, downloadUrl, messageText });
+        console.log("Received private message:", {
+          text,
+          senderName,
+          senderId,
+          isFile,
+          filePath,
+          downloadUrl,
+          messageText,
+        });
         if (this.onReceivePrivateMessageHandler) {
           this.onReceivePrivateMessageHandler({
             id: Date.now(),
@@ -112,11 +121,20 @@ export class ChatService {
             senderId: senderId ?? 0,
             seen: false,
             text: messageText,
-            sendDate: sendDate,
+            sendDate: new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })
+              .format(new Date())
+              .replace(/\u200e/g, "")
+              .replace(/,/g, " "),
             isFile: isFile,
             filePath: filePath,
             downloadUrl: downloadUrl,
-
           });
         }
       }

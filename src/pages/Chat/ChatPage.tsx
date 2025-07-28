@@ -59,7 +59,12 @@ const ChatPage = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    console.log("ChatPage rendered, contactId:", contactId, "chatService:", !!chatService);
+    console.log(
+      "ChatPage rendered, contactId:",
+      contactId,
+      "chatService:",
+      !!chatService
+    );
     if (!contactId) {
       console.warn("No contactId provided");
       return;
@@ -87,12 +92,28 @@ const ChatPage = () => {
       try {
         const response = await getMessages(token, Number(contactId));
         if (response.isSuccess && Array.isArray(response.value)) {
-          setMessages(response.value.map((msg: { isFile: unknown; filePath: string; text: string | number | boolean; }) => ({
-            ...msg,
-            isUploading: false,
-            filePath: msg.isFile && msg.filePath && !msg.filePath.endsWith('/') ? `${msg.filePath}/` : msg.filePath,
-            downloadUrl: msg.isFile ? `${fileURLPrefix}${msg.filePath.replace("ChatFiles/", "")}/${encodeURIComponent(msg.text)}` : "",
-          })));
+          setMessages(
+            response.value.map(
+              (msg: {
+                isFile: unknown;
+                filePath: string;
+                text: string | number | boolean;
+              }) => ({
+                ...msg,
+                isUploading: false,
+                filePath:
+                  msg.isFile && msg.filePath && !msg.filePath.endsWith("/")
+                    ? `${msg.filePath}/`
+                    : msg.filePath,
+                downloadUrl: msg.isFile
+                  ? `${fileURLPrefix}${msg.filePath.replace(
+                      "ChatFiles/",
+                      ""
+                    )}/${encodeURIComponent(msg.text)}`
+                  : "",
+              })
+            )
+          );
           console.log("Messages from getMessages:", response.value);
         } else {
           setMessages([]);
@@ -109,13 +130,15 @@ const ChatPage = () => {
     if (!contactId) return;
 
     chatService.onReceivePrivateMessage((msg) => {
-
       console.log("Received message:", msg);
       const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
-      // Skip sender's own file messages to avoid overwriting local update
-      if (msg.senderId === currentUserId && msg.isFile) {
+
+      // Skip sender's own messages to avoid duplicates
+      // The sender already has their message in the state (temporary or real)
+      if (msg.senderId === currentUserId) {
         return;
       }
+
       const newMessage = {
         ...msg,
         receiverId: Number(contactId),
@@ -123,48 +146,6 @@ const ChatPage = () => {
       };
       console.log("Adding message to state:", newMessage);
       setMessages((prev) => [...prev, newMessage]);
-
-<!--       setMessages((prev) => {
-        const isOwnMessage = msg.senderId === currentUserId;
-
-        // Set the correct receiver ID for the message
-        const messageWithReceiverId = {
-          ...msg,
-          receiverId: isOwnMessage ? Number(contactId) : currentUserId,
-        };
-
-        if (isOwnMessage) {
-          // This is likely a response to our sent message
-          // Find and replace the temporary message with the real one
-          let tempMessageIndex = -1;
-          for (let i = prev.length - 1; i >= 0; i--) {
-            const existingMsg = prev[i];
-            if (
-              existingMsg.id < 0 &&
-              existingMsg.text === msg.text &&
-              existingMsg.senderId === msg.senderId
-            ) {
-              tempMessageIndex = i;
-              break;
-            }
-          }
-
-          if (tempMessageIndex !== -1) {
-            // Replace the temporary message with the real one
-            const newMessages = [...prev];
-            newMessages[tempMessageIndex] = messageWithReceiverId;
-            return newMessages;
-          }
-        }
-
-        // If it's not a replacement, add as new message
-        // Only add if it's from the current contact
-        if (msg.senderId === Number(contactId)) {
-          return [...prev, messageWithReceiverId];
-        }
-        return prev;
-      }); -->
-
     });
 
     chatService.onSeenMessage((messageIds, isSeen) => {
@@ -197,7 +178,6 @@ const ChatPage = () => {
 
   const handleSend = async (msg: string) => {
     if (msg.trim() && contactId) {
-
       const tempId = `temp-${Date.now()}`;
       const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
 
@@ -244,16 +224,18 @@ const ChatPage = () => {
       ]);
       try {
         const filePath = await chatService.sendFile(file, contactId);
-        const downloadUrl = `${fileURLPrefix}${filePath.replace("ChatFiles/", "")}/${encodeURIComponent(file.name)}`;
+        const downloadUrl = `${fileURLPrefix}${filePath.replace(
+          "ChatFiles/",
+          ""
+        )}/${encodeURIComponent(file.name)}`;
         console.log("File uploaded:", { filePath, downloadUrl });
         setMessages((prev) =>
           prev.map((msg) =>
             msg.tempKey === tempId
               ? {
                   ...msg,
-                  id: -Date.now(),
                   text: file.name,
-                  filePath: filePath.endsWith('/') ? filePath : `${filePath}/`,
+                  filePath: filePath.endsWith("/") ? filePath : `${filePath}/`,
                   downloadUrl: downloadUrl,
                   isUploading: false,
                   tempKey: undefined,
@@ -263,7 +245,9 @@ const ChatPage = () => {
         );
       } catch (error) {
         console.error("File upload error:", error);
-        setError("خطا در ارسال فایل: " + ((error as Error).message || "خطای ناشناخته"));
+        setError(
+          "خطا در ارسال فایل: " + ((error as Error).message || "خطای ناشناخته")
+        );
         setMessages((prev) => prev.filter((m) => m.tempKey !== tempId));
       }
     } else {
@@ -301,7 +285,11 @@ const ChatPage = () => {
       />
       <MainChat messages={messages} loading={loading} />
       <Box sx={{ position: "relative", zIndex: 5, backgroundColor: "#fff" }}>
-        <ChatInput onSend={handleSend} onSendFile={handleSendFile} disabled={!contactId} />
+        <ChatInput
+          onSend={handleSend}
+          onSendFile={handleSendFile}
+          disabled={!contactId}
+        />
       </Box>
       <Snackbar
         open={!!error}
