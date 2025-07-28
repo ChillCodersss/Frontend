@@ -22,6 +22,7 @@ export interface ContactsItemProps {
   online?: boolean;
   active?: boolean;
   onClick?: () => void;
+  requestStatus?: number;
 }
 
 const fetchImage = async (picUrl: string) => {
@@ -97,7 +98,12 @@ const ContactsItem: React.FC<ContactsItemProps> = ({
           src={avatarUrl}
           alt={picName}
           sx={{
-            border: online ? "3px solid #4caf50" : "2px solid #bdbdbd",
+            border: online ? "4px solid #4caf50" : "3px solid #bdbdbd",
+            padding: "1px",
+            borderRadius: "50%",
+            "& img": {
+              borderRadius: "50%",
+            },
           }}
         />
       </ListItemAvatar>

@@ -79,6 +79,7 @@ export class ChatService {
 
     this.connection.on(
       "ReceivePrivateMessage",
+
       (text, senderName, senderId, sendDate) => {
         const isFile = text.startsWith("http://62.60.213.13");
         let filePath = "";
@@ -115,6 +116,7 @@ export class ChatService {
             isFile: isFile,
             filePath: filePath,
             downloadUrl: downloadUrl,
+
           });
         }
       }

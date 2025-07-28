@@ -16,16 +16,25 @@ import {
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import InfoIcon from "@mui/icons-material/Info";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useContacts } from "@/contexts/ContactsContext";
 
 interface ChatHeaderProps {
   contactName: string;
   avatarUrl?: string;
+  contactId?: number;
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ contactName, avatarUrl }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({
+  contactName,
+  avatarUrl,
+  contactId,
+}) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [open, setOpen] = React.useState(false);
+  const { onlineContactIds } = useContacts();
+
+  const isOnline = contactId ? onlineContactIds.includes(contactId) : false;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -61,7 +70,17 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ contactName, avatarUrl }) => {
           <ArrowForwardIcon />
         </IconButton>
         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Avatar src={avatarUrl} />
+          <Avatar
+            src={avatarUrl}
+            sx={{
+              border: isOnline ? "4px solid #4caf50" : "3px solid #bdbdbd",
+              padding: "1px",
+              borderRadius: "50%",
+              "& img": {
+                borderRadius: "50%",
+              },
+            }}
+          />
           <Typography
             sx={{
               fontWeight: "bold",

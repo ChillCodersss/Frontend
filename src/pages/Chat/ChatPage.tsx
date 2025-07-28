@@ -107,7 +107,9 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (!contactId) return;
+
     chatService.onReceivePrivateMessage((msg) => {
+
       console.log("Received message:", msg);
       const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
       // Skip sender's own file messages to avoid overwriting local update
@@ -121,13 +123,66 @@ const ChatPage = () => {
       };
       console.log("Adding message to state:", newMessage);
       setMessages((prev) => [...prev, newMessage]);
+
+<!--       setMessages((prev) => {
+        const isOwnMessage = msg.senderId === currentUserId;
+
+        // Set the correct receiver ID for the message
+        const messageWithReceiverId = {
+          ...msg,
+          receiverId: isOwnMessage ? Number(contactId) : currentUserId,
+        };
+
+        if (isOwnMessage) {
+          // This is likely a response to our sent message
+          // Find and replace the temporary message with the real one
+          let tempMessageIndex = -1;
+          for (let i = prev.length - 1; i >= 0; i--) {
+            const existingMsg = prev[i];
+            if (
+              existingMsg.id < 0 &&
+              existingMsg.text === msg.text &&
+              existingMsg.senderId === msg.senderId
+            ) {
+              tempMessageIndex = i;
+              break;
+            }
+          }
+
+          if (tempMessageIndex !== -1) {
+            // Replace the temporary message with the real one
+            const newMessages = [...prev];
+            newMessages[tempMessageIndex] = messageWithReceiverId;
+            return newMessages;
+          }
+        }
+
+        // If it's not a replacement, add as new message
+        // Only add if it's from the current contact
+        if (msg.senderId === Number(contactId)) {
+          return [...prev, messageWithReceiverId];
+        }
+        return prev;
+      }); -->
+
     });
 
     chatService.onSeenMessage((messageIds, isSeen) => {
       setMessages((prev) =>
-        prev.map((msg) =>
-          messageIds.includes(msg.id) ? { ...msg, seen: isSeen } : msg
-        )
+        prev.map((msg) => {
+          // Case 1: Update existing messages with real IDs (for seen/unseen status)
+          if (messageIds.includes(msg.id)) {
+            return { ...msg, seen: isSeen };
+          }
+
+          // Case 2: Replace temporary messages (negative IDs) with real message IDs
+          // This happens when sender gets response for their sent message
+          if (msg.id < 0 && messageIds.length === 1) {
+            return { ...msg, id: messageIds[0], seen: isSeen };
+          }
+
+          return msg;
+        })
       );
     });
   }, [token, contactId, chatService]);
@@ -142,8 +197,11 @@ const ChatPage = () => {
 
   const handleSend = async (msg: string) => {
     if (msg.trim() && contactId) {
+
       const tempId = `temp-${Date.now()}`;
       const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
+
+      // Add temporary message
       setMessages((prev) => [
         ...prev,
         {
@@ -158,6 +216,7 @@ const ChatPage = () => {
           tempKey: tempId,
         },
       ]);
+
       await chatService.sendMessage(msg, contactId);
     }
   };
@@ -238,6 +297,7 @@ const ChatPage = () => {
       <ChatHeader
         contactName={contactInfo.name}
         avatarUrl={contactInfo.avatarUrl}
+        contactId={contactId ? Number(contactId) : undefined}
       />
       <MainChat messages={messages} loading={loading} />
       <Box sx={{ position: "relative", zIndex: 5, backgroundColor: "#fff" }}>
