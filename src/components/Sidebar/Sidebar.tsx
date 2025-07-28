@@ -57,7 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     {
       label: "چت های من ",
       icon: <MessageIcon />,
-      path: "/dashboard/chat-student",
+      path: "/dashboard/contacts",
     },
     {
       label: "پرداختی ها",
@@ -75,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     {
       label: "چت با مشاور",
       icon: <MessageIcon />,
-      path: "/dashboard/student-contacts",
+      path: "/dashboard/contacts",
     },
     {
       label: "پرداختی ها",

@@ -15,12 +15,25 @@ import {
 } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import InfoIcon from "@mui/icons-material/Info";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useContacts } from "@/contexts/ContactsContext";
 
-const ChatHeader: React.FC = () => {
+interface ChatHeaderProps {
+  contactName: string;
+  avatarUrl?: string;
+  contactId?: number;
+}
+
+const ChatHeader: React.FC<ChatHeaderProps> = ({
+  contactName,
+  avatarUrl,
+  contactId,
+}) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [open, setOpen] = React.useState(false);
+  const { onlineContactIds } = useContacts();
+
+  const isOnline = contactId ? onlineContactIds.includes(contactId) : false;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -37,12 +50,9 @@ const ChatHeader: React.FC = () => {
         alignItems: "center",
         justifyContent: "space-between",
         direction: "rtl",
-        position: "sticky",
-        top: isSmallScreen ? "58px" : "64px",
         width: "100%",
         padding: "12px 16px",
         boxSizing: "border-box",
-        zIndex: 100,
         backgroundColor: "#fff",
         minHeight: "56px",
         boxShadow: "0 2px 8px 0 rgba(0,0,0,0.06)",
@@ -59,7 +69,17 @@ const ChatHeader: React.FC = () => {
           <ArrowForwardIcon />
         </IconButton>
         <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Avatar />
+          <Avatar
+            src={avatarUrl}
+            sx={{
+              border: isOnline ? "4px solid #4caf50" : "3px solid #bdbdbd",
+              padding: "1px",
+              borderRadius: "50%",
+              "& img": {
+                borderRadius: "50%",
+              },
+            }}
+          />
           <Typography
             sx={{
               fontWeight: "bold",
@@ -67,7 +87,7 @@ const ChatHeader: React.FC = () => {
               marginLeft: "8px",
             }}
           >
-            هومن متین
+            {contactName}
           </Typography>
         </Box>
       </Box>
@@ -80,9 +100,6 @@ const ChatHeader: React.FC = () => {
       >
         <IconButton onClick={() => handleClickOpen()}>
           <InfoIcon />
-        </IconButton>
-        <IconButton>
-          <MoreVertIcon />
         </IconButton>
       </Box>
       <Dialog
