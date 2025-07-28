@@ -225,6 +225,12 @@ const useStudents = (
   };
 };
 
+// Function to convert numbers to Persian numerals
+const toPersianNumeral = (num: number | string): string => {
+  const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  return String(num).replace(/[0-9]/g, (d) => persianDigits[parseInt(d)]);
+};
+
 const Students: React.FC = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
@@ -232,7 +238,6 @@ const Students: React.FC = () => {
   const [majorFilter, setMajorFilter] = useState<string>("همه");
   const [gradeFilter, setGradeFilter] = useState<string>("همه");
   const [statusFilter, setStatusFilter] = useState<string>("فعال");
-  // const [selectedAboutMe, setSelectedAboutMe] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(true);
   const pageSize = isSmallScreen ? 4 : 4;
@@ -321,10 +326,6 @@ const Students: React.FC = () => {
     },
     []
   );
-
-  // const handleCloseAboutMeDialog = useCallback(() => {
-  //   setSelectedAboutMe(null);
-  // }, []);
 
   const filteredItems = useMemo(() => value?.items || [], [value]);
 
@@ -644,7 +645,15 @@ const Students: React.FC = () => {
                           <TableCell
                             sx={{ textAlign: "center", padding: "8px" }}
                           >
-                            {student.remainingDays || "ندارد"}
+                            {statusFilter === "گذشته" ? (
+                              "-"
+                            ) : student.remainingDays && student.remainingDays < 0 ? (
+                              <Typography sx={{ color: "red" }}>
+                                {`${toPersianNumeral(Math.abs(student.remainingDays))} روز گذشته`}
+                              </Typography>
+                            ) : (
+                              toPersianNumeral(student.remainingDays || "ندارد")
+                            )}
                           </TableCell>
                           <TableCell sx={{ padding: "8px" }}>
                             <StudentDisplayPopup
@@ -723,7 +732,15 @@ const Students: React.FC = () => {
                                 </Typography>
                                 <Typography variant="caption">
                                   <strong>روز باقی مانده:</strong>{" "}
-                                  {student.remainingDays || "ندارد"}
+                                  {statusFilter === "گذشته" ? (
+                                    "-"
+                                  ) : student.remainingDays && student.remainingDays < 0 ? (
+                                    <Typography component="span" sx={{ color: "red" }}>
+                                      {`${toPersianNumeral(Math.abs(student.remainingDays))} روز گذشته`}
+                                    </Typography>
+                                  ) : (
+                                    toPersianNumeral(student.remainingDays || "ندارد")
+                                  )}
                                 </Typography>
                               </Box>
                             </Box>

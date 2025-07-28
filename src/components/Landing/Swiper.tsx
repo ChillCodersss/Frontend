@@ -72,6 +72,13 @@ interface ApiResponse {
   };
 }
 
+const toPersianDigits = (number: number | string): string => {
+  const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  return number
+    .toString()
+    .replace(/[0-9]/g, (digit) => persianDigits[parseInt(digit)]);
+};
+
 const CounselorSwiper = () => {
   const isMobile = useMediaQuery("(max-width:600px)");
   const isTablet = useMediaQuery("(min-width:601px) and (max-width:960px)");
@@ -242,7 +249,7 @@ const CounselorSwiper = () => {
                 {/* Top Section */}
                 <Box sx={SwiperSlideTopSection}>
                   <Typography variant="body2" sx={{ color: "#fff" }}>
-                    تجربه کار: {counselor.employmentDuration} سال
+                    تجربه کار: {toPersianDigits(counselor.employmentDuration)} سال
                   </Typography>
                   <Box sx={SwiperSlideTopSectionRateStyle}>
                     <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
@@ -299,7 +306,7 @@ const CounselorSwiper = () => {
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#666" }}>
                       <EventIcon sx={IconStyle} />
-                      کنکور {counselor.entranceExamYear}
+                      کنکور {toPersianDigits(counselor.entranceExamYear)}
                     </Typography>
                   </Box>
                 </Box>
