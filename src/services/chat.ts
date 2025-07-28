@@ -57,6 +57,7 @@ export class ChatService {
     sendDate: string;
     isFile?: boolean;
     filePath?: string;
+    downloadUrl?: string;
     tempKey?: string;
   }) => void;
   private onSeenMessageHandler?: (
@@ -78,36 +79,63 @@ export class ChatService {
 
     this.connection.on(
       "ReceivePrivateMessage",
-      (text, senderId, messageId, sendDate, receiverId, seen, isFile, filePath) => {
-        console.log("Received private message:", { text, senderId, messageId, sendDate, receiverId, seen, isFile, filePath });
+      (text, senderName, senderId, sendDate) => {
+        const isFile = text.startsWith("http://62.60.213.13");
+        let filePath = "";
+        let downloadUrl = "";
+        let messageText = text;
+        if (isFile) {
+          try {
+            const urlObj = new URL(text);
+            const pathParts = urlObj.pathname.split('/');
+            const fileIndex = pathParts.indexOf("ChatFiles");
+            if (fileIndex !== -1 && pathParts.length > fileIndex + 1) {
+              filePath = `ChatFiles/${pathParts[fileIndex + 1]}/`;
+              downloadUrl = text;
+              messageText = decodeURIComponent(pathParts[pathParts.length - 1].split('?')[0]);
+            } else {
+              throw new Error("Invalid file path structure");
+            }
+          } catch (error) {
+            console.error("Error parsing file URL:", error);
+            filePath = "";
+            downloadUrl = text;
+            messageText = "فایل ارسالی";
+          }
+        }
+        console.log("Received private message:", { text, senderName, senderId, sendDate, isFile, filePath, downloadUrl, messageText });
         if (this.onReceivePrivateMessageHandler) {
           this.onReceivePrivateMessageHandler({
-            id: messageId ?? 0,
-            receiverId: receiverId ?? 0,
+            id: Date.now(),
+            receiverId: 0,
             senderId: senderId ?? 0,
-            seen: seen ?? false,
-            text: text ?? "",
+            seen: false,
+            text: messageText,
             sendDate: sendDate,
-            isFile: isFile ?? false,
-            filePath: filePath ?? "",
+            isFile: isFile,
+            filePath: filePath,
+            downloadUrl: downloadUrl,
           });
         }
       }
     );
 
     this.connection.on("SeenMessage", (messageIds, isSeen) => {
+      console.log("SeenMessage:", { messageIds, isSeen });
       if (this.onSeenMessageHandler) {
         this.onSeenMessageHandler(messageIds, isSeen);
       }
     });
 
     this.connection.on("ReceiveOnlineContacts", (onlineContactIds) => {
+      console.log("ReceiveOnlineContacts:", { onlineContactIds });
       if (this.onReceiveOnlineContactsHandler) {
         this.onReceiveOnlineContactsHandler(onlineContactIds);
       }
     });
 
     this.connection.on("ReceiveUserStatusChange", (userId, isOnline) => {
+      console.log("ReceiveUserStatusChange:", { userId, isOnline });
       if (this.onReceiveUserStatusChangeHandler) {
         this.onReceiveUserStatusChangeHandler(userId, isOnline);
       }
@@ -128,6 +156,7 @@ export class ChatService {
       sendDate: string;
       isFile?: boolean;
       filePath?: string;
+      downloadUrl?: string;
       tempKey?: string;
     }) => void
   ) {
@@ -181,23 +210,7 @@ export class ChatService {
     return filePath;
   }
 
-
-
-  public async sendMessage(message: string, receiverId: string): Promise<void> {
-    try {
-      await this.connection.invoke(
-        "SendPrivateMessage",
-        message,
-        Number(receiverId),
-        false,
-        ""
-      );
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  }
-
-    public async sendFile(file: File, receiverId: string): Promise<string> {
+  public async sendFile(file: File, receiverId: string): Promise<string> {
     try {
       const filePath = await this.uploadMessageFile(this.jwtToken, file);
       console.log("Sending file message:", { fileName: file.name, filePath });
@@ -212,6 +225,20 @@ export class ChatService {
     } catch (error) {
       console.error("Error sending file:", error);
       throw error;
+    }
+  }
+
+  public async sendMessage(message: string, receiverId: string): Promise<void> {
+    try {
+      await this.connection.invoke(
+        "SendPrivateMessage",
+        message,
+        Number(receiverId),
+        false,
+        ""
+      );
+    } catch (error) {
+      console.error("Error sending message:", error);
     }
   }
 

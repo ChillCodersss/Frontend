@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography, Link, CircularProgress } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import { getToken } from "@/services/auth";
 
 export interface ChatBubbleProps {
   id: number;
@@ -34,6 +35,34 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
   tempKey,
 }) => {
   console.log("Rendering ChatBubble:", { id, text, isFile, filePath, isUploading, tempKey });
+
+  const handleDownload = async () => {
+    if (!filePath) {
+      console.error("No filePath provided for download:", { id, text });
+      return;
+    }
+    console.log("Attempting download:", { filePath, text });
+    try {
+      const token = getToken();
+      const response = await fetch(filePath, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!response.ok) {
+        console.error("Download failed:", { status: response.status, statusText: response.statusText });
+        return;
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = text;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      console.log("Download successful:", { filePath, text });
+    } catch (error) {
+      console.error("Download error:", error);
+    }
+  };
 
   return (
     <Box
@@ -79,10 +108,8 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
           </Box>
         ) : isFile && filePath ? (
           <Link
-            href={filePath}
-            download={text}
-            target="_blank"
-            rel="noopener noreferrer"
+            component="button"
+            onClick={handleDownload}
             sx={{
               color: "rgb(0, 153, 255)",
               textDecoration: "underline",
@@ -90,7 +117,6 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
               textAlign: "right",
               display: "block",
             }}
-            onClick={() => console.log("Downloading file:", filePath)}
           >
             {text}
           </Link>

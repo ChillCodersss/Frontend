@@ -20,6 +20,7 @@ interface ApiMessage {
   sendDate: string;
   isFile?: boolean;
   filePath?: string;
+  downloadUrl?: string;
   isUploading?: boolean;
   tempKey?: string;
 }
@@ -39,6 +40,8 @@ function formatJalaliDate(date: Date): string {
     .replace(/,/g, " ");
 }
 
+const fileURLPrefix = "http://62.60.213.13:9000/eduguide/ChatFiles/";
+
 const ChatPage = () => {
   const token = String(getToken());
   const { contactId } = useParams<{ contactId: string }>();
@@ -54,7 +57,6 @@ const ChatPage = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [tempFileNames, setTempFileNames] = useState<Map<string, string>>(new Map());
 
   useEffect(() => {
     console.log("ChatPage rendered, contactId:", contactId, "chatService:", !!chatService);
@@ -73,7 +75,7 @@ const ChatPage = () => {
     } else {
       setContactInfo({ name: "", avatarUrl: "" });
     }
-  }, [contactId, contacts]);
+  }, [chatService, contactId, contacts]);
 
   useEffect(() => {
     if (!contactId) {
@@ -85,7 +87,13 @@ const ChatPage = () => {
       try {
         const response = await getMessages(token, Number(contactId));
         if (response.isSuccess && Array.isArray(response.value)) {
-          setMessages(response.value.map((msg) => ({ ...msg, isUploading: false })));
+          setMessages(response.value.map((msg: { isFile: unknown; filePath: string; text: string | number | boolean; }) => ({
+            ...msg,
+            isUploading: false,
+            filePath: msg.isFile && msg.filePath && !msg.filePath.endsWith('/') ? `${msg.filePath}/` : msg.filePath,
+            downloadUrl: msg.isFile ? `${fileURLPrefix}${msg.filePath.replace("ChatFiles/", "")}/${encodeURIComponent(msg.text)}` : "",
+          })));
+          console.log("Messages from getMessages:", response.value);
         } else {
           setMessages([]);
         }
@@ -101,30 +109,18 @@ const ChatPage = () => {
     if (!contactId) return;
     chatService.onReceivePrivateMessage((msg) => {
       console.log("Received message:", msg);
-      setMessages((prev) => {
-        // Match temporary message by tempKey
-        const tempIndex = prev.findIndex((m) => m.tempKey === msg.tempKey);
-        if (tempIndex !== -1) {
-          const tempKey = prev[tempIndex].tempKey!;
-          const fileName = tempFileNames.get(tempKey) || msg.text;
-          const newMessages = [...prev];
-          newMessages[tempIndex] = {
-            ...msg,
-            text: fileName,
-            isUploading: false,
-            tempKey: undefined,
-          };
-          setTempFileNames((prevMap) => {
-            const newMap = new Map(prevMap);
-            newMap.delete(tempKey);
-            return newMap;
-          });
-          return newMessages;
-        }
-        // For receiver, use filePath to get file name
-        const fileName = msg.isFile ? (tempFileNames.get(msg.filePath || "") || msg.text) : msg.text;
-        return [...prev, { ...msg, text: fileName, isUploading: false }];
-      });
+      const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
+      // Skip sender's own file messages to avoid overwriting local update
+      if (msg.senderId === currentUserId && msg.isFile) {
+        return;
+      }
+      const newMessage = {
+        ...msg,
+        receiverId: Number(contactId),
+        isUploading: false,
+      };
+      console.log("Adding message to state:", newMessage);
+      setMessages((prev) => [...prev, newMessage]);
     });
 
     chatService.onSeenMessage((messageIds, isSeen) => {
@@ -147,7 +143,7 @@ const ChatPage = () => {
   const handleSend = async (msg: string) => {
     if (msg.trim() && contactId) {
       const tempId = `temp-${Date.now()}`;
-      const currentUserId = parseInt(getToken() ? getUserInfo()?.id || "0" : "0");
+      const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
       setMessages((prev) => [
         ...prev,
         {
@@ -170,8 +166,7 @@ const ChatPage = () => {
     if (contactId) {
       console.log("Sending file:", file.name);
       const tempId = `temp-${Date.now()}-${file.name}`;
-      const currentUserId = parseInt(getToken() ? getUserInfo()?.id || "0" : "0");
-      setTempFileNames((prev) => new Map(prev).set(tempId, file.name));
+      const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
       setMessages((prev) => [
         ...prev,
         {
@@ -183,22 +178,34 @@ const ChatPage = () => {
           sendDate: formatJalaliDate(new Date()),
           isFile: true,
           filePath: "",
+          downloadUrl: "",
           isUploading: true,
           tempKey: tempId,
         },
       ]);
       try {
         const filePath = await chatService.sendFile(file, contactId);
-        // Store file name with filePath for receiver
-        setTempFileNames((prev) => new Map(prev).set(filePath, file.name));
+        const downloadUrl = `${fileURLPrefix}${filePath.replace("ChatFiles/", "")}/${encodeURIComponent(file.name)}`;
+        console.log("File uploaded:", { filePath, downloadUrl });
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.tempKey === tempId
+              ? {
+                  ...msg,
+                  id: -Date.now(),
+                  text: file.name,
+                  filePath: filePath.endsWith('/') ? filePath : `${filePath}/`,
+                  downloadUrl: downloadUrl,
+                  isUploading: false,
+                  tempKey: undefined,
+                }
+              : msg
+          )
+        );
       } catch (error) {
+        console.error("File upload error:", error);
         setError("خطا در ارسال فایل: " + ((error as Error).message || "خطای ناشناخته"));
         setMessages((prev) => prev.filter((m) => m.tempKey !== tempId));
-        setTempFileNames((prev) => {
-          const newMap = new Map(prev);
-          newMap.delete(tempId);
-          return newMap;
-        });
       }
     } else {
       console.warn("No contactId for sending file");
