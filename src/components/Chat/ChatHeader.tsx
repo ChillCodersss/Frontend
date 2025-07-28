@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import InfoIcon from "@mui/icons-material/Info";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useContacts } from "@/contexts/ContactsContext";
 
 interface ChatHeaderProps {
@@ -101,9 +100,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       >
         <IconButton onClick={() => handleClickOpen()}>
           <InfoIcon />
-        </IconButton>
-        <IconButton>
-          <MoreVertIcon />
         </IconButton>
       </Box>
       <Dialog
