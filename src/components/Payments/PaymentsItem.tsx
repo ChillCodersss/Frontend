@@ -53,12 +53,12 @@ const PaymentsItem: React.FC<PaymentsItemProps> = ({
       <TableCell sx={PITableCellStyles}>{paymentDate}</TableCell>
       <TableCell>
         <SecondaryButton
-          name="جزییات"
-          backgroundColor="rgb(0, 140, 190)"
+          name="جزئیات"
+          backgroundColor="rgb(63, 81, 181)"
           fontSize={isMobile ? "0.9rem" : "1rem"}
-          width={isMobile ? "90px" : "150px"}
+          width={isMobile ? "80px" : "120px"}
           height={"32px"}
-          borderRadius={"8px"}
+          borderRadius="8px"
           onClick={() => {
             operation(
               `شما با پرداخت مبلغ ${amount} تومان دوره ${counselingDuration}ماهه با ${payableTo} را در تاریخ ${paymentDate} نهایی کردید.`

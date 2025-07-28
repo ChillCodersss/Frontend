@@ -15,7 +15,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
 } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import PaymentsItem, {
@@ -33,6 +32,7 @@ import {
   PPaginationStyle,
   PTextStyle,
 } from "./CounselorPaymentsStyles";
+import SecondaryButton from "@/components/common/SecondaryButton";
 
 const CounselorPayments = () => {
   const theme = useTheme();
@@ -111,8 +111,8 @@ const CounselorPayments = () => {
           variant="h5"
           sx={{
             fontWeight: "bold",
-            textAlign: "right",
-            margin: "16px 16px 24px 16px",
+            textAlign: "center",
+            margin: "16px 16px 0px 16px",
             color: "#333",
           }}
         >
@@ -155,11 +155,11 @@ const CounselorPayments = () => {
                       </TableHead>
                       <TableBody>
                         {payments.map((payment, index) => (
-                            <PaymentsItem
-                              key={index}
-                              {...payment}
-                              operation={showMoreDetails}
-                            />
+                          <PaymentsItem
+                            key={index}
+                            {...payment}
+                            operation={showMoreDetails}
+                          />
                         ))}
                       </TableBody>
                     </Table>
@@ -182,23 +182,61 @@ const CounselorPayments = () => {
             </Box>
           </Box>
         )}
-        <Dialog
-          open={!!moreDetails}
-          onClose={closeMoreDetails}
-          dir="rtl"
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle sx={{ fontWeight: "bold" }}>جزییات</DialogTitle>
-          <DialogContent>
-            <Typography>{moreDetails}</Typography>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={closeMoreDetails} color="primary">
-              بستن
-            </Button>
-          </DialogActions>
-        </Dialog>
+<Dialog
+  open={!!moreDetails}
+  onClose={closeMoreDetails}
+  dir="rtl"
+  maxWidth="sm"
+  fullWidth
+  PaperProps={{
+    sx: {
+      borderRadius: "16px",
+      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+    },
+  }}
+>
+  <Box sx={{ position: "relative" }}>
+    <DialogTitle
+      sx={{
+        fontWeight: "bold",
+        padding: "20px 24px",
+        borderBottom: "1px solid #e0e0e0",
+        backgroundColor: "#f8f9fa",
+        borderRadius: "16px 16px 0 0",
+      }}
+    >
+      جزییات
+    </DialogTitle>
+  </Box>
+  <DialogContent sx={{ padding: "24px" }}>
+    <Typography
+      sx={{ fontSize: "17.6px", color: "#424242", textAlign: "center" }}
+    >
+      {moreDetails}
+    </Typography>
+  </DialogContent>
+  <DialogActions
+    sx={{ padding: "16px 24px", borderTop: "1px solid #e0e0e0" }}
+  >
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "flex-end",
+        width: "100%",
+      }}
+    >
+      <SecondaryButton
+        name="بستن"
+        backgroundColor="rgb(221, 84, 84)"
+        width="100px"
+        height="32px"
+        fontSize="14px"
+        borderRadius="12px"
+        onClick={closeMoreDetails}
+      />
+    </Box>
+  </DialogActions>
+</Dialog>
       </Box>
     </>
   );

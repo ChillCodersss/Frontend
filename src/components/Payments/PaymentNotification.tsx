@@ -73,7 +73,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
       <TableCell sx={PITableOperationCellStyles}>
         <SecondaryButton
           name="پرداخت"
-          backgroundColor="rgb(0, 140, 190)"
+          backgroundColor="rgb(5, 190, 30)"
           fontSize={isMobile ? "0.9rem" : "1rem"}
           width={isMobile ? "90px" : "120px"}
           height={"32px"}

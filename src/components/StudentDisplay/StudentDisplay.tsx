@@ -155,12 +155,12 @@ const StudentDisplayPopup: React.FC<Props> = ({ studentId }) => {
       <SecondaryButton
                     name="نمایش اطلاعات"
                     variant="contained"
-                    backgroundColor="#3f51b5"
                     onClick={handleOpenPopup}
                     fontSize={isMobile ? "0.9rem" : "1rem"}
-                    width={isMobile ? "100%" : "150px"}
+                    backgroundColor="rgb(63, 81, 181)"
+                    width={isMobile ? "80px" : "120px"}
                     height={"40px"}
-                    borderRadius="20px"
+                    borderRadius="8px"
                   />
       <Dialog
         open={openPopup}
