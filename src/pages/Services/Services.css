@@ -130,7 +130,7 @@
 
 @media (min-width: 750px) {     /* md */
     .sv-banner {
-        padding: 10% 5%;
+        padding: 10% 10%;
     }
 
     .sv-banner-bg-img {
@@ -146,7 +146,7 @@
 
     .sv-text-container {
         flex-direction: row;
-        padding: 0px 5%;
+        padding: 0px 10%;
     }
 
     .sv-tc1 {
