@@ -74,15 +74,15 @@ export class ChatService {
 
     this.connection.on(
       "ReceivePrivateMessage",
-      (text, senderId, messageId, sendDate, receiverId, seen) => {
+      (text, senderName, senderId) => {
         if (this.onReceivePrivateMessageHandler) {
           this.onReceivePrivateMessageHandler({
-            id: messageId ?? 0,
-            receiverId: receiverId ?? 0,
+            id: 0, // Will be updated when SeenMessage is received
+            receiverId: 0, // Will be set by the caller
             senderId: senderId ?? 0,
-            seen: seen ?? false,
+            seen: false,
             text: text ?? "",
-            sendDate: sendDate,
+            sendDate: new Date().toISOString(),
           });
         }
       }

@@ -91,14 +91,18 @@ const ChatPage = () => {
 
     chatService.onReceivePrivateMessage((msg) => {
       setMessages((prev) => {
-        // Check if this message matches any pending message by text and sender
         const currentUserId = getToken() ? getUserInfo()?.id ?? 0 : 0;
         const isOwnMessage = msg.senderId === currentUserId;
+
+        // Set the correct receiver ID for the message
+        const messageWithReceiverId = {
+          ...msg,
+          receiverId: isOwnMessage ? Number(contactId) : currentUserId,
+        };
 
         if (isOwnMessage) {
           // This is likely a response to our sent message
           // Find and replace the temporary message with the real one
-          // Look for the most recent temporary message with matching text
           let tempMessageIndex = -1;
           for (let i = prev.length - 1; i >= 0; i--) {
             const existingMsg = prev[i];
@@ -115,21 +119,36 @@ const ChatPage = () => {
           if (tempMessageIndex !== -1) {
             // Replace the temporary message with the real one
             const newMessages = [...prev];
-            newMessages[tempMessageIndex] = msg;
+            newMessages[tempMessageIndex] = messageWithReceiverId;
             return newMessages;
           }
         }
 
         // If it's not a replacement, add as new message
-        return [...prev, msg];
+        // Only add if it's from the current contact
+        if (msg.senderId === Number(contactId)) {
+          return [...prev, messageWithReceiverId];
+        }
+        return prev;
       });
     });
 
     chatService.onSeenMessage((messageIds, isSeen) => {
       setMessages((prev) =>
-        prev.map((msg) =>
-          messageIds.includes(msg.id) ? { ...msg, seen: isSeen } : msg
-        )
+        prev.map((msg) => {
+          // Case 1: Update existing messages with real IDs (for seen/unseen status)
+          if (messageIds.includes(msg.id)) {
+            return { ...msg, seen: isSeen };
+          }
+
+          // Case 2: Replace temporary messages (negative IDs) with real message IDs
+          // This happens when sender gets response for their sent message
+          if (msg.id < 0 && messageIds.length === 1) {
+            return { ...msg, id: messageIds[0], seen: isSeen };
+          }
+
+          return msg;
+        })
       );
     });
   }, [token, contactId, chatService]);
