@@ -35,6 +35,15 @@ import {
 import { NotificationItem } from "@/components/Payments/PaymentNotification";
 import { toast } from "react-toastify";
 import SecondaryButton from "@/components/common/SecondaryButton";
+import PaginationItem from "@mui/material/PaginationItem";
+
+// Function to convert English numbers to Persian
+const convertToPersianNumbers = (text: string | number): string => {
+  const persianNumbers = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+  return text
+    .toString()
+    .replace(/[0-9]/g, (match) => persianNumbers[parseInt(match)]);
+};
 
 const Payments = () => {
   const theme = useTheme();
@@ -61,7 +70,7 @@ const Payments = () => {
     setMoreDetails(null);
   }, []);
 
-  const fetchPayments = async () => {
+  const fetchPayments = async (page: number = 1) => {
     try {
       const token = getToken();
       if (!token) {
@@ -69,21 +78,24 @@ const Payments = () => {
         return;
       }
       setLoading(true);
-      const data = await PaymentsHistory(token, 10, 1);
+      const data = await PaymentsHistory(token, 5, page);
       if (data.isSuccess) {
         setPayments(data.value.items);
-        setTotalPages(data.totalPages);
+        setTotalPages(data.value.totalPages);
         setLoading(false);
       } else {
         console.error("خطا در ارتباط با سرور");
+        setLoading(false);
       }
     } catch (error) {
       console.error("خطا در ارتباط با سرور", error);
+      setLoading(false);
     }
   };
+
   useEffect(() => {
-    fetchPayments();
-  }, []);
+    fetchPayments(currentPage);
+  }, [currentPage]);
 
   const handleCancelClick = () => {
     setCancelDialogOpen(true);
@@ -98,7 +110,7 @@ const Payments = () => {
       const data = await cancelRequestCounselor(token);
       if (data.isSuccess) {
         toast.success("درخواست با موفقیت لغو شد.");
-        fetchPayments();
+        fetchPayments(currentPage);
       } else {
         toast.error("خطا در لغو درخواست.");
       }
@@ -127,7 +139,7 @@ const Payments = () => {
           پرداخت‌های من
         </Typography>
         {loading ? (
-          <Typography sx={PTextStyle}>در حال بارگزاری</Typography>
+          <Typography sx={PTextStyle}>در حال بارگذاری</Typography>
         ) : (
           <Box sx={PMainBoxStyle}>
             {payments.length === 0 ? (
@@ -168,21 +180,25 @@ const Payments = () => {
                     <TableBody>
                       {payments
                         .filter((payment) => !payment.isPaid)
-                        .map((payment) => (
+                        .map((payment, index) => (
                           <NotificationItem
                             key={payment.id}
                             {...payment}
                             operation={fetchPayments}
                             onCancelClick={handleCancelClick}
+                            animationDelay={index * 0.1}
+                            convertToPersian={convertToPersianNumbers}
                           />
                         ))}
                       {payments
                         .filter((payment) => payment.isPaid)
-                        .map((payment) => (
+                        .map((payment, index) => (
                           <PaymentsItem
                             key={payment.id}
                             {...payment}
                             operation={showMoreDetails}
+                            animationDelay={index * 0.1}
+                            convertToPersian={convertToPersianNumbers}
                           />
                         ))}
                     </TableBody>
@@ -197,6 +213,16 @@ const Payments = () => {
                     dir="rtl"
                     size={isSmallScreen ? "small" : "medium"}
                     sx={PPaginationStyle}
+                    renderItem={(item) => (
+                      <PaginationItem
+                        {...item}
+                        page={
+                          item.page
+                            ? convertToPersianNumbers(item.page)
+                            : undefined
+                        }
+                      />
+                    )}
                   />
                 </Box>
               </Box>

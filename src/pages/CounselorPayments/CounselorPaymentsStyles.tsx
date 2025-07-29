@@ -15,6 +15,17 @@ export const PITableContainerStyle: SxProps = {
   maxHeight: "70vh",
   overflowY: "auto",
   marginTop: "50px",
+  animation: "fadeInSlideUp 0.6s ease-out",
+  "@keyframes fadeInSlideUp": {
+    "0%": {
+      opacity: 0,
+      transform: "translateY(30px)",
+    },
+    "100%": {
+      opacity: 1,
+      transform: "translateY(0)",
+    },
+  },
 };
 
 export const PTableHeadRowStyle: SxProps = {
@@ -44,4 +55,16 @@ export const PPaginationStyle: SxProps = {
 export const PTextStyle: SxProps = {
   textAlign: "center",
   margin: "30px 10px",
+};
+
+export const PTableRowStyle: SxProps = {
+  animation: "fadeInRow 0.4s ease-out",
+  "@keyframes fadeInRow": {
+    "0%": {
+      opacity: 0,
+    },
+    "100%": {
+      opacity: 1,
+    },
+  },
 };
