@@ -21,6 +21,8 @@ import { toast } from "react-toastify";
 interface NotificationItemProps extends PaymentsItemProps {
   operation: () => void;
   onCancelClick: () => void;
+  animationDelay?: number;
+  convertToPersian?: (text: string | number) => string;
 }
 
 export const NotificationItem: React.FC<NotificationItemProps> = ({
@@ -31,6 +33,8 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   counselorId,
   operation,
   onCancelClick,
+  animationDelay = 0,
+  convertToPersian = (text: string | number) => text.toString(),
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -55,8 +59,24 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   };
 
   return (
-    <TableRow sx={PITableRowStyles}>
-      <TableCell sx={PITableCellStyles}>{`${amount} تومان`}</TableCell>
+    <TableRow
+      sx={{
+        ...PITableRowStyles,
+        animation: "fadeInRow 0.4s ease-out",
+        animationDelay: `${animationDelay}s`,
+        "@keyframes fadeInRow": {
+          "0%": {
+            opacity: 0,
+          },
+          "100%": {
+            opacity: 1,
+          },
+        },
+      }}
+    >
+      <TableCell sx={PITableCellStyles}>{`${convertToPersian(
+        amount
+      )} تومان`}</TableCell>
       <TableCell sx={PITableCellStyles}>
         <Link
           onClick={viewProfile}
@@ -66,14 +86,14 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
           {payableTo}
         </Link>
       </TableCell>
-      <TableCell
-        sx={PITableCellStyles}
-      >{`${counselingDuration} ماهه`}</TableCell>
+      <TableCell sx={PITableCellStyles}>{`${convertToPersian(
+        counselingDuration
+      )} ماهه`}</TableCell>
       <TableCell sx={PITableCellStyles}>---</TableCell>
       <TableCell sx={PITableOperationCellStyles}>
         <SecondaryButton
           name="پرداخت"
-          backgroundColor="rgb(0, 140, 190)"
+          backgroundColor="rgb(5, 190, 30)"
           fontSize={isMobile ? "0.9rem" : "1rem"}
           width={isMobile ? "90px" : "120px"}
           height={"32px"}

@@ -15,6 +15,8 @@ export interface PaymentsItemProps {
   paymentDate: string;
   studentName: number;
   operation: (aboutMe: string | null) => void;
+  animationDelay?: number;
+  convertToPersian?: (text: string | number) => string;
 }
 
 const PaymentsItem: React.FC<PaymentsItemProps> = ({
@@ -22,6 +24,8 @@ const PaymentsItem: React.FC<PaymentsItemProps> = ({
   amount,
   studentName,
   operation,
+  animationDelay = 0,
+  convertToPersian = (text: string | number) => text.toString(),
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -30,8 +34,24 @@ const PaymentsItem: React.FC<PaymentsItemProps> = ({
   //   // navigate(`/OurCounselor/CounselorPage/${counselorId}`);
   // };
   return (
-    <TableRow sx={PITableRowStyles}>
-      <TableCell sx={PITableCellStyles}>{`${amount} تومان`}</TableCell>
+    <TableRow
+      sx={{
+        ...PITableRowStyles,
+        animation: "fadeInRow 0.4s ease-out",
+        animationDelay: `${animationDelay}s`,
+        "@keyframes fadeInRow": {
+          "0%": {
+            opacity: 0,
+          },
+          "100%": {
+            opacity: 1,
+          },
+        },
+      }}
+    >
+      <TableCell sx={PITableCellStyles}>{`${convertToPersian(
+        amount
+      )} تومان`}</TableCell>
       <TableCell sx={PITableCellStyles}>
         {/* <Link
           onClick={viewProfile}
@@ -40,20 +60,28 @@ const PaymentsItem: React.FC<PaymentsItemProps> = ({
         >
           {studentName}
         </Link> */}
-        {studentName}
+        {convertToPersian(studentName)}
       </TableCell>
-      <TableCell sx={PITableCellStyles}>{paymentDate}</TableCell>
+      <TableCell sx={PITableCellStyles}>
+        {convertToPersian(paymentDate)}
+      </TableCell>
       <TableCell>
         <SecondaryButton
-          name="جزییات"
-          backgroundColor="rgb(0, 140, 190)"
+          name="جزئیات"
+          backgroundColor="rgb(63, 81, 181)"
           fontSize={isMobile ? "0.9rem" : "1rem"}
-          width={isMobile ? "90px" : "150px"}
+          width={isMobile ? "80px" : "120px"}
           height={"32px"}
-          borderRadius={"8px"}
+          borderRadius="8px"
           onClick={() => {
             operation(
-              `شما در تاریخ ${paymentDate} مبلغ ${amount} تومان بابت حق مشاوره دانش‌آموز ${studentName} دریافت کردید.`
+              `شما در تاریخ ${convertToPersian(
+                paymentDate
+              )} مبلغ ${convertToPersian(
+                amount
+              )} تومان بابت حق مشاوره دانش‌آموز ${convertToPersian(
+                studentName
+              )} دریافت کردید.`
             );
           }}
         />
