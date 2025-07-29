@@ -33,6 +33,15 @@ import {
   PTextStyle,
 } from "./CounselorPaymentsStyles";
 import SecondaryButton from "@/components/common/SecondaryButton";
+import PaginationItem from "@mui/material/PaginationItem";
+
+// Function to convert English numbers to Persian
+const convertToPersianNumbers = (text: string | number): string => {
+  const persianNumbers = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+  return text
+    .toString()
+    .replace(/[0-9]/g, (match) => persianNumbers[parseInt(match)]);
+};
 
 const CounselorPayments = () => {
   const theme = useTheme();
@@ -58,7 +67,7 @@ const CounselorPayments = () => {
     setMoreDetails(null);
   }, []);
 
-  const fetchPayments = async () => {
+  const fetchPayments = async (page: number = 1) => {
     try {
       const token = getToken();
       if (!token) {
@@ -66,21 +75,24 @@ const CounselorPayments = () => {
         return;
       }
       setLoading(true);
-      const data = await CounselorPaymentsHistory(token, 10, 1);
+      const data = await CounselorPaymentsHistory(token, 5, page);
       if (data.isSuccess) {
         setPayments(data.value.items);
-        setTotalPages(data.totalPages);
+        setTotalPages(data.value.totalPages);
         setLoading(false);
       } else {
         console.error("خطا در ارتباط با سرور");
+        setLoading(false);
       }
     } catch (error) {
       console.error("خطا در ارتباط با سرور", error);
+      setLoading(false);
     }
   };
+
   useEffect(() => {
-    fetchPayments();
-  }, []);
+    fetchPayments(currentPage);
+  }, [currentPage]);
 
   return (
     <>
@@ -119,7 +131,7 @@ const CounselorPayments = () => {
           پرداخت‌های من
         </Typography>
         {loading ? (
-          <Typography sx={PTextStyle}>در حال بارگزاری</Typography>
+          <Typography sx={PTextStyle}>در حال بارگذاری</Typography>
         ) : (
           <Box>
             <Box sx={PMainBoxStyle}>
@@ -159,6 +171,8 @@ const CounselorPayments = () => {
                             key={index}
                             {...payment}
                             operation={showMoreDetails}
+                            animationDelay={index * 0.1}
+                            convertToPersian={convertToPersianNumbers}
                           />
                         ))}
                       </TableBody>
@@ -175,6 +189,16 @@ const CounselorPayments = () => {
                       dir="rtl"
                       size={isSmallScreen ? "small" : "medium"}
                       sx={PPaginationStyle}
+                      renderItem={(item) => (
+                        <PaginationItem
+                          {...item}
+                          page={
+                            item.page
+                              ? convertToPersianNumbers(item.page)
+                              : undefined
+                          }
+                        />
+                      )}
                     />
                   </Box>
                 </Box>
@@ -182,61 +206,61 @@ const CounselorPayments = () => {
             </Box>
           </Box>
         )}
-<Dialog
-  open={!!moreDetails}
-  onClose={closeMoreDetails}
-  dir="rtl"
-  maxWidth="sm"
-  fullWidth
-  PaperProps={{
-    sx: {
-      borderRadius: "16px",
-      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-    },
-  }}
->
-  <Box sx={{ position: "relative" }}>
-    <DialogTitle
-      sx={{
-        fontWeight: "bold",
-        padding: "20px 24px",
-        borderBottom: "1px solid #e0e0e0",
-        backgroundColor: "#f8f9fa",
-        borderRadius: "16px 16px 0 0",
-      }}
-    >
-      جزییات
-    </DialogTitle>
-  </Box>
-  <DialogContent sx={{ padding: "24px" }}>
-    <Typography
-      sx={{ fontSize: "17.6px", color: "#424242", textAlign: "center" }}
-    >
-      {moreDetails}
-    </Typography>
-  </DialogContent>
-  <DialogActions
-    sx={{ padding: "16px 24px", borderTop: "1px solid #e0e0e0" }}
-  >
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "flex-end",
-        width: "100%",
-      }}
-    >
-      <SecondaryButton
-        name="بستن"
-        backgroundColor="rgb(221, 84, 84)"
-        width="100px"
-        height="32px"
-        fontSize="14px"
-        borderRadius="12px"
-        onClick={closeMoreDetails}
-      />
-    </Box>
-  </DialogActions>
-</Dialog>
+        <Dialog
+          open={!!moreDetails}
+          onClose={closeMoreDetails}
+          dir="rtl"
+          maxWidth="sm"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: "16px",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+            },
+          }}
+        >
+          <Box sx={{ position: "relative" }}>
+            <DialogTitle
+              sx={{
+                fontWeight: "bold",
+                padding: "20px 24px",
+                borderBottom: "1px solid #e0e0e0",
+                backgroundColor: "#f8f9fa",
+                borderRadius: "16px 16px 0 0",
+              }}
+            >
+              جزییات
+            </DialogTitle>
+          </Box>
+          <DialogContent sx={{ padding: "24px" }}>
+            <Typography
+              sx={{ fontSize: "17.6px", color: "#424242", textAlign: "center" }}
+            >
+              {moreDetails}
+            </Typography>
+          </DialogContent>
+          <DialogActions
+            sx={{ padding: "16px 24px", borderTop: "1px solid #e0e0e0" }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "flex-end",
+                width: "100%",
+              }}
+            >
+              <SecondaryButton
+                name="بستن"
+                backgroundColor="rgb(221, 84, 84)"
+                width="100px"
+                height="32px"
+                fontSize="14px"
+                borderRadius="12px"
+                onClick={closeMoreDetails}
+              />
+            </Box>
+          </DialogActions>
+        </Dialog>
       </Box>
     </>
   );

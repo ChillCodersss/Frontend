@@ -19,6 +19,7 @@ export const PaymentsHistory = async (
   if (!response.ok) {
     const errorData = await response.json();
     console.log(errorData.message || "خطا در ارتباط با سرور");
+    throw new Error(errorData.message || "خطا در ارتباط با سرور");
   }
 
   return response.json();
@@ -37,6 +38,7 @@ export const payingPayments = async (token: string, id: number) => {
   if (!response.ok) {
     const errorData = await response.json();
     console.log(errorData.message || "خطا در ارتباط با سرور");
+    throw new Error(errorData.message || "خطا در ارتباط با سرور");
   }
   return response.json();
 };
@@ -58,6 +60,7 @@ export const cancelRequestCounselor = async (token: string) => {
   if (!response.ok) {
     const errorData = await response.json();
     console.log(errorData.message || "خطا در ارتباط با سرور");
+    throw new Error(errorData.message || "خطا در ارتباط با سرور");
   }
   return response.json();
 };
