@@ -19,6 +19,7 @@ export const CounselorPaymentsHistory = async (
   if (!response.ok) {
     const errorData = await response.json();
     console.log(errorData.message || "خطا در ارتباط با سرور");
+    throw new Error(errorData.message || "خطا در ارتباط با سرور");
   }
 
   return response.json();

@@ -1,66 +1,157 @@
 import { Box } from "@mui/material";
 import chatBackGround from "@/assets/chatBackGround.png";
 import ChatBubble, { ChatBubbleProps } from "./ChatBubble";
-import ChatInput from "./ChatInput";
+import { getUserInfo } from "@/services/auth";
+import { useEffect, useRef } from "react";
 
-interface MainChatProps {
-  messages: ChatBubbleProps[];
-  handleSend: (message: string) => void;
+interface ApiMessage {
+  id: number;
+  receiverId: number;
+  senderId: number;
+  seen: boolean;
+  text: string;
+  sendDate: string;
+  isFile?: boolean;
+  filePath?: string | null;
+  downloadUrl?: string | null;
+  isUploading?: boolean;
+  tempKey?: string;
 }
 
-const MainChat = ({ messages, handleSend }: MainChatProps) => (
-  <Box
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      height: "100vh",
-      width: "100%",
-      position: "relative",
-      backgroundImage: `url(${chatBackGround})`,
-      backgroundSize: "200px",
-      backgroundRepeat: "repeat",
-      backgroundPosition: "center",
-    }}
-  >
-    {/* overlay */}
-    <Box
-      sx={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(255,255,255,0.8)",
-        zIndex: 1,
-        pointerEvents: "none",
-      }}
-    />
+interface MainChatProps {
+  messages: ApiMessage[];
+  loading?: boolean;
+}
 
-    {/* chat bubbles */}
+const MainChat = ({ messages, loading }: MainChatProps) => {
+  const currentUser = getUserInfo();
+  const currentUserId = currentUser?.id;
+  const isStudent = currentUser?.role === "Student";
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = (smooth = false) => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({
+        behavior: smooth ? "smooth" : "auto",
+      });
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom(false);
+  }, []);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      scrollToBottom(true);
+    }
+  }, [messages.length]);
+
+  const mappedMessages: ChatBubbleProps[] = messages.map((msg) => ({
+    id: msg.id,
+    text: msg.text,
+    isOwn: Number(msg.senderId) === Number(currentUserId),
+    seen: msg.seen,
+    sendDate: msg.sendDate,
+    isStudent,
+    isFile: msg.isFile,
+    filePath: msg.filePath,
+    downloadUrl: msg.downloadUrl,
+    isUploading: msg.isUploading,
+    tempKey: msg.tempKey,
+  }));
+
+  //console.log("MainChat rendering messages:", mappedMessages);
+
+  return (
     <Box
       sx={{
-        flex: 1,
-        overflowY: "auto",
-        zIndex: 2,
         display: "flex",
         flexDirection: "column",
-        justifyContent: "flex-end",
+        width: "100%",
+        position: "relative",
+        backgroundImage: `url(${chatBackGround})`,
+        backgroundSize: "200px",
+        backgroundRepeat: "repeat",
+        backgroundPosition: "center",
+        flex: 1,
+        minHeight: 0,
       }}
     >
-      {messages.map((msg, idx) => (
-        <ChatBubble key={idx} {...msg} />
-      ))}
+      <Box
+        sx={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          backgroundColor: "rgba(255,255,255,0.8)",
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
+      />
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: mappedMessages.length === 0 ? "center" : "flex-start",
+          alignItems: mappedMessages.length === 0 ? "center" : "stretch",
+          paddingBottom: "16px",
+          scrollBehavior: "smooth",
+        }}
+      >
+        {loading ? (
+          <Box
+            sx={{
+              zIndex: 3,
+              color: "#888",
+              fontSize: "1.2rem",
+              background: "rgba(255,255,255,0.9)",
+              borderRadius: 2,
+              padding: "16px 32px",
+              boxShadow: 1,
+            }}
+          >
+            در حال بارگذاری
+          </Box>
+        ) : mappedMessages.length === 0 ? (
+          <Box
+            sx={{
+              zIndex: 3,
+              color: "#888",
+              fontSize: "1.2rem",
+              background: "rgba(255,255,255,0.9)",
+              borderRadius: 2,
+              padding: "16px 32px",
+              boxShadow: 1,
+            }}
+          >
+            شما پیامی ندارید
+          </Box>
+        ) : (
+          mappedMessages.map((msg, idx) => (
+            <Box
+              key={msg.tempKey || msg.id}
+              sx={{
+                "@keyframes fadeIn": {
+                  from: { opacity: 0, transform: "translateY(20px)" },
+                  to: { opacity: 1, transform: "translateY(0)" },
+                },
+                animation: "fadeIn 0.3s cubic-bezier(0.4,0,0.2,1)",
+                animationDelay: `${idx * 5}ms`,
+                animationFillMode: "both",
+              }}
+            >
+              <ChatBubble {...msg} />
+            </Box>
+          ))
+        )}
+        <div ref={messagesEndRef} />
+      </Box>
     </Box>
-    <Box
-      sx={{
-        position: "sticky",
-        bottom: 0,
-        zIndex: 5,
-        backgroundColor: "#fff",
-      }}
-    >
-      <ChatInput onSend={handleSend} />
-    </Box>
-  </Box>
-);
+  );
+};
 
 export default MainChat;

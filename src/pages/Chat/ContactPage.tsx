@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -8,64 +8,64 @@ import {
   InputAdornment,
   IconButton,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import ContactsItem from "@/components/Chat/ContactsItem";
-
-const contactsData = [
-  {
-    id: 1,
-    name: "هومن متین",
-    lastMessage: "سلام چطوری شما چه خبرا",
-    avatar: "",
-    online: true,
-    active: true,
-  },
-  {
-    id: 2,
-    name: "مهیار نیاوند",
-    lastMessage: "دوره خوبی رو با هم گذروندیم",
-    avatar: "",
-    online: false,
-    active: false,
-  },
-];
+import ContactsItem, {
+  ContactsItemProps,
+} from "@/components/Chat/ContactsItem";
+import { getUserInfo } from "@/services/auth";
+import Pagination from "@mui/material/Pagination";
+import PaginationItem from "@mui/material/PaginationItem";
+import {
+  contactPageBoxStyle,
+  contactPageTitleStyle,
+  contactPageTextFieldStyle,
+  contactPageDividerStyle,
+  contactPageListBoxStyle,
+  contactPagePaginationBoxStyle,
+  contactPagePaginationStyle,
+} from "./ContactPageStyles";
+import { useChatService } from "@/contexts/ChatServiceContext";
+import { useContacts } from "@/contexts/ContactsContext";
 
 const ContactPage: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [search, setSearch] = useState("");
-  const [contacts] = useState(contactsData);
+  const chatService = useChatService();
+  const chatServiceRef = useRef(chatService);
+  const {
+    contacts,
+    loading,
+    pageIndex,
+    setPageIndex,
+    totalPages,
+    search,
+    setSearch,
+    onlineContactIds,
+    setOnlineContactIds,
+    updateOnlineStatus,
+  } = useContacts();
 
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.includes(search)
-  );
+  // Setup ChatService and handlers for online contacts and status changes
+  useEffect(() => {
+    chatServiceRef.current = chatService;
+
+    chatService.onReceiveOnlineContacts((ids) => {
+      setOnlineContactIds(ids);
+    });
+
+    chatService.onReceiveUserStatusChange((userId, isOnline) => {
+      updateOnlineStatus(userId, isOnline);
+    });
+  }, [chatService, setOnlineContactIds, updateOnlineStatus]);
+
+  function toPersianNumber(num: number | string) {
+    return String(num).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d, 10)]);
+  }
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        padding: "20px",
-        boxSizing: "border-box",
-        animation: "slideLeft 0.5s cubic-bezier(0.4,0,0.2,1)",
-        "@keyframes slideLeft": {
-          from: {
-            opacity: 0,
-            transform: "translateX(70px)",
-          },
-          to: {
-            opacity: 1,
-            transform: "translateX(0)",
-          },
-        },
-      }}
-    >
-      <Typography
-        variant="h6"
-        sx={{ marginBottom: "16px", textAlign: "center" }}
-      >
+    <Box sx={contactPageBoxStyle}>
+      <Typography variant="h6" sx={contactPageTitleStyle}>
         مشاوران من
       </Typography>
       <TextField
@@ -73,7 +73,10 @@ const ContactPage: React.FC = () => {
         placeholder="جستجو..."
         value={search}
         dir="rtl"
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setPageIndex(1); // Reset to first page on search
+        }}
         slotProps={{
           input: {
             startAdornment: (
@@ -85,38 +88,57 @@ const ContactPage: React.FC = () => {
             ),
           },
         }}
-        sx={{ marginBottom: "16px" }}
+        sx={contactPageTextFieldStyle}
       />
-      <Divider sx={{ marginBottom: "16px" }} />
-      <Box
-        sx={{
-          maxHeight: 400,
-          overflowY: "auto",
-        }}
-      >
+      <Divider sx={contactPageDividerStyle} />
+      <Box sx={contactPageListBoxStyle}>
         <List>
-          {filteredContacts.length === 0 ? (
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+              <CircularProgress size={24} />
+            </Box>
+          ) : contacts.length === 0 ? (
             <Typography sx={{ textAlign: "center", marginTop: "16px" }}>
-              هیچ مشاوری ندارید.
+              هیچ مخاطبی ندارید.
             </Typography>
           ) : (
-            filteredContacts.map((contact) => (
+            contacts.map((contact: ContactsItemProps) => (
               <ContactsItem
-                key={contact.id}
-                {...contact}
+                key={contact.contactId}
+                contactId={contact.contactId}
+                contactName={contact.contactName}
+                lastMessage={contact.lastMessage}
+                picName={contact.picName}
+                contactProfilePicUrl={contact.contactProfilePicUrl}
+                online={onlineContactIds.includes(contact.contactId)}
+                active={contact.requestStatus === 4}
                 onClick={() => {
-                  if (location.pathname === "/dashboard/student-contacts") {
-                    navigate(`/dashboard/student-chat/${contact.id}`);
-                  } else if (
-                    location.pathname === "/dashboard/counselor-contacts"
-                  ) {
-                    navigate(`/dashboard/counselor-chat/${contact.id}`);
+                  if (getUserInfo()?.role === "Counselor") {
+                    navigate(`/dashboard/counselor-chat/${contact.contactId}`);
+                  } else if (getUserInfo()?.role === "Student") {
+                    navigate(`/dashboard/student-chat/${contact.contactId}`);
                   }
                 }}
               />
             ))
           )}
         </List>
+      </Box>
+      <Box sx={contactPagePaginationBoxStyle}>
+        <Pagination
+          dir="rtl"
+          count={totalPages}
+          page={pageIndex}
+          onChange={(_, value) => setPageIndex(value)}
+          renderItem={(item) => (
+            <PaginationItem
+              {...item}
+              page={item.page ? toPersianNumber(item.page) : undefined}
+            />
+          )}
+          sx={contactPagePaginationStyle}
+          color="primary"
+        />
       </Box>
     </Box>
   );

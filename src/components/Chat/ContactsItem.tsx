@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ListItem,
   ListItemAvatar,
@@ -10,24 +10,76 @@ import {
 import HistoryIcon from "@mui/icons-material/History";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 
-interface ContactsItemProps {
-  id: number;
-  name: string;
+const baseURL = "http://62.60.213.13/";
+
+export interface ContactsItemProps {
+  contactId: number;
+  contactName: string;
   lastMessage: string;
-  avatar: string;
-  online: boolean;
-  active: boolean;
+  contactProfilePicUrl: string;
+  picName: string;
+  role?: string;
+  online?: boolean;
+  active?: boolean;
   onClick?: () => void;
+  requestStatus?: number;
 }
 
+const fetchImage = async (picUrl: string) => {
+  try {
+    const response = await fetch(
+      `${baseURL}api/MediaFiles/StramImg?FileUrl=${encodeURIComponent(picUrl)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      const blob = await response.blob();
+      return URL.createObjectURL(blob);
+    }
+    return "";
+  } catch {
+    return "";
+  }
+};
+
 const ContactsItem: React.FC<ContactsItemProps> = ({
-  name,
+  contactName,
   lastMessage,
-  avatar,
+  contactProfilePicUrl,
+  picName,
   online,
-  active,
+  active = true,
   onClick,
 }) => {
+  const [avatarUrl, setAvatarUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    let isMounted = true;
+    let objectUrl: string | undefined;
+
+    if (contactProfilePicUrl) {
+      fetchImage(contactProfilePicUrl).then((url) => {
+        if (isMounted) {
+          setAvatarUrl(url || undefined);
+          objectUrl = url;
+        }
+      });
+    } else {
+      setAvatarUrl(undefined);
+    }
+
+    return () => {
+      isMounted = false;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [contactProfilePicUrl]);
+
   return (
     <ListItem
       component="button"
@@ -43,18 +95,23 @@ const ContactsItem: React.FC<ContactsItemProps> = ({
     >
       <ListItemAvatar>
         <Avatar
-          src={avatar}
+          src={avatarUrl}
+          alt={picName}
           sx={{
-            //  should i keep this?
-            border: online ? "3px solid #4caf50" : "2px solid #bdbdbd",
+            border: online ? "4px solid #4caf50" : "3px solid #bdbdbd",
+            padding: "1px",
+            borderRadius: "50%",
+            "& img": {
+              borderRadius: "50%",
+            },
           }}
-        ></Avatar>
+        />
       </ListItemAvatar>
       <ListItemText
         sx={{ direction: "rtl", textAlign: "right" }}
         primary={
           <Typography sx={{ direction: "rtl", textAlign: "right" }}>
-            {name}
+            {contactName}
           </Typography>
         }
         secondary={

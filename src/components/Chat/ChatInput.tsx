@@ -7,21 +7,25 @@ import {
   useTheme,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
+  onSendFile: (file: File) => void;
   disabled?: boolean;
   placeholder?: string;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
   onSend,
+  onSendFile,
   disabled = false,
   placeholder = "پیام خود را بنویسید...",
 }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [value, setValue] = useState("");
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
     if (value.trim()) {
@@ -32,9 +36,18 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      // the shift is for new line adding type shi*
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onSendFile(file);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -85,11 +98,37 @@ const ChatInput: React.FC<ChatInputProps> = ({
         }}
       />
       <IconButton
+        onClick={() => fileInputRef.current?.click()}
+        disabled={disabled}
+        sx={{
+          backgroundColor: "#fff",
+          height: isSmallScreen ? "36px" : "48px",
+          width: isSmallScreen ? "36px" : "48px",
+          color: "#0099ff",
+          transition: "background-color 0.4s, color 1s",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          "&:hover": {
+            backgroundColor: "#e3e3e3",
+          },
+        }}
+      >
+        <AttachFileIcon sx={{ color: "#0099ff" }} />
+      </IconButton>
+      <input
+        type="file"
+        //accept=".pdf"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileSelect}
+      />
+      <IconButton
         onClick={() => {
           if (disabled || !value.trim()) return;
           handleSend();
         }}
-        disabled={false}
+        disabled={disabled}
         sx={{
           backgroundColor: "#fff",
           height: isSmallScreen ? "36px" : "48px",
