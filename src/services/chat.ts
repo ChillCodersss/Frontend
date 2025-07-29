@@ -74,12 +74,11 @@ export class ChatService {
     this.jwtToken = token;
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(`http://${baseURL}/chat?access_token=${token}`, {})
-      .configureLogging(signalR.LogLevel.Information)
       .build();
 
     this.connection.on(
       "ReceivePrivateMessage",
-      (text, senderName, senderId) => {
+      (text, senderName, senderId, sendDate) => {
         const isFile = text.startsWith("http://62.60.213.13");
         let filePath = "";
         let downloadUrl = "";
@@ -90,7 +89,7 @@ export class ChatService {
             const pathParts = urlObj.pathname.split("/");
             const fileIndex = pathParts.indexOf("ChatFiles");
             if (fileIndex !== -1 && pathParts.length > fileIndex + 1) {
-              filePath = `ChatFiles/${pathParts[fileIndex + 1]}/`;
+              filePath = pathParts.slice(fileIndex).join("/");
               downloadUrl = text;
               messageText = decodeURIComponent(
                 pathParts[pathParts.length - 1].split("?")[0]
@@ -105,15 +104,7 @@ export class ChatService {
             messageText = "فایل ارسالی";
           }
         }
-        console.log("Received private message:", {
-          text,
-          senderName,
-          senderId,
-          isFile,
-          filePath,
-          downloadUrl,
-          messageText,
-        });
+
         if (this.onReceivePrivateMessageHandler) {
           this.onReceivePrivateMessageHandler({
             id: Date.now(),
@@ -121,41 +112,29 @@ export class ChatService {
             senderId: senderId ?? 0,
             seen: false,
             text: messageText,
-            sendDate: new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            })
-              .format(new Date())
-              .replace(/\u200e/g, "")
-              .replace(/,/g, " "),
-            isFile: isFile,
-            filePath: filePath,
-            downloadUrl: downloadUrl,
+            sendDate,
+            isFile,
+            filePath: filePath || undefined,
+            downloadUrl: downloadUrl || undefined,
+            tempKey: undefined,
           });
         }
       }
     );
 
     this.connection.on("SeenMessage", (messageIds, isSeen) => {
-      console.log("SeenMessage:", { messageIds, isSeen });
       if (this.onSeenMessageHandler) {
         this.onSeenMessageHandler(messageIds, isSeen);
       }
     });
 
     this.connection.on("ReceiveOnlineContacts", (onlineContactIds) => {
-      console.log("ReceiveOnlineContacts:", { onlineContactIds });
       if (this.onReceiveOnlineContactsHandler) {
         this.onReceiveOnlineContactsHandler(onlineContactIds);
       }
     });
 
     this.connection.on("ReceiveUserStatusChange", (userId, isOnline) => {
-      console.log("ReceiveUserStatusChange:", { userId, isOnline });
       if (this.onReceiveUserStatusChangeHandler) {
         this.onReceiveUserStatusChangeHandler(userId, isOnline);
       }
@@ -220,7 +199,6 @@ export class ChatService {
     }
 
     const filePath = await response.text();
-    console.log("Raw API response:", filePath);
 
     if (!filePath) {
       console.error("مسیر فایل در پاسخ سرور یافت نشد");
@@ -233,7 +211,6 @@ export class ChatService {
   public async sendFile(file: File, receiverId: string): Promise<string> {
     try {
       const filePath = await this.uploadMessageFile(this.jwtToken, file);
-      console.log("Sending file message:", { fileName: file.name, filePath });
       await this.connection.invoke(
         "SendPrivateMessage",
         file.name,

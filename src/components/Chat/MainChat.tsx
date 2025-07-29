@@ -12,7 +12,8 @@ interface ApiMessage {
   text: string;
   sendDate: string;
   isFile?: boolean;
-  filePath?: string;
+  filePath?: string | null;
+  downloadUrl?: string | null;
   isUploading?: boolean;
   tempKey?: string;
 }
@@ -55,11 +56,12 @@ const MainChat = ({ messages, loading }: MainChatProps) => {
     isStudent,
     isFile: msg.isFile,
     filePath: msg.filePath,
+    downloadUrl: msg.downloadUrl,
     isUploading: msg.isUploading,
     tempKey: msg.tempKey,
   }));
 
-  console.log("MainChat rendering messages:", mappedMessages);
+  //console.log("MainChat rendering messages:", mappedMessages);
 
   return (
     <Box

@@ -29,7 +29,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
 
   const handleSend = () => {
     if (value.trim()) {
-      console.log("Sending text message:", value);
       onSend(value);
       setValue("");
     }
@@ -45,7 +44,6 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      console.log("Selected file:", file.name);
       onSendFile(file);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
