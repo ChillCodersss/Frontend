@@ -1,0 +1,154 @@
+.erp-flex {
+    display: flex;
+}
+
+.erp-flex-center {
+    justify-content: center;
+    align-items: center;
+}
+
+.erp-flex-col {
+    flex-direction: column;
+}
+
+.erp-flex-grow {
+    flex-grow: 1;
+}
+
+.erp-container {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.erp-banner {
+    height: 25vh;
+    position: absolute;
+    top: var(--l-header-height-s);
+    padding: 0% 10%;
+}
+
+.erp-banner-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    background-image: radial-gradient(circle at bottom left, #1a49ba, #09f);
+    z-index: -2;
+}
+
+.erp-banner-h {
+    direction: rtl;
+    font-size: 2.5rem;
+    color: white;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.erp-error-img-container {
+    width: 100%;
+    height: calc(100dvh - var(--l-header-height-s));
+    overflow: hidden;
+
+    flex-direction: column;
+    row-gap: 30px;
+}
+
+.erp-error-img-wrapper {
+    position: relative;
+    aspect-ratio: 9/5;
+    overflow: hidden;
+
+    width: 100%;
+}
+
+.erp-error-img {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.erp-error-title-wrapper {
+    row-gap: 30px;
+    margin-bottom: 50px;
+}
+
+.erp-error-title {
+    direction: rtl;
+    font-size: 1.8rem;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+@media (min-width: 600px) {     /* sm */
+    .erp-banner {
+        justify-content: right;
+        top: var(--l-header-height-m);
+    }
+
+    .erp-banner-h {
+        font-size: 3rem;
+    }
+
+    .erp-error-img-container {
+        height: calc(100dvh - var(--l-header-height-m));
+    }
+
+    .erp-error-img-wrapper {
+        width: unset;
+        height: 50%;
+    }
+
+    .erp-error-title-wrapper {
+        row-gap: 30px;
+    }
+
+    .erp-error-title {
+        font-size: 2.5rem;
+    }
+}
+
+@media (min-width: 750px) {     /* md */
+    .erp-banner {
+        padding: 0% 5%;
+    }
+
+    .erp-banner-h {
+        font-size: 3.5rem;
+        text-align: unset;
+    }
+}
+
+@media (min-width: 1200px) {
+    .erp-error-img-container {
+        flex-direction: row;
+    }
+
+    .erp-error-img-wrapper {
+        width: unset;
+        height: unset;
+        flex-grow: 1;
+    }
+
+    .erp-error-title-wrapper {
+        padding: 0px 100px;
+    }
+
+    .erp-error-title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-height: 400px) {
+    .erp-error-img-wrapper {
+        height: 0;
+    }
+}
+
+@media (max-height: 500px) {
+    .erp-error-img-container {
+        row-gap: unset;
+    }
+}

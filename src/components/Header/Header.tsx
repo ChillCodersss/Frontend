@@ -46,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({ isWhiteMode = false }) => {
   const pages = [
     { label: "درباره ما", path: "/about-us" },
     { label: "استخدام", path: "/Recruitment" },
-    { label: "خدمات", path: "/#" },
+    { label: "خدمات", path: "/services" },
     { label: "مشاوران ما", path: "/OurCounselor" },
   ];
 
