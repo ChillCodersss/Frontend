@@ -79,7 +79,8 @@ export class ChatService {
 
     this.connection.on(
       "ReceivePrivateMessage",
-      (text, senderName, senderId) => {
+      (text, senderName, senderId, sendDate) => {
+        console.log("Received private message raw:", { text, senderName, senderId, sendDate });
         const isFile = text.startsWith("http://62.60.213.13");
         let filePath = "";
         let downloadUrl = "";
@@ -90,7 +91,7 @@ export class ChatService {
             const pathParts = urlObj.pathname.split("/");
             const fileIndex = pathParts.indexOf("ChatFiles");
             if (fileIndex !== -1 && pathParts.length > fileIndex + 1) {
-              filePath = `ChatFiles/${pathParts[fileIndex + 1]}/`;
+              filePath = pathParts.slice(fileIndex).join("/");
               downloadUrl = text;
               messageText = decodeURIComponent(
                 pathParts[pathParts.length - 1].split("?")[0]
@@ -105,14 +106,14 @@ export class ChatService {
             messageText = "فایل ارسالی";
           }
         }
-        console.log("Received private message:", {
-          text,
+        console.log("Processed private message:", {
+          text: messageText,
           senderName,
           senderId,
+          sendDate,
           isFile,
           filePath,
           downloadUrl,
-          messageText,
         });
         if (this.onReceivePrivateMessageHandler) {
           this.onReceivePrivateMessageHandler({
@@ -121,20 +122,11 @@ export class ChatService {
             senderId: senderId ?? 0,
             seen: false,
             text: messageText,
-            sendDate: new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: false,
-            })
-              .format(new Date())
-              .replace(/\u200e/g, "")
-              .replace(/,/g, " "),
-            isFile: isFile,
-            filePath: filePath,
-            downloadUrl: downloadUrl,
+            sendDate,
+            isFile,
+            filePath: filePath || undefined,
+            downloadUrl: downloadUrl || undefined,
+            tempKey: undefined,
           });
         }
       }
@@ -279,4 +271,5 @@ export class ChatService {
       return false;
     }
   }
+
 }

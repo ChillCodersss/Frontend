@@ -10,7 +10,6 @@ import { getMessages } from "@/services/chat";
 import { getUserInfo } from "@/services/auth";
 import ChatInput from "@/components/Chat/ChatInput";
 
-// Define the API message type
 interface ApiMessage {
   id: number;
   receiverId: number;
@@ -19,13 +18,13 @@ interface ApiMessage {
   text: string;
   sendDate: string;
   isFile?: boolean;
-  filePath?: string;
-  downloadUrl?: string;
+  filePath?: string | null;
+  fileUrl?: string | null;
   isUploading?: boolean;
   tempKey?: string;
+  downloadUrl?: string | null; // Added for compatibility with ChatBubble
 }
 
-// Helper to format date as Jalali (Persian) date string
 function formatJalaliDate(date: Date): string {
   return new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
     year: "numeric",
@@ -95,22 +94,21 @@ const ChatPage = () => {
           setMessages(
             response.value.map(
               (msg: {
-                isFile: unknown;
-                filePath: string;
-                text: string | number | boolean;
+                id: number;
+                receiverId: number;
+                senderId: number;
+                seen: boolean;
+                text: string;
+                sendDate: string;
+                isFile?: boolean;
+                filePath?: string | null;
+                fileUrl?: string | null;
               }) => ({
                 ...msg,
                 isUploading: false,
-                filePath:
-                  msg.isFile && msg.filePath && !msg.filePath.endsWith("/")
-                    ? `${msg.filePath}/`
-                    : msg.filePath,
-                downloadUrl: msg.isFile
-                  ? `${fileURLPrefix}${msg.filePath.replace(
-                      "ChatFiles/",
-                      ""
-                    )}/${encodeURIComponent(msg.text)}`
-                  : "",
+                filePath: msg.isFile ? msg.filePath : null,
+                fileUrl: msg.isFile ? msg.fileUrl : null,
+                downloadUrl: msg.isFile ? msg.fileUrl : null, // Use fileUrl as downloadUrl
               })
             )
           );
@@ -133,8 +131,6 @@ const ChatPage = () => {
       console.log("Received message:", msg);
       const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
 
-      // Skip sender's own messages to avoid duplicates
-      // The sender already has their message in the state (temporary or real)
       if (msg.senderId === currentUserId) {
         return;
       }
@@ -151,17 +147,12 @@ const ChatPage = () => {
     chatService.onSeenMessage((messageIds, isSeen) => {
       setMessages((prev) =>
         prev.map((msg) => {
-          // Case 1: Update existing messages with real IDs (for seen/unseen status)
           if (messageIds.includes(msg.id)) {
             return { ...msg, seen: isSeen };
           }
-
-          // Case 2: Replace temporary messages (negative IDs) with real message IDs
-          // This happens when sender gets response for their sent message
           if (msg.id < 0 && messageIds.length === 1) {
             return { ...msg, id: messageIds[0], seen: isSeen };
           }
-
           return msg;
         })
       );
@@ -181,7 +172,6 @@ const ChatPage = () => {
       const tempId = `temp-${Date.now()}`;
       const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
 
-      // Add temporary message
       setMessages((prev) => [
         ...prev,
         {
@@ -216,8 +206,8 @@ const ChatPage = () => {
           text: file.name,
           sendDate: formatJalaliDate(new Date()),
           isFile: true,
-          filePath: "",
-          downloadUrl: "",
+          filePath: undefined,
+          downloadUrl: undefined,
           isUploading: true,
           tempKey: tempId,
         },
@@ -235,8 +225,8 @@ const ChatPage = () => {
               ? {
                   ...msg,
                   text: file.name,
-                  filePath: filePath.endsWith("/") ? filePath : `${filePath}/`,
-                  downloadUrl: downloadUrl,
+                  filePath,
+                  downloadUrl,
                   isUploading: false,
                   tempKey: undefined,
                 }
@@ -248,7 +238,13 @@ const ChatPage = () => {
         setError(
           "خطا در ارسال فایل: " + ((error as Error).message || "خطای ناشناخته")
         );
-        setMessages((prev) => prev.filter((m) => m.tempKey !== tempId));
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.tempKey === tempId
+              ? { ...msg, isUploading: false, text: `${file.name} (خطا در بارگذاری)` }
+              : msg
+          )
+        );
       }
     } else {
       console.warn("No contactId for sending file");

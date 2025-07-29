@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Typography, Link, CircularProgress } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
-import { getToken } from "@/services/auth";
 
 export interface ChatBubbleProps {
   id: number;
@@ -13,11 +12,11 @@ export interface ChatBubbleProps {
   sendDate?: string;
   isFile?: boolean;
   filePath?: string;
+   downloadUrl?: string;
   isUploading?: boolean;
   tempKey?: string;
 }
 
-// Utility to convert Western digits to Persian digits
 function toPersianDigits(str: string) {
   return str.replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[parseInt(d)]);
 }
@@ -31,37 +30,30 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
   sendDate,
   isFile = false,
   filePath,
+  downloadUrl,
   isUploading = false,
   tempKey,
 }) => {
-  console.log("Rendering ChatBubble:", { id, text, isFile, filePath, isUploading, tempKey });
-
-  const handleDownload = async () => {
-    if (!filePath) {
-      console.error("No filePath provided for download:", { id, text });
+  //console.log("Rendering ChatBubble:", { id, text, isFile, filePath, isUploading, tempKey });
+  const handleDownload = () => {
+    if (!filePath && !downloadUrl) {
+      console.error("No filePath or downloadUrl provided for download:", { id, text });
       return;
     }
-    console.log("Attempting download:", { filePath, text });
-    try {
-      const token = getToken();
-      const response = await fetch(filePath, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (!response.ok) {
-        console.error("Download failed:", { status: response.status, statusText: response.statusText });
-        return;
-      }
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = text;
-      a.click();
-      window.URL.revokeObjectURL(url);
-      console.log("Download successful:", { filePath, text });
-    } catch (error) {
-      console.error("Download error:", error);
-    }
+    const urlToFetch = downloadUrl || filePath;
+    console.log("Attempting to open file:", { urlToFetch, text });
+    
+    // Get the auth token if available
+    // const token = getToken();
+    
+    // // Construct URL with token if present
+    // const finalUrl = token 
+    //   ? `${urlToFetch}${urlToFetch?.includes('?') ? '&' : '?'}token=${token}`
+    //   : urlToFetch;
+    
+    // Open the file in a new tab/window
+    window.open(urlToFetch, '_blank');
+    console.log("File opened in new tab:", { urlToFetch, text });
   };
 
   return (
@@ -106,7 +98,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
               {text} (در حال بارگذاری...)
             </Typography>
           </Box>
-        ) : isFile && filePath ? (
+        ) : isFile && (filePath || downloadUrl) ? (
           <Link
             component="button"
             onClick={handleDownload}
