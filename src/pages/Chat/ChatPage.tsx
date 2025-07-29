@@ -58,12 +58,6 @@ const ChatPage = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    console.log(
-      "ChatPage rendered, contactId:",
-      contactId,
-      "chatService:",
-      !!chatService
-    );
     if (!contactId) {
       console.warn("No contactId provided");
       return;
@@ -128,7 +122,6 @@ const ChatPage = () => {
     if (!contactId) return;
 
     chatService.onReceivePrivateMessage((msg) => {
-      console.log("Received message:", msg);
       const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
 
       if (msg.senderId === currentUserId) {
@@ -140,7 +133,6 @@ const ChatPage = () => {
         receiverId: Number(contactId),
         isUploading: false,
       };
-      console.log("Adding message to state:", newMessage);
       setMessages((prev) => [...prev, newMessage]);
     });
 
@@ -193,7 +185,6 @@ const ChatPage = () => {
 
   const handleSendFile = async (file: File) => {
     if (contactId) {
-      console.log("Sending file:", file.name);
       const tempId = `temp-${Date.now()}-${file.name}`;
       const currentUserId = parseInt(String(getUserInfo()?.id ?? "0"));
       setMessages((prev) => [
@@ -218,7 +209,6 @@ const ChatPage = () => {
           "ChatFiles/",
           ""
         )}/${encodeURIComponent(file.name)}`;
-        console.log("File uploaded:", { filePath, downloadUrl });
         setMessages((prev) =>
           prev.map((msg) =>
             msg.tempKey === tempId
@@ -241,7 +231,11 @@ const ChatPage = () => {
         setMessages((prev) =>
           prev.map((msg) =>
             msg.tempKey === tempId
-              ? { ...msg, isUploading: false, text: `${file.name} (خطا در بارگذاری)` }
+              ? {
+                  ...msg,
+                  isUploading: false,
+                  text: `${file.name} (خطا در بارگذاری)`,
+                }
               : msg
           )
         );

@@ -11,8 +11,8 @@ export interface ChatBubbleProps {
   seen?: boolean;
   sendDate?: string;
   isFile?: boolean;
-  filePath?: string;
-   downloadUrl?: string;
+  filePath?: string | null;
+  downloadUrl?: string | null;
   isUploading?: boolean;
   tempKey?: string;
 }
@@ -37,23 +37,18 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
   //console.log("Rendering ChatBubble:", { id, text, isFile, filePath, isUploading, tempKey });
   const handleDownload = () => {
     if (!filePath && !downloadUrl) {
-      console.error("No filePath or downloadUrl provided for download:", { id, text });
+      console.error("No filePath or downloadUrl provided for download:", {
+        id,
+        text,
+      });
       return;
     }
-    const urlToFetch = downloadUrl || filePath;
-    console.log("Attempting to open file:", { urlToFetch, text });
-    
-    // Get the auth token if available
-    // const token = getToken();
-    
-    // // Construct URL with token if present
-    // const finalUrl = token 
-    //   ? `${urlToFetch}${urlToFetch?.includes('?') ? '&' : '?'}token=${token}`
-    //   : urlToFetch;
-    
+    const urlToFetch = downloadUrl;
+
     // Open the file in a new tab/window
-    window.open(urlToFetch, '_blank');
-    console.log("File opened in new tab:", { urlToFetch, text });
+    if (urlToFetch) {
+      window.open(urlToFetch, "_blank");
+    }
   };
 
   return (
@@ -154,8 +149,8 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
                 {toPersianDigits(sendDate)}
               </Typography>
             )}
-            {isOwn && (
-              seen ? (
+            {isOwn &&
+              (seen ? (
                 <DoneAllIcon
                   fontSize="small"
                   sx={{ color: "green" }}
@@ -167,8 +162,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
                   sx={{ color: "green" }}
                   titleAccess="Delivered"
                 />
-              )
-            )}
+              ))}
           </Box>
         )}
       </Box>

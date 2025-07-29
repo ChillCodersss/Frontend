@@ -74,13 +74,11 @@ export class ChatService {
     this.jwtToken = token;
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(`http://${baseURL}/chat?access_token=${token}`, {})
-      .configureLogging(signalR.LogLevel.Information)
       .build();
 
     this.connection.on(
       "ReceivePrivateMessage",
       (text, senderName, senderId, sendDate) => {
-        console.log("Received private message raw:", { text, senderName, senderId, sendDate });
         const isFile = text.startsWith("http://62.60.213.13");
         let filePath = "";
         let downloadUrl = "";
@@ -106,15 +104,7 @@ export class ChatService {
             messageText = "فایل ارسالی";
           }
         }
-        console.log("Processed private message:", {
-          text: messageText,
-          senderName,
-          senderId,
-          sendDate,
-          isFile,
-          filePath,
-          downloadUrl,
-        });
+
         if (this.onReceivePrivateMessageHandler) {
           this.onReceivePrivateMessageHandler({
             id: Date.now(),
@@ -133,21 +123,18 @@ export class ChatService {
     );
 
     this.connection.on("SeenMessage", (messageIds, isSeen) => {
-      console.log("SeenMessage:", { messageIds, isSeen });
       if (this.onSeenMessageHandler) {
         this.onSeenMessageHandler(messageIds, isSeen);
       }
     });
 
     this.connection.on("ReceiveOnlineContacts", (onlineContactIds) => {
-      console.log("ReceiveOnlineContacts:", { onlineContactIds });
       if (this.onReceiveOnlineContactsHandler) {
         this.onReceiveOnlineContactsHandler(onlineContactIds);
       }
     });
 
     this.connection.on("ReceiveUserStatusChange", (userId, isOnline) => {
-      console.log("ReceiveUserStatusChange:", { userId, isOnline });
       if (this.onReceiveUserStatusChangeHandler) {
         this.onReceiveUserStatusChangeHandler(userId, isOnline);
       }
@@ -212,7 +199,6 @@ export class ChatService {
     }
 
     const filePath = await response.text();
-    console.log("Raw API response:", filePath);
 
     if (!filePath) {
       console.error("مسیر فایل در پاسخ سرور یافت نشد");
@@ -225,7 +211,6 @@ export class ChatService {
   public async sendFile(file: File, receiverId: string): Promise<string> {
     try {
       const filePath = await this.uploadMessageFile(this.jwtToken, file);
-      console.log("Sending file message:", { fileName: file.name, filePath });
       await this.connection.invoke(
         "SendPrivateMessage",
         file.name,
@@ -271,5 +256,4 @@ export class ChatService {
       return false;
     }
   }
-
 }

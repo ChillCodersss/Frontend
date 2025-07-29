@@ -12,8 +12,8 @@ interface ApiMessage {
   text: string;
   sendDate: string;
   isFile?: boolean;
-  filePath?: string;
-  downloadUrl?: string;
+  filePath?: string | null;
+  downloadUrl?: string | null;
   isUploading?: boolean;
   tempKey?: string;
 }
