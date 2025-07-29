@@ -9,7 +9,7 @@ import SecondaryButton from "@/components/common/SecondaryButton";
 import CounselorSwiper from "@/components/Landing/Swiper.tsx";
 import RoadMap from "@/components/Landing/RoadMap";
 import Logo from "@/assets/landing_banner_logo.png";
-import ChatImage from "@/assets/chat_screen.jpg";
+import ChatImage from "@/assets/chat_screen.png";
 import RecImage from "@/assets/recruit_screen.jpg";
 import './Landing.css';
 

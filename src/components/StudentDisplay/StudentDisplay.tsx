@@ -156,7 +156,7 @@ const StudentDisplayPopup: React.FC<Props> = ({ studentId }) => {
                     name="نمایش اطلاعات"
                     variant="contained"
                     onClick={handleOpenPopup}
-                    fontSize={isMobile ? "0.9rem" : "1rem"}
+                    fontSize={isMobile ? "0.75rem" : "1rem"}
                     backgroundColor="rgb(63, 81, 181)"
                     width={isMobile ? "80px" : "120px"}
                     height={"40px"}
