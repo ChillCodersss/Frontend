@@ -78,7 +78,7 @@ export class ChatService {
 
     this.connection.on(
       "ReceivePrivateMessage",
-      (text, senderName, senderId, sendDate) => {
+      (text, senderId, sendDate) => {
         const isFile = text.startsWith("http://62.60.213.13");
         let filePath = "";
         let downloadUrl = "";
