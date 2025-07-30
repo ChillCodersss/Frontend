@@ -255,7 +255,7 @@ const Login: React.FC = () => {
                   sx={{
                     textDecoration: "none",
                     marginRight: "7px",
-                    color: "gray",
+                    color: "rgba(14, 87, 160, 1)",
                     fontSize: "0.9rem",
                     "&:hover": { color: "rgb(3, 37, 107)" },
                   }}
@@ -283,9 +283,10 @@ const Login: React.FC = () => {
                 <Link
                   href="/signup"
                   sx={{
-                    textDecorationColor: "gray",
-                    color: "gray",
+                    textDecorationColor: "rgba(14, 87, 160, 1)",
+                    color: "rgba(14, 87, 160, 1)",
                     fontSize: "0.9rem",
+                    textDecoration: "none",
                     "&:hover": { color: "rgb(3, 37, 107)" },
                   }}
                 >
@@ -294,7 +295,7 @@ const Login: React.FC = () => {
                 <span
                   style={{
                     fontSize: "0.9rem",
-                    marginLeft: "4px",
+                    marginLeft: "5px",
                     color: "black",
                   }}
                 >

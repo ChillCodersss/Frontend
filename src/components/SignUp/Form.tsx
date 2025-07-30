@@ -11,6 +11,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+import Link from "@mui/material/Link";
 
 const SignUpForm: React.FC = () => {
   const navigate = useNavigate();
@@ -243,28 +244,43 @@ const SignUpForm: React.FC = () => {
             component="a"
             href="/recruitment"
             sx={{
-              color: "black",
+              color: "rgba(14, 87, 160, 1)",
               textDecoration: "none",
-              "&:hover": {
-                textDecoration: "underline",
-              },
+              "&:hover": { color: "rgb(3, 37, 107)" },
             }}
           >
             فرم استخدام مشاور
           </Box>
-          <Box
-            component="a"
-            href="/login"
-            sx={{
-              color: "black",
-              textDecoration: "none",
-              "&:hover": {
-                textDecoration: "underline",
-              },
-            }}
-          >
-            اکانت دارم
-          </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginTop: "1px",
+                  alignItems: "center",
+                }}
+              >
+                <Link
+                  href="/login"
+                  sx={{
+                    textDecorationColor: "gray",
+                    color: "rgba(14, 87, 160, 1)",
+                    // fontSize: "1rem",
+                    textDecoration: "none",
+                    "&:hover": { color: "rgb(3, 37, 107)" },
+                  }}
+                >
+                   ورود
+                </Link>
+                <span
+                  style={{
+                    // fontSize: "1rem",
+                    marginLeft: "5px",
+                    color: "black",
+                  }}
+                >
+                  اکانت داری؟
+                </span>
+              </Box>
         </Box>
       </Box>
     </form>
