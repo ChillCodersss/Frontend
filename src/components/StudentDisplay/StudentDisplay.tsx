@@ -10,6 +10,7 @@ import { getToken } from "@/services/auth";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import SecondaryButton from "../common/SecondaryButton";
+import defaultphoto from "@/assets/DefaultPerson.png"
 
 
 interface Props {
@@ -31,6 +32,7 @@ const StudentDisplayPopup: React.FC<Props> = ({ studentId }) => {
     schoolName: "نامشخص",
     province: "نامشخص",
     picUrl: "/src/assets/DefaultPerson.png",
+
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
@@ -238,7 +240,7 @@ const StudentDisplayPopup: React.FC<Props> = ({ studentId }) => {
                   src={studentData.picUrl}
                   alt="Profile"
                   onError={(e) => {
-                    e.currentTarget.src = "/src/assets/DefaultPerson.png";
+                    e.currentTarget.src = defaultphoto;
                   }}
                   style={{
                     width: isMobile ? "120px" : "180px",
