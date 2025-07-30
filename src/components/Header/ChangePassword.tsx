@@ -37,34 +37,34 @@ const ChangePassword = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.newPassword || !formData.confirmedNewPassword) {
-      toast.error("لطفا رمز عبور جدید را وارد کنید");
-      return;
-    }
-    if (formData.newPassword !== formData.confirmedNewPassword) {
-      toast.error("رمز عبورهای وارد شده مطابقت ندارند");
-      return;
-    }
-    if (formData.newPassword.length < 8) {
-      toast.error("رمز عبور باید حداقل 8 کاراکتر باشد");
-      return;
-    }
-    if (!/[A-Z]/.test(formData.newPassword)) {
-      toast.error("رمز عبور باید حداقل یک حرف بزرگ داشته باشد");
-      return;
-    }
-    if (!/[a-z]/.test(formData.newPassword)) {
-      toast.error("رمز عبور باید حداقل یک حرف کوچک داشته باشد");
-      return;
-    }
-    if (!/[0-9]/.test(formData.newPassword)) {
-      toast.error("رمز عبور باید حداقل یک عدد داشته باشد");
-      return;
-    }
-    if (!/[!@#$%^&*]/.test(formData.newPassword)) {
-      toast.error("رمز عبور باید حداقل یک کاراکتر خاص داشته باشد");
-      return;
-    }
+    // if (!formData.newPassword || !formData.confirmedNewPassword) {
+    //   toast.error("لطفا رمز عبور جدید را وارد کنید");
+    //   return;
+    // }
+    // if (formData.newPassword !== formData.confirmedNewPassword) {
+    //   toast.error("رمز عبورهای وارد شده مطابقت ندارند");
+    //   return;
+    // }
+    // if (formData.newPassword.length < 8) {
+    //   toast.error("رمز عبور باید حداقل 8 کاراکتر باشد");
+    //   return;
+    // }
+    // if (!/[A-Z]/.test(formData.newPassword)) {
+    //   toast.error("رمز عبور باید حداقل یک حرف بزرگ داشته باشد");
+    //   return;
+    // }
+    // if (!/[a-z]/.test(formData.newPassword)) {
+    //   toast.error("رمز عبور باید حداقل یک حرف کوچک داشته باشد");
+    //   return;
+    // }
+    // if (!/[0-9]/.test(formData.newPassword)) {
+    //   toast.error("رمز عبور باید حداقل یک عدد داشته باشد");
+    //   return;
+    // }
+    // if (!/[!@#$%^&*]/.test(formData.newPassword)) {
+    //   toast.error("رمز عبور باید حداقل یک کاراکتر خاص داشته باشد");
+    //   return;
+    // }
     try {
       const token = getToken();
       if (!token) {
@@ -78,7 +78,9 @@ const ChangePassword = () => {
         formData.confirmedNewPassword
       );
       if (data.isFailure) {
-        toast.error(data.message || "خطا در ارتباط با سرور");
+        const firstError = data.message.split(" | ")[0];
+        toast.error(firstError);
+        // toast.error(data.message);
         return;
       }
       if (data.isSuccess) {

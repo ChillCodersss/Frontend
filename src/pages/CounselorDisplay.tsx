@@ -441,10 +441,6 @@ const CounselorDisplay: React.FC = () => {
         return;
       }
 
-      if (!response.ok) {
-        throw new Error("خطا در ارسال نظر");
-      }
-
       const data: ApiResponse = await response.json();
 
       if (data.isFailure) {
