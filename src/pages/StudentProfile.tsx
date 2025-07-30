@@ -734,24 +734,11 @@ const StudentProfile = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Error details:", errorData);
-
-        if (errorData.errors) {
-          const validationErrors = Object.entries(errorData.errors)
-            .map(
-              ([field, errors]) =>
-                `${field}: ${(errors as string[]).join(", ")}`
-            )
-            .join("\n");
-          toast.error(`خطاهای اعتبارسنجی:\n${validationErrors}`);
-          return;
-        }
-
-        toast.error(
-          errorData.title || errorData.message || "خطا در بروزرسانی پروفایل"
-        );
+        const firstError = errorData.message.split(" | ")[0];
+        toast.error(firstError);
         return;
-      }
+        
+}
 
       const data = await response.json();
       console.log("Update response:", data);

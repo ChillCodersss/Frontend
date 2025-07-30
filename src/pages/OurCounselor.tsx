@@ -77,7 +77,7 @@ const OurCounselor = () => {
   const [loadingTimeouts, setLoadingTimeouts] = useState<
     Record<string, number>
   >({});
-  const pageSize = 4;
+  const pageSize = 3;
   const navigate = useNavigate();
 
   const getMajorCode = (major: string) => {

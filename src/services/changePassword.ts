@@ -22,10 +22,11 @@ export const changePassword = async (
     }
   );
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "Failed to change password");
-  }
+  // if (!response.ok) {
+  //   const errorData = await response.json();
+  //   console.log("555")
+  //   throw new Error(errorData.message || "Failed to change password");
+  // }
 
   return response.json();
 };
