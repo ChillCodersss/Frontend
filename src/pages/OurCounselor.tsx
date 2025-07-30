@@ -12,6 +12,7 @@ import {
   Pagination,
   IconButton,
   CircularProgress,
+  Fade,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import StarIcon from "@mui/icons-material/Star";
@@ -22,7 +23,9 @@ import { IoIosArrowBack } from "react-icons/io";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import sampp from "../assets/DefaultPerson.png";
-import ourCounselorPoster from "../assets/ourcounselor_poster.png";
+// import ourCounselorPoster from "../assets/ourcounselor_poster.png";
+import './OurCounselor.css';
+import Logo from "@/assets/UsersGroup.svg";
 
 const toPersianNumber = (num: number): string => {
   const persianDigits = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
@@ -243,7 +246,18 @@ const OurCounselor = () => {
     <>
       <Box sx={{ minHeight: "100vh", direction: "rtl" }}>
         {/* Top Poster */}
-        <Box
+        <section className='oc-container oc-banner'>
+            <div className='oc-banner-bg'>
+                <img className="oc-banner-bg-img" src={Logo}/>
+            </div>
+            <Fade timeout={600} in={true}>
+                <h1 className='oc-banner-h'>مشاوران ما</h1>
+            </Fade>
+            <Fade timeout={600} in={true}>
+                <p className="oc-banner-p">با مشاوران متخصص و با تجربه ما، مسیر موفقیت را هموار کنید</p>
+            </Fade>
+        </section>
+        {/* <Box
           sx={{
             width: "100%",
             height: isMobile ? "200px" : "400px",
@@ -308,7 +322,7 @@ const OurCounselor = () => {
               با مشاوران متخصص و با تجربه ما، مسیر موفقیت را هموار کنید
             </Typography>
           </Box>
-        </Box>
+        </Box> */}
 
         {/* Search and Filter Container */}
         <Box
