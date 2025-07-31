@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ children }) => {
     {
       label: "پرداختی ها",
       icon: <AttachMoneyIcon />,
-      path: "/dashboard/payments ",
+      path: "/dashboard/payments",
     },
   ];
 
