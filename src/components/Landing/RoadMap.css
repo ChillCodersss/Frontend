@@ -1,0 +1,109 @@
+:root {
+    --rm-img-width: 160px;
+    --rm-line-scale: 0;
+}
+
+.rm-step-label-wrapper {
+    height: fit-content;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    margin-bottom: 30px;
+    row-gap: 20px;
+}
+
+.rm-step-label-first-row {
+    display: flex;
+    align-items: center;
+    direction: rtl;
+    width: 100%;
+}
+
+.rm-label-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #cccccc;
+    color: #ffffff;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 2px 15px 0px rgba(0,0,0,.25);
+    background-image: radial-gradient(circle at bottom left, #1a49ba, #09f);
+    margin-left: 10px;
+}
+
+.rm-label {
+    direction: rtl;
+    font-size: 1rem;
+    font-weight: 600;
+    max-width: 200px;
+    text-align: center;
+}
+
+.rm-img {
+    width: 280px;
+    aspect-ratio: 4/3;
+    border-radius: 13px;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+@media (min-width: 600px) {
+    .rm-desktop {
+        width: 100%;
+        direction: rtl;
+        display: flex;
+        justify-content: space-around;
+        position: relative;
+    }
+
+    .rm-step-label-wrapper {
+        margin-bottom: unset;
+    }
+
+    .rm-label-number {
+        margin-left: unset;
+    }
+
+    .rm-label {
+        width: 160px;
+        height: 50px;
+        max-width: unset;
+    }
+
+    .rm-img {
+        width: 160px;
+    }
+
+    .rm-line {
+        position: absolute;
+        top: 25px;
+        border: 2px dashed #CCCCCC;
+        width: calc(100% - (100% - var(--rm-img-width) * 3) / 3 - var(--rm-img-width));
+        transform: translateY(-50%) scaleX(var(--rm-line-scale));
+        transform-origin: right;
+        transition: transform 1s ease-in-out 0.3s;
+        /* transition: transform 0.6s ease-in-out 0.3s; */
+    }
+}
+
+@media (min-width: 990px) {
+    .rm-label {
+        width: 200px;
+        height: 60px;
+        max-width: unset;
+    }
+
+    .rm-img {
+        width: 240px;
+    }
+
+    .rm-line {
+        --rm-img-width: 240px;
+    }
+}

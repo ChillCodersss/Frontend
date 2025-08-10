@@ -1,0 +1,143 @@
+.ab-container {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ab-banner {
+    height: calc(60vh - var(--l-header-height-s));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 10% 10%;
+}
+
+.ab-banner-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: radial-gradient(circle at bottom left, #1a49ba, #09f);
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: -2;
+}
+
+.ab-banner-bg-img {
+    position: absolute;
+    height: 80%;
+    aspect-ratio: 1;
+    z-index: -1;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 15%;
+}
+
+.ab-banner-h {
+    direction: rtl;
+    font-size: 2.5rem;
+    color: white;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.ab-text-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 50px;
+    direction: rtl;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0px 10%;
+    overflow: hidden;
+}
+
+.ab-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+    direction: rtl;
+    width: 100%;
+    min-width: 200px;
+}
+
+.ab-image-wrapper {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 200px;
+}
+
+.ab-image {
+    position: absolute;
+    /* height: 200px; */
+    width: 80%;
+    max-width: 500px;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+@media (min-width: 600px) {     /* sm */
+    .ab-banner {
+        height: calc(60vh - var(--l-header-height-m));
+        justify-content: right;
+    }
+
+    .ab-banner-h {
+        font-size: 3rem;
+    }
+
+    .ab-image-wrapper {
+        min-height: 300px;
+    }
+}
+
+@media (min-width: 750px) {     /* md */
+    .ab-banner {
+        padding: 10% 10%;
+    }
+
+    .ab-banner-bg-img {
+        height: 80%;
+        left: 0;
+        transform: translateX(15%);
+    }
+
+    .ab-banner-h {
+        font-size: 3.5rem;
+        text-align: unset;
+    }
+
+    .ab-text-container {
+        flex-direction: row;
+        padding: 0px 10%;
+    }
+
+    .ab-tc1 {
+        flex-direction: row-reverse;
+    }
+
+    .ab-text-wrapper {
+        width: 40%;
+    }
+
+    .ab-tw2 {
+        width: 60%;
+    }
+
+    .ab-image {
+        /* height: 250px; */
+        width: 50%;
+    }
+
+    .ab-image2 {
+        width: 75%;
+    }
+}

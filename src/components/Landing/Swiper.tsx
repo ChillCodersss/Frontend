@@ -1,0 +1,341 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+import {
+  Box,
+  Typography,
+  Avatar,
+  useMediaQuery,
+  Fab,
+  IconButton,
+  Zoom,
+} from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
+import EventIcon from "@mui/icons-material/Event";
+import SchoolIcon from "@mui/icons-material/School";
+import CircleIcon from "@mui/icons-material/Circle";
+import { IoIosArrowBack } from "react-icons/io";
+import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
+import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+import {
+  OuterBoxStyle,
+  SwiperTopSectionStyle,
+  SwiperButtonsStyle,
+  SwiperSlideStyle,
+  IconStyle,
+  SwiperSlideTopSection,
+  SwiperSlideAvatar,
+  SwiperSlideTopSectionRateStyle,
+  SwiperSlideIconButtonStyle,
+} from "./SwiperStyles";
+import "swiper";
+import "../../../node_modules/swiper/swiper.css";
+import "../../../node_modules/swiper/swiper-bundle.css";
+import "../../../node_modules/swiper/modules/pagination.css";
+import "../../../node_modules/swiper/modules/navigation.css";
+import "swiper/swiper-bundle.css";
+// import "swiper/swiper-bundle.min.css";
+import { useNavigate } from "react-router";
+
+interface Counselor {
+  id: number;
+  fullName: string;
+  uniMajor: string;
+  hsMajor: string;
+  uniName: string;
+  entranceExamYear: string;
+  employmentDuration: number;
+  picName: string | null;
+  picUrl: string;
+  rate: number;
+}
+
+interface ApiResponse {
+  value: {
+    items: Counselor[];
+    pageIndex: number;
+    pageSize: number;
+    totalPages: number;
+    hasPreviousPage: boolean;
+    hasNextPage: boolean;
+    totalCount: number;
+    filteredCount: number;
+  };
+  isSuccess: boolean;
+  isFailure: boolean;
+  message: string | null;
+  error: {
+    code: string;
+    message: string;
+  };
+}
+
+const toPersianDigits = (number: number | string): string => {
+  const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  return number
+    .toString()
+    .replace(/[0-9]/g, (digit) => persianDigits[parseInt(digit)]);
+};
+
+const CounselorSwiper = () => {
+  const isMobile = useMediaQuery("(max-width:600px)");
+  const isTablet = useMediaQuery("(min-width:601px) and (max-width:960px)");
+  // const isDesktop = useMediaQuery("(min-width:961px)");
+  const [counselors, setCounselors] = useState<Counselor[]>([]);
+  // animation
+  const [buttonsVisible, setButtonsVisible] = useState({
+    customPrev: false,
+    customNext: false,
+    showMore: false,
+  });
+  const navigate = useNavigate();
+
+  const fetchCounselors = async () => {
+    try {
+      const response = await axios.get<ApiResponse>(
+        "http://62.60.213.13/api/Counselor/GetList",
+        {
+          params: { PageSize: 5, PageIndex: 1 },
+        }
+      );
+
+      if (response.data.isSuccess) {
+        setCounselors(response.data.value.items || []);
+      } else {
+        setCounselors([]);
+      }
+    } catch (error) {
+      console.error("Error fetching counselors:", error);
+      setCounselors([]);
+    }
+  };
+  useEffect(() => {
+    fetchCounselors();
+  }, []);
+
+  // animation
+  useEffect(() => {
+    const customPrev = document.querySelectorAll(`[id="custom-prev"]`);
+    const customNext = document.querySelectorAll(`[id="custom-next"]`);
+    const showMore = document.querySelectorAll(`[id="show-more"]`);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            if (entry.target.id === "custom-prev") {
+              setButtonsVisible((prev) => ({
+                ...prev,
+                customPrev: true,
+              }));
+            }
+            if (entry.target.id === "custom-next") {
+              setButtonsVisible((prev) => ({
+                ...prev,
+                customNext: true,
+              }));
+            }
+            if (entry.target.id === "show-more") {
+              setButtonsVisible((prev) => ({
+                ...prev,
+                showMore: true,
+              }));
+            }
+
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      {
+        threshold: 0.3,
+      }
+    );
+
+    observer.observe(customPrev[0]);
+    observer.observe(customNext[0]);
+    observer.observe(showMore[0]);
+  }, []);
+
+  return (
+    <Box sx={OuterBoxStyle}>
+      {/* top section */}
+      <Box sx={SwiperTopSectionStyle}>
+        <Box sx={SwiperButtonsStyle}>
+          <Zoom timeout={800} in={buttonsVisible.customNext}>
+            <Fab sx={{ boxShadow: "none" }} aria-label="next" id="custom-next">
+              <ArrowBackIosRoundedIcon />
+            </Fab>
+          </Zoom>
+          <Zoom timeout={800} in={buttonsVisible.customPrev}>
+            <Fab sx={{ boxShadow: "none" }} aria-label="prev" id="custom-prev">
+              <ArrowForwardIosRoundedIcon />
+            </Fab>
+          </Zoom>
+        </Box>
+        <Box>
+          <Fab
+            variant="extended"
+            sx={{
+              marginLeft: isMobile ? "20px" : "0px",
+              boxShadow: "none",
+              height: "56px",
+              fontSize: isMobile ? "12px" : "18px",
+              ml: 1,
+              // animation
+              transform: buttonsVisible.showMore
+                ? "translateX(0px)"
+                : "translateX(-50%)",
+              transition: "transform 800ms, opacity 800ms",
+              opacity: buttonsVisible.showMore ? "100%" : "0%",
+            }}
+            onClick={() => {
+              navigate("/OurCounselor");
+            }}
+            id={"show-more"}
+          >
+            <GroupAddIcon sx={{ ml: 1 }} />
+            مشاهده بیشتر
+          </Fab>
+        </Box>
+      </Box>
+      {/* swiper section */}
+      <Box>
+        <Swiper
+          dir="rtl"
+          slidesPerView={1}
+          centeredSlides={true}
+          grabCursor={true}
+          spaceBetween={30}
+          autoplay={{
+            delay: 7000,
+            disableOnInteraction: true,
+            stopOnLastSlide: true,
+          }}
+          breakpoints={{
+            600: {
+              centeredSlides: false,
+            },
+            960: {
+              slidesPerView: 3,
+              centeredSlides: false,
+            },
+          }}
+          navigation={{
+            prevEl: "#custom-prev",
+            nextEl: "#custom-next",
+          }}
+          modules={[Navigation, Autoplay]}
+          className="mySwiper"
+          style={{ padding: "4px 20px" }}
+        >
+          {counselors.map((counselor, index) => (
+            <SwiperSlide key={counselor.id}>
+              <Box
+                key={counselor.id}
+                sx={{
+                  ...SwiperSlideStyle,
+                  maxWidth: isMobile ? "300px" : "500px",
+                  // animation
+                  transform: buttonsVisible.showMore
+                    ? "translateX(0px)"
+                    : "translateX(-50%)",
+                  transition: "transform 800ms, opacity 800ms",
+                  opacity: buttonsVisible.showMore ? "100%" : "0%",
+                  transitionDelay: `${index * 100}ms`,
+                }}
+              >
+                {/* Top Section */}
+                <Box sx={SwiperSlideTopSection}>
+                  <Typography variant="body2" sx={{ color: "#fff" }}>
+                    تجربه کار: {toPersianDigits(counselor.employmentDuration)} سال
+                  </Typography>
+                  <Box sx={SwiperSlideTopSectionRateStyle}>
+                    <StarIcon sx={{ color: "#FFD700", fontSize: "20px" }} />
+                    <Typography variant="body2" sx={{ color: "#fff" }}>
+                      {counselor.rate
+                        .toLocaleString("fa-IR")
+                        .toString()
+                        .replace("٫", ".")}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                {/* Profile Section */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: "16px",
+                    padding: "0 16px",
+                    marginTop: "10px",
+                  }}
+                >
+                  <Avatar
+                    onClick={() => {
+                      navigate(`/OurCounselor/CounselorPage/${counselor.id}`);
+                    }}
+                    sx={{
+                      width: isMobile ? 100 : 120,
+                      height: isMobile ? 100 : 120,
+                      ...SwiperSlideAvatar,
+                    }}
+                    src={counselor.picUrl}
+                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "8px",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{ fontWeight: "bold", color: "#1a49ba" }}
+                    >
+                      {counselor.fullName}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      <CircleIcon sx={IconStyle} />
+                      {counselor.hsMajor}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      <SchoolIcon sx={IconStyle} />
+                      {counselor.uniMajor}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: "#666" }}>
+                      <EventIcon sx={IconStyle} />
+                      کنکور {toPersianDigits(counselor.entranceExamYear)}
+                    </Typography>
+                  </Box>
+                </Box>
+                <IconButton
+                  onClick={() => {
+                    navigate(`/OurCounselor/CounselorPage/${counselor.id}`);
+                  }}
+                  sx={{
+                    bottom: isMobile ? "15px" : "20px",
+                    left: isMobile ? "15px" : "20px",
+                    width: isMobile ? "32px" : isTablet ? "36px" : "40px",
+                    height: isMobile ? "32px" : isTablet ? "36px" : "40px",
+                    ...SwiperSlideIconButtonStyle,
+                  }}
+                >
+                  <IoIosArrowBack
+                    style={{
+                      fontSize: isMobile ? "20px" : isTablet ? "22px" : "24px",
+                      color: "#1a49ba",
+                    }}
+                  />
+                </IconButton>
+              </Box>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </Box>
+    </Box>
+  );
+};
+
+export default CounselorSwiper;
